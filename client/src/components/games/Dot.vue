@@ -1,0 +1,63 @@
+<template>
+  <v-container>
+    <v-row align="center" justify="center">
+      <v-col cols="auto">
+        <v-btn
+          size="x-large"
+          elevation="8"
+          @click="setChoice('red')"
+          :disabled="hasChoose"
+          color="red-darken-1"
+          >RED</v-btn
+        >
+      </v-col>
+      <v-col cols="auto">
+        <v-btn
+          size="x-large"
+          elevation="8"
+          @click="setChoice('black')"
+          :disabled="hasChoose"
+          color="grey-darken-4"
+          >BLACK</v-btn
+        >
+      </v-col>
+    </v-row>
+    {{ choice }}
+    <div v-if="state.player.rightAnswer">
+      <div v-if="state.player.rightAnswer === choice">
+        gagné, 2 gorgés à donner
+        <GiveSoif :soif-to-add="2" />
+      </div>
+      <span v-else>perdu</span>
+    </div>
+  </v-container>
+</template>
+
+<script>
+import { state, socket } from '@/socket'
+import GiveSoif from '@/components/GiveSoif.vue'
+
+export default {
+  components: {
+    GiveSoif
+  },
+  data() {
+    return {
+      state,
+      choice: null
+    }
+  },
+  computed: {
+    hasChoose() {
+      return this.choice != null
+    }
+  },
+  methods: {
+    setChoice(val) {
+      this.choice = val
+      socket.emit('playGame', 'RedOrBlack', val)
+    }
+  },
+  created() {}
+}
+</script>
