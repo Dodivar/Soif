@@ -96,8 +96,7 @@ export default {
       return state.room?.gamesTour[this.actualGameIdx]
     },
     allHasPlayed() {
-      if (!state.room.gamesTour) return null
-      return state.room.gamesTour[this.actualGameIdx]
+      return state.room.players.every(e => e.hasPlayed)
     }
   },
   watch: {
