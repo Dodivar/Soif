@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.3",
     "css-loader": "^7.1.2",
     "npm": "^10.8.2",
     "socket.io-client": "^4.7.5",

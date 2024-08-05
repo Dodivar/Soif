@@ -3,7 +3,7 @@
     <div class="game-container">
       <h1>Devinez le nombre entre 1 et 100</h1>
       <p>Vous avez 3 essais !</p>
-      <input type="number" id="guess" min="1" max="100" v-model="inputNumber">
+      <input type="number" id="guess" min="1" max="100" v-model="inputNumber" />
       <button id="submit" v-show="submitButtonVisible">Deviner</button>
       <p id="message">
         {{ message }}
@@ -12,7 +12,7 @@
       <div class="arrow arrow-down" v-show="arrowToShow === 'down'">⬇️</div>
       <button id="replay" v-show="!submitButtonVisible" @click="initGame">Rejouer</button>
       <ul id="guesses-list">
-        <li v-for="guess in guesses">
+        <li v-for="(guess, idx) in guesses" :key="idx">
           {{ guess }}
         </li>
       </ul>
@@ -23,13 +23,13 @@
 
 <script>
 import { state, socket } from '@/socket'
-import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js'
+import confetti from 'canvas-confetti'
 
 export default {
   data() {
     return {
       state,
-      inputNumber: 50
+      inputNumber: 50,
       targetNumber: null,
       submitButtonVisible: true,
       attempts: 3,
@@ -43,11 +43,11 @@ export default {
   },
   methods: {
     initGame() {
-      this.targetNumber = Math.floor(Math.random() * 100) + 1;
-      this.attempts = 3;
-      this.guesses = [];
-      this.message = '';
-      this.inputNumber = 50;
+      this.targetNumber = Math.floor(Math.random() * 100) + 1
+      this.attempts = 3
+      this.guesses = []
+      this.message = ''
+      this.inputNumber = 50
       this.submitButtonVisible = true
       this.arrowToShow = null
     },
@@ -59,34 +59,34 @@ export default {
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 }
-        });
+        })
       }
       this.arrowToShow = null
     },
 
     playerGuess() {
       if (isNaN(this.inputNumber) || this.inputNumber < 1 || this.inputNumber > 100) {
-        this.message = 'Veuillez entrer un nombre valide entre 1 et 100.';
-        return;
+        this.message = 'Veuillez entrer un nombre valide entre 1 et 100.'
+        return
       }
 
-      this.attempts--;
-      this.guesses.push(this.inputNumber);
+      this.attempts--
+      this.guesses.push(this.inputNumber)
 
       if (this.inputNumber === this.targetNumber) {
-        this.message = `Bravo ! Vous avez trouvé le nombre ${this.targetNumber} !`;
-        this.endGame(true);
-      } else if (attempts === 0) {
-        this.message = `Dommage ! Le nombre était ${this.targetNumber}. Vous avez épuisé vos essais.`;
-        this.endGame(false);
+        this.message = `Bravo ! Vous avez trouvé le nombre ${this.targetNumber} !`
+        this.endGame(true)
+      } else if (this.attempts === 0) {
+        this.message = `Dommage ! Le nombre était ${this.targetNumber}. Vous avez épuisé vos essais.`
+        this.endGame(false)
       } else {
-        this.message = `Ce n'est pas le bon nombre. Il vous reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`;
-        this.arrowToShow = this.inputNumber < this.targetNumber ? 'up' : 'down';
+        this.message = `Ce n'est pas le bon nombre. Il vous reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`
+        this.arrowToShow = this.inputNumber < this.targetNumber ? 'up' : 'down'
       }
 
-      this.inputNumber = null;
+      this.inputNumber = null
     }
-  },
+  }
 }
 </script>
 
@@ -103,7 +103,7 @@ input {
 button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
@@ -120,7 +120,9 @@ button:hover {
 .arrow {
   font-size: 3rem;
   opacity: 0;
-  transition: opacity 0.5s, transform 0.5s;
+  transition:
+    opacity 0.5s,
+    transform 0.5s;
 }
 .arrow.show {
   opacity: 1;

@@ -9,8 +9,7 @@ export const state = reactive({
   player: {
     id: null,
     pseudo: null,
-    rightAnswer: null,
-    gameValue: null
+    isRoomMaster: false
   },
   room: {}
 })
@@ -21,30 +20,26 @@ export const socket = io(URL)
 socket.on('join room', (roomState) => {
   console.log(roomState)
   state.player.id = socket.id
+  state.player.isRoomMaster = socket.isRoomMaster
   state.room = roomState
 })
 
-// User left the game
 socket.on('launch games', () => {
   state.room.isPlaying = true
 })
 
-// User left the game
 socket.on('refresh players', (players) => {
   state.room.players = players
   console.log(players)
+})
+
+socket.on('refresh room', (room) => {
+  state.room = room
+  console.log(room)
 })
 
 // Send a message to client
 socket.on('msg', (msg) => {
   alert(msg)
   console.info(msg)
-})
-
-socket.on('RedOrBlack answer', (answer) => {
-  state.player.rightAnswer = answer
-})
-
-socket.on('CardColors answer', (answer) => {
-  state.player.rightAnswer = answer
 })

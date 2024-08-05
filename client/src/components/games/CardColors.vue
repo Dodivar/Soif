@@ -25,14 +25,13 @@
         >
       </v-col>
     </v-row>
-    {{ choice }}
+    <!-- {{ choice }}
     <div v-if="state.player.rightAnswer">
       <div v-if="state.player.rightAnswer === choice">
         gagné, 4 gorgés à donner
-        <!-- <GiveSoif :soif-to-add="4" /> -->
       </div>
       <span v-else>perdu</span>
-    </div>
+    </div> -->
   </v-container>
 </template>
 

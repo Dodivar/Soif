@@ -8,18 +8,11 @@ import StartMenu from './components/StartMenu.vue'
       <template v-slot:prepend>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>
       </template>
-
       <v-app-bar-title>Soif !</v-app-bar-title>
-
-      <!-- <template v-slot:append>
-        <v-btn icon="mdi-heart" color="white"></v-btn>
-
-        <v-btn icon="mdi-magnify"></v-btn>
-
-        <v-btn icon="mdi-dots-vertical"></v-btn>
-      </template> -->
     </v-app-bar>
-    <StartMenu />
+    <v-main>
+      <StartMenu />
+    </v-main>
   </v-app>
 </template>
 

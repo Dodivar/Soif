@@ -1,58 +1,57 @@
 <template>
-  <v-main>
-    <v-layout>
-      <v-sheet v-if="!state.room.roomId" class="mx-auto" width="300">
-        <v-text-field
-          v-model="state.player.pseudo"
-          :counter="10"
-          :rules="pseudoRules"
-          label="Pseudo"
-          required
-        ></v-text-field>
+  <v-layout>
+    <v-sheet v-if="!state.room.roomId" class="mx-auto" width="300">
+      <v-text-field
+        v-model="state.player.pseudo"
+        :counter="10"
+        :rules="pseudoRules"
+        label="Pseudo"
+        required
+      ></v-text-field>
 
-        <!-- Create room -->
-        <v-btn @click="createRoom" color="success">Créer une partie</v-btn>
+      <!-- Create room -->
+      <v-btn @click="createRoom" color="success">Créer une partie</v-btn>
 
-        <!-- Join room -->
-        <v-row align="center" justify="center">
-          <v-col cols="auto">
-            <v-text-field
-              v-model="roomToJoin"
-              :counter="6"
-              placeholder="RoomId"
-              label="RoomId"
-            ></v-text-field>
-          </v-col>
-          <v-btn @click="joinRoom" color="warning">Rejoindre une partie</v-btn>
-        </v-row>
-      </v-sheet>
+      <!-- Join room -->
+      <v-row align="center" justify="center">
+        <v-col cols="auto">
+          <v-text-field
+            v-model="roomToJoin"
+            :counter="6"
+            placeholder="RoomId"
+            label="RoomId"
+          ></v-text-field>
+        </v-col>
+        <v-btn @click="joinRoom" color="warning">Rejoindre une partie</v-btn>
+      </v-row>
+    </v-sheet>
 
-      <!-- Saloon -->
-      <v-sheet v-else>
-        <div v-if="!allIsReady">
-          <h2>
-            {{ state.room.roomId }}
-          </h2>
+    <!-- Saloon -->
+    <v-sheet v-else>
+      <div v-if="!allIsReady">
+        <h2>
+          {{ state.room.roomId }}
+        </h2>
 
-          <!-- Players -->
-          <p>Nombre de joueur: {{ players?.length }}</p>
-          <v-avatar v-for="player in players" :key="player.socketId" color="brown" size="large">
-            <span class="text">{{ player.pseudo }}</span>
-          </v-avatar>
+        <!-- Players -->
+        <p>Nombre de joueur: {{ players?.length }}</p>
+        <v-avatar v-for="player in players" :key="player.socketId" color="brown" size="large">
+          <span class="text">{{ player.pseudo }}</span>
+        </v-avatar>
 
-          <v-btn @click="readyToPlay" color="success">Prêt</v-btn>
-          <v-btn @click="quitRoom" color="error">Quitter la partie</v-btn>
+        <v-btn @click="readyToPlay" color="success">Prêt</v-btn>
+        <v-btn @click="quitRoom" color="error">Quitter la partie</v-btn>
+      </div>
+      <div v-else>
+        <!-- GAMES -->
+        <div v-if="allHasPlayed">
+          <ScoreSoif />
+          <v-btn @click="nextGame">Next</v-btn>
         </div>
-        <div v-else>
-          <!-- GAMES -->
-          <div v-if="allHasPlayed">
-            <ScoreSoif />
-          </div>
-          <component v-else :is="actualGame" />
-        </div>
-      </v-sheet>
-    </v-layout>
-  </v-main>
+        <component v-else :is="actualGame" />
+      </div>
+    </v-sheet>
+  </v-layout>
 </template>
 
 <script>
@@ -60,6 +59,13 @@ import StopSlider from './games/StopSlider.vue'
 import RedOrBlack from './games/RedOrBlack.vue'
 import CardColors from './games/CardColors.vue'
 import MovableList from './games/MovableList.vue'
+import TTMC from './games/TTMC.vue'
+import ReactionClick from './games/ReactionClick.vue'
+import FastClick from './games/FastClick.vue'
+import DotClick from './games/DotClick.vue'
+import SurvivalEmoji from './games/SurvivalEmoji.vue'
+import Simon from './games/Simon.vue'
+import GuessNumber from './games/GuessNumber.vue'
 import ScoreSoif from './ScoreSoif.vue'
 import { state, socket } from '@/socket'
 
@@ -70,7 +76,14 @@ export default {
     RedOrBlack,
     CardColors,
     ScoreSoif,
-    MovableList
+    MovableList,
+    TTMC,
+    ReactionClick,
+    FastClick,
+    DotClick,
+    SurvivalEmoji,
+    Simon,
+    GuessNumber
   },
   data() {
     return {
@@ -83,29 +96,31 @@ export default {
       actualGameIdx: 0
     }
   },
-  created() {},
   computed: {
     players() {
       return state.room.players
     },
     allIsReady() {
-      return state.room.players?.every((e) => e.isReady)
+      return this.players?.every((e) => e.isReady)
     },
     actualGame() {
       if (!state.room.gamesTour) return null
       return state.room?.gamesTour[this.actualGameIdx]
     },
     allHasPlayed() {
-      return state.room.players.every(e => e.hasPlayed)
+      return this.players.every((e) => e.hasPlayed)
+    },
+    isRoomMaster() {
+      return this.players.find((e) => e.socketId === state.player.socketId).isRoomMaster
     }
   },
   watch: {
-    allIsReady(oldVal, newVal) {
-      // Change the game when each player is ready
-      if (newVal === true) {
-        this.actualGameIdx++
-      }
-    }
+    // weCanPassToTheNextGame(oldVal, newVal) {
+    //   // Change the game when each player is ready
+    //   if (newVal === true) {
+    //     this.actualGameIdx++
+    //   }
+    // }
   },
   methods: {
     createRoom() {
@@ -130,6 +145,11 @@ export default {
     },
     readyToPlay() {
       socket.emit('ready to play')
+    },
+    nextGame() {
+      this.actualGameIdx++
+      this.players.forEach((e) => (e.hasPlayed = false))
+      socket.emit('refresh players', this.players)
     }
   }
 }
