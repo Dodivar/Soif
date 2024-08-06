@@ -1,14 +1,14 @@
 <template>
   <v-card class="mx-auto" max-width="300" :title="`La réponse était ${roundAnswer}`">
-    <h3 v-if="hasWin">Vous pouvez donner {{ soifToAdd }} soif !</h3>
+    <h3 v-if="state.player.winner">Vous pouvez donner {{ state.player.soifToGive }} soif !</h3>
     <v-list :items="playerItems">
       <v-list-subheader inset>Liste des buveurs</v-list-subheader>
       <v-list-item
         v-for="player in playerItems"
         :key="player.socketId"
         :title="player.pseudo"
-        :subtitle="`Nombre de soif: ${player.soif}`"
-        @click="hasWin ? giveSoif(player.id) : null"
+        :subtitle="`Nombre de soif: ${player.soifTotal}`"
+        @click="state.player.winner ? giveSoif(player.socketId) : null"
       >
         <!-- Prepend -->
         <template v-slot:prepend>
@@ -19,12 +19,12 @@
 
         <!-- Append -->
         <template v-slot:append>
-          <v-chip v-if="player.soifAdded > 0" color="green" variant="flat">
-            +{{ player.soifAdded }}
+          <v-chip v-if="player.soifAddedThisRound > 0" color="green" variant="flat">
+            + {{ player.soifAddedThisRound }}
           </v-chip>
           <span v-if="typeof player.gameValue === 'string' || typeof player.gameValue === 'number'">
-            {{ player.gameValue }}</span
-          >
+            {{ player.gameValue }}
+          </span>
           <span v-else>A répondu</span>
         </template>
       </v-list-item>
@@ -53,14 +53,11 @@ export default {
     },
     roundAnswer() {
       return state.room.roundAnswer
-    },
-    hasWin() {
-      return state.room.players.find((e) => e.gameValue === this.roundAnswer)
     }
   },
   methods: {
     giveSoif(socketId) {
-      socket.emit('give soif', socketId, this.soifToAdd)
+      socket.emit('give soif', socketId, state.player.soifToGive)
     }
   }
 }

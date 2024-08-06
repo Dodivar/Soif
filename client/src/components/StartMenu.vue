@@ -44,9 +44,8 @@
       </div>
       <div v-else>
         <!-- GAMES -->
-        <div v-if="allHasPlayed">
+        <div v-if="state.player.hasPlayed">
           <ScoreSoif />
-          <v-btn @click="nextGame">Next</v-btn>
         </div>
         <component v-else :is="actualGame" />
       </div>
@@ -100,27 +99,15 @@ export default {
     players() {
       return state.room.players
     },
+    actualGame() {
+      return state.room.actualGameName
+    },
     allIsReady() {
       return this.players?.every((e) => e.isReady)
-    },
-    actualGame() {
-      if (!state.room.gamesTour) return null
-      return state.room?.gamesTour[this.actualGameIdx]
-    },
-    allHasPlayed() {
-      return this.players.every((e) => e.hasPlayed)
     },
     isRoomMaster() {
       return this.players.find((e) => e.socketId === state.player.socketId).isRoomMaster
     }
-  },
-  watch: {
-    // weCanPassToTheNextGame(oldVal, newVal) {
-    //   // Change the game when each player is ready
-    //   if (newVal === true) {
-    //     this.actualGameIdx++
-    //   }
-    // }
   },
   methods: {
     createRoom() {
@@ -145,11 +132,6 @@ export default {
     },
     readyToPlay() {
       socket.emit('ready to play')
-    },
-    nextGame() {
-      this.actualGameIdx++
-      this.players.forEach((e) => (e.hasPlayed = false))
-      socket.emit('refresh players', this.players)
     }
   }
 }

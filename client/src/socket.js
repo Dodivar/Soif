@@ -18,23 +18,19 @@ export const socket = io(URL)
 
 // User joined the game
 socket.on('join room', (roomState) => {
-  console.log(roomState)
-  state.player.id = socket.id
-  state.player.isRoomMaster = socket.isRoomMaster
   state.room = roomState
-})
-
-socket.on('launch games', () => {
-  state.room.isPlaying = true
+  state.player = state.room.players.find((e) => e.socketId === socket.id)
+  console.log(roomState)
 })
 
 socket.on('refresh players', (players) => {
   state.room.players = players
-  console.log(players)
+  state.player = players.find((e) => e.socketId === socket.id)
 })
 
 socket.on('refresh room', (room) => {
   state.room = room
+  state.player = state.room.players.find((e) => e.socketId === socket.id)
   console.log(room)
 })
 

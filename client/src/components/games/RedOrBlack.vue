@@ -22,11 +22,6 @@
         >
       </v-col>
     </v-row>
-    <!-- {{ choice }}
-    <div v-if="state.player.rightAnswer">
-      <div v-if="state.player.rightAnswer === choice">gagné, 2 gorgés à donner</div>
-      <span v-else>perdu</span>
-    </div> -->
   </v-container>
 </template>
 
@@ -49,7 +44,7 @@ export default {
   methods: {
     setChoice(val) {
       this.choice = val
-      socket.emit('playGame', 'RedOrBlack', val)
+      socket.emit('playGame', val)
     }
   },
   created() {}

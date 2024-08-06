@@ -2,9 +2,14 @@ const Express = require("express")();
 const Http = require("http").Server(Express);
 const io = require("socket.io")(Http, {
   cors: {
-    origin: "http://localhost:3000"
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
   }
 });
+
+Http.listen(3333, () => {
+    console.log("Listening at : 3333");
+})
 
 var Player = require("./player.js");
 
@@ -14,14 +19,37 @@ const initRoomState = (socket, isRoomMaster) => {
     return  {
         roomId: socket.actualRoomId,
         gamesTour: null,
+        gameIdx: 0,
+        actualGameName: null,
         players: [actualPlayer],
         player: actualPlayer,
-        isPlaying: false,
         roundAnswer: null,
     }
 }
 
 var roomState = []; // State of rooms
+
+const games = {
+    qa: 
+    [
+        {name: 'RedOrBlack', soif: 2}, 
+        {name: 'CardColors', soif: 4}, 
+        // {name: 'TTMC', soif: 5}
+    ],
+    reflexe:
+    [
+        {name: 'StopSlider', soif: 4}, 
+        // {name: 'ReactionClick', soif: 4}, 
+        // {name: 'FastClick', soif: 4}, 
+        // {name: 'DotClick', soif: 4}, 
+        // {name: 'SurvivalEmoji', soif: 4}
+    ],
+    reflexion: 
+    [
+        // {name: 'Simon', soif: 4}, 
+        // {name: 'GuessNumber', soif: 4}
+    ]
+}
 
 io.on("connection", socket => {
 
@@ -98,7 +126,6 @@ io.on("connection", socket => {
         room.players.push(newPlayer)
 
         io.emit('join room', room);
-        io.to(roomId).broadcast.emit("refresh players", getPlayerRoomState(socket.actualRoomId))
     });
 
     socket.on("quit room", () => {
@@ -109,12 +136,29 @@ io.on("connection", socket => {
     socket.on("ready to play", () => {
         getPlayerState(socket.actualRoomId, socket.id).isReady = true
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+
+        if (getPlayerRoomState(socket.actualRoomId).every(e => e.isReady)) {
+            sendNextGame(io, socket, 500)
+        }
     });
 
     socket.on("give soif", (socketId, soifNumber) => {
-        giveSoif(socket.actualRoomId, socketId, soifNumber)
-        getPlayerState(socket.actualRoomId, socket.id).givedSoif = true
+        // Give the soif
+        const playerToGive = getPlayerState(socket.actualRoomId, socketId)
+        playerToGive.soifTotal += soifNumber
+        playerToGive.soifAddedThisRound = soifNumber
+
+        // Set soif has been gived
+        const player = getPlayerState(socket.actualRoomId, socket.id)
+        player.givedSoif = true
+
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+
+        // If all soif has been gived, launch next game
+        const winners = getPlayerRoomState(socket.actualRoomId).filter(e => e.winner)
+        if (winners.every(e => e.givedSoif)) {
+            sendNextGame(io, socket)
+        }
     });
 
     socket.on("score timeout", () => {
@@ -122,58 +166,103 @@ io.on("connection", socket => {
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
     })
 
-    socket.on("playGame", (gameName, data) => {
-        playGame(socket, gameName, data)
-
-        io.to(socket.actualRoomId).emit("refresh room", getRoom(socket.actualRoomId))
+    socket.on("playGame", (data) => {
+        playGame(io, socket, data)
     })
+
+    socket.on("refresh players", (players) => {
+        getPlayerRoomState(socket.actualRoomId) = players;
+        io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+    }) 
 })
 
-Http.listen(3333, () => {
-    console.log("Listening at : 3333");
-})
 
-function playGame(socket, name, data) {
+function sendNextGame(io, socket, wait = 2000) {
+    const room = getRoom(socket.actualRoomId)
+    const nextGameName = room.gamesTour[room.gameIdx].name
+    room.actualGameName = nextGameName
+
+    // Re-init players state for next game
+    room.players.forEach(e => {
+        e.hasPlayed = false
+        e.winner = false
+        e.soifToGive = 0
+        e.gameValue = null
+        e.soifAddedThisRound = 0
+        e.givedSoif = false
+    })
+
+    console.log(`prochain round ${nextGameName} dans ${wait}ms`)
+    setTimeout(() => {
+        console.log('ooo')
+        io.to(socket.actualRoomId).emit("refresh room", room)
+        room.gameIdx++
+    }, wait)
+}
+
+function playGame(io, socket, data) {
     let choices
     let player = getPlayerState(socket.actualRoomId, socket.id)
     const room = getRoom(socket.actualRoomId)
 
+    player.gameValue = data
+    player.hasPlayed = true
+
+    // Send answer if all played has played
+    if (!room.players.every(e => e.hasPlayed && e.gameValue !== null)) {
+            io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+        return;
+    }
+
     try {
-        switch(name) {
+        // Check answer
+        switch(room.actualGameName) {
             case "RedOrBlack":
-                if (socket.isRoomMaster) {
-                    choices = ["red", "black"]
-                    room.roundAnswer = choices[Math.round(Math.random())]
-                }
+                choices = ["red", "black"]
+                room.roundAnswer = choices[Math.round(Math.random())]
                 break
 
             case "CardColors":
-                if (socket.isRoomMaster) {
-                    choices = ["♠️", "❤️", "🔶", "♣️"]
-                    room.roundAnswer = choices[Math.floor(Math.random() * choices.length - 1)]
-                }
+                choices = ["♠️", "❤️", "🔶", "♣️"]
+                room.roundAnswer = choices[Math.floor(Math.random() * choices.length - 1)]
                 break
 
             case "StopSlider":
-
-                const everyPlayerPlayed = getPlayerRoomState(socket.actualRoomId).every(e => e.gameValue !== null)
-
-                // Assign the winner
-                if (everyPlayerPlayed) {
-                    console.log('every has played !')
-                    const bestScore = Math.max.apply(Math, getPlayerRoomState(socket.actualRoomId).map(e => e.gameValue));
-                    // getPlayerRoomState(socket.actualRoomId).filter(e => e.gameValue === bestScore).forEach(e => {
-                    //     e.gameWinner = true
-                    // })
-                    room.roundAnswer = bestScore
-                }
+                const bestScore = Math.max.apply(Math, room.players.map(e => e.gameValue));
+                room.roundAnswer = bestScore
                 break
             default:
                 break
         }
+        console.log(`Réponse: ${room.roundAnswer}`)
 
-        player.gameValue = data
-        player.hasPlayed = true
+
+
+        // Assign winner, if no one send next game
+        const winners = room.players.filter(e => e.gameValue === room.roundAnswer)
+        if (winners.length > 0) {
+
+            // Get the number of soif to give
+            let soifToGive = 2
+            Object.keys(games).forEach(type => {
+                const filter = games[type].find(e => e.name === room.actualGameName)
+                if (filter) {
+                    soifToGive = filter.soif
+                    return;
+                }
+            })
+            
+            winners.forEach(e => { 
+                e.winner = true
+                e.soifToGive = soifToGive
+             })
+             
+            io.to(socket.actualRoomId).emit("refresh room", getRoom(socket.actualRoomId))
+        }
+        else {
+            io.to(socket.actualRoomId).emit("refresh room", getRoom(socket.actualRoomId))
+            sendNextGame(io, socket)
+        }
     }
     catch(e) {
         console.error(e)
@@ -191,7 +280,7 @@ function makeid(length) {
     return result;
 }
 
-function deleteRoomData (roomId) {
+function deleteRoomData(roomId) {
     const roomIdx = roomState.findIndex(e => e.roomId === roomId)
     roomState = roomState.splice(roomIdx, 1)
     delete io.sockets.adapter.rooms[roomId];
@@ -214,12 +303,6 @@ function resetPlayersReady(roomId) {
     })
 }
 
-function giveSoif(roomId, socketId, number) {
-    const player = getPlayerState(roomId, socketId)
-    player.soif += number
-    player.soifAdded = number
-}
-
 function getRoom(roomId) {
     return roomState.find(e => e.roomId === roomId)
 }
@@ -233,11 +316,7 @@ function getPlayerState(roomId, socketId) {
 }
 
 function getGamesTour(number = 10) {
-    const games = {
-        qa: ['RedOrBlack', 'CardColors', 'TTMC'],
-        reflexe: ['StopSlider', 'ReactionClick', 'FastClick', 'DotClick', 'SurvivalEmoji'],
-        reflexion: ['Simon', 'GuessNumber']
-    }
+
     const types = Object.keys(games)
 
     const tour = []
@@ -248,7 +327,8 @@ function getGamesTour(number = 10) {
 
         if (possibilities.length === 1) {
             tour.push(possibilities[0])
-        } else {
+        } 
+        else {
             const rdm = Math.floor(
                 Math.random() * possibilities.length
             )

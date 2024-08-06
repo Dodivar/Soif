@@ -25,19 +25,11 @@
         >
       </v-col>
     </v-row>
-    <!-- {{ choice }}
-    <div v-if="state.player.rightAnswer">
-      <div v-if="state.player.rightAnswer === choice">
-        gagné, 4 gorgés à donner
-      </div>
-      <span v-else>perdu</span>
-    </div> -->
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
-// import GiveSoif from '@/components/GiveSoif.vue'
 
 export default {
   components: {},
@@ -55,7 +47,7 @@ export default {
   methods: {
     setChoice(val) {
       this.choice = val
-      socket.emit('playGame', 'CardColors', val)
+      socket.emit('playGame', val)
     }
   },
   created() {}
