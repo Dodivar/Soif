@@ -41,12 +41,6 @@ export default {
       state
     }
   },
-  props: {
-    soifToAdd: {
-      type: Number,
-      default: 2
-    }
-  },
   computed: {
     playerItems() {
       return state.room.players

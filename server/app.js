@@ -20,7 +20,11 @@ const initRoomState = (socket, isRoomMaster) => {
         roomId: socket.actualRoomId,
         gamesTour: null,
         gameIdx: 0,
-        actualGameName: null,
+        actualGame: {
+            name: null,
+            randomDelay: null,
+            sequence: []
+        },
         players: [actualPlayer],
         player: actualPlayer,
         roundAnswer: null,
@@ -29,27 +33,33 @@ const initRoomState = (socket, isRoomMaster) => {
 
 var roomState = []; // State of rooms
 
-const games = {
-    qa: 
-    [
-        {name: 'RedOrBlack', soif: 2}, 
-        {name: 'CardColors', soif: 4}, 
-        // {name: 'TTMC', soif: 5}
-    ],
-    reflexe:
-    [
-        {name: 'StopSlider', soif: 4}, 
-        // {name: 'ReactionClick', soif: 4}, 
-        // {name: 'FastClick', soif: 4}, 
-        // {name: 'DotClick', soif: 4}, 
-        // {name: 'SurvivalEmoji', soif: 4}
-    ],
-    reflexion: 
-    [
-        // {name: 'Simon', soif: 4}, 
-        // {name: 'GuessNumber', soif: 4}
-    ]
-}
+const allGames = [
+    {
+        theme: 'qa',
+        games: [
+            {name: 'RedOrBlack', soif: 2}, 
+            {name: 'CardColors', soif: 4}, 
+            // {name: 'TTMC', soif: 5}
+        ],
+    },
+    {
+        theme: 'reflexe',
+        games: [
+            {name: 'StopSlider', soif: 4}, 
+            {name: 'ReactionClick', soif: 4}, 
+            {name: 'FastClick', soif: 4}, 
+            // {name: 'DotClick', soif: 4}, 
+            {name: 'SurvivalEmoji', soif: 4}
+        ],
+    },
+    {
+        theme: 'reflexion',
+        games: [
+            {name: 'Simon', soif: 4}, 
+            // {name: 'GuessNumber', soif: 4}
+        ],
+    },
+]
 
 io.on("connection", socket => {
 
@@ -169,18 +179,32 @@ io.on("connection", socket => {
     socket.on("playGame", (data) => {
         playGame(io, socket, data)
     })
-
-    socket.on("refresh players", (players) => {
-        getPlayerRoomState(socket.actualRoomId) = players;
-        io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
-    }) 
 })
 
+function setActualGameData(room, nextGameName) {
+    room.actualGame = {}
+    room.actualGame.name = nextGameName
+
+    switch(room.actualGame.name) {
+        case "ReactionClick":
+            room.actualGame.randomDelay = Math.floor(Math.random() * 9000) + 1000 // Entre 1000ms et 10000ms
+            break
+        case "Simon":
+            const buttons = ['red', 'green', 'blue', 'yellow']
+            const sequence = []
+            for (let i = 0; i < 20; i++) {
+                const button = buttons[Math.floor(Math.random() * buttons.length)]
+                sequence.push(button)
+            }
+            room.actualGame.sequence = sequence
+            break
+    }
+}
 
 function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.actualRoomId)
     const nextGameName = room.gamesTour[room.gameIdx].name
-    room.actualGameName = nextGameName
+    setActualGameData(room, nextGameName)
 
     // Re-init players state for next game
     room.players.forEach(e => {
@@ -191,17 +215,15 @@ function sendNextGame(io, socket, wait = 2000) {
         e.soifAddedThisRound = 0
         e.givedSoif = false
     })
-
-    console.log(`prochain round ${nextGameName} dans ${wait}ms`)
+    
     setTimeout(() => {
-        console.log('ooo')
         io.to(socket.actualRoomId).emit("refresh room", room)
         room.gameIdx++
     }, wait)
 }
 
 function playGame(io, socket, data) {
-    let choices
+    let choices, bestScore
     let player = getPlayerState(socket.actualRoomId, socket.id)
     const room = getRoom(socket.actualRoomId)
 
@@ -209,14 +231,14 @@ function playGame(io, socket, data) {
     player.hasPlayed = true
 
     // Send answer if all played has played
-    if (!room.players.every(e => e.hasPlayed && e.gameValue !== null)) {
-            io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+    if (!room.players.every(e => e.hasPlayed && e.gameValue !== null) || room.actualGame.name === "Simon") {
+        io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
         return;
     }
 
     try {
         // Check answer
-        switch(room.actualGameName) {
+        switch(room.actualGame.name) {
             case "RedOrBlack":
                 choices = ["red", "black"]
                 room.roundAnswer = choices[Math.round(Math.random())]
@@ -228,15 +250,29 @@ function playGame(io, socket, data) {
                 break
 
             case "StopSlider":
-                const bestScore = Math.max.apply(Math, room.players.map(e => e.gameValue));
+            case "ReactionClick":
+            case "FastClick":
+            case "SurvivalEmoji":
+                bestScore = Math.max.apply(Math, room.players.map(e => e.gameValue));
                 room.roundAnswer = bestScore
                 break
+                
+            case "Simon":
+                // If the score is > 0 then it's a win, else if the score = 0, it's a loose for this player  
+                if (data === 0) {
+                    // Assign to other players the right value
+                    room.players.filter(e => e.socketId !== socket.id).forEach(e => e.gameValue = room.roundAnswer)
+                } 
+                else {
+                    room.roundAnswer = room.actualGame.sequence.length
+                }
+
+                break
+
             default:
                 break
         }
         console.log(`Réponse: ${room.roundAnswer}`)
-
-
 
         // Assign winner, if no one send next game
         const winners = room.players.filter(e => e.gameValue === room.roundAnswer)
@@ -244,8 +280,8 @@ function playGame(io, socket, data) {
 
             // Get the number of soif to give
             let soifToGive = 2
-            Object.keys(games).forEach(type => {
-                const filter = games[type].find(e => e.name === room.actualGameName)
+            allGames.forEach(theme => {
+                const filter = theme.games.find(e => e.name === room.actualGame.name)
                 if (filter) {
                     soifToGive = filter.soif
                     return;
@@ -316,14 +352,11 @@ function getPlayerState(roomId, socketId) {
 }
 
 function getGamesTour(number = 10) {
-
-    const types = Object.keys(games)
-
     const tour = []
     let typeIdx = 0
 
     while (tour.length != number) {
-        const possibilities = games[types[typeIdx]]
+        const possibilities = allGames[typeIdx].games
 
         if (possibilities.length === 1) {
             tour.push(possibilities[0])
@@ -335,9 +368,9 @@ function getGamesTour(number = 10) {
             tour.push(possibilities[rdm])
         }
 
-        typeIdx = typeIdx + 1 > games[types[typeIdx]].length ? 0 : typeIdx + 1
+        typeIdx = typeIdx + 1 === allGames.length ? 0 : typeIdx + 1
     }
 
-    tour.push("ScoreSoif")
+    tour.push({name: "ScoreSoif"})
     return tour
 }

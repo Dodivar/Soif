@@ -27,7 +27,7 @@
     </v-sheet>
 
     <!-- Saloon -->
-    <v-sheet v-else>
+    <v-row v-else>
       <div v-if="!allIsReady">
         <h2>
           {{ state.room.roomId }}
@@ -47,9 +47,9 @@
         <div v-if="state.player.hasPlayed">
           <ScoreSoif />
         </div>
-        <component v-else :is="actualGame" />
+        <component v-else :is="actualGameName" />
       </div>
-    </v-sheet>
+    </v-row>
   </v-layout>
 </template>
 
@@ -99,8 +99,8 @@ export default {
     players() {
       return state.room.players
     },
-    actualGame() {
-      return state.room.actualGameName
+    actualGameName() {
+      return state.room.actualGame.name
     },
     allIsReady() {
       return this.players?.every((e) => e.isReady)
