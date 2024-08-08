@@ -7,9 +7,10 @@
       <div class="simon-button" id="blue" @click="playerTurn('blue')"></div>
       <div class="simon-button" id="yellow" @click="playerTurn('yellow')"></div>
     </div>
-    <span id="message" v-if="message !== null">
-      {{ message }}
-    </span>
+    <div id="message">
+      <p v-if="message !== null">{{ message }}</p>
+      <p>{{ actualPlayerPseudo }}</p>
+    </div>
   </v-container>
 </template>
 
@@ -25,28 +26,53 @@ export default {
     return {
       state,
       buttons: ['red', 'green', 'blue', 'yellow'],
-      sequence: [],
+      btnSequence: [],
       playerSequence: [],
-      level: 0,
-      message: null,
+      gameTurn: [],
+      // level: 0,
+      // message: null,
       userCanPlay: false
     }
   },
   created() {
-    this.sequence = state.room.actualGame.sequence
+    this.btnSequence = state.room.actualGame.btnSequence
+    this.gameTurn = state.room.actualGame.gameTurn
+  },
+  computed: {
+    level() {
+      return state.room.actualGame.level
+    },
+    message() {
+      return state.room.actualGame.message
+    },
+    actualPlayerPseudo() {
+      return this.gameTurn[this.level].pseudo
+    },
+    isPlayerTurn() {
+      return this.gameTurn[this.level].socketId === state.player.socketId
+    }
+  },
+  watch: {
+    'state.room.actualGame.clickedBtn'(newColor) {
+      if (newColor === null) return
+      this.lightUpButton(newColor)
+    },
+    level() {
+      setTimeout(this.playSequence, 1000)
+    }
   },
   methods: {
     nextRound() {
-      this.level++
-      this.playerSequence = []
-      this.message = `${this.level}`
-      this.playSequence()
+      if (!this.isPlayerTurn) return
+      socket.emit('SimonNextRound')
     },
 
     playSequence() {
+      this.playerSequence = []
+
       let i = 0
       const intervalId = setInterval(() => {
-        this.lightUpButton(this.sequence[i])
+        this.lightUpButton(this.btnSequence[i])
         i++
 
         if (i >= this.level) {
@@ -59,17 +85,21 @@ export default {
     lightUpButton(color) {
       const button = document.getElementById(color)
       button.classList.add('lit')
+      state.room.actualGame.clickedBtn = null
+
       setTimeout(() => {
         button.classList.remove('lit')
       }, 300)
     },
 
     playerTurn(color) {
-      if (!this.userCanPlay) {
+      if (!this.userCanPlay || !this.isPlayerTurn) {
         return
       }
-      this.playerSequence.push(color)
+      socket.emit('SimonLightUpButton', color)
       this.lightUpButton(color)
+
+      this.playerSequence.push(color)
       this.checkPlayerInput()
     },
 
@@ -77,15 +107,15 @@ export default {
       // Loose
       if (
         this.playerSequence[this.playerSequence.length - 1] !==
-        this.sequence[this.playerSequence.length - 1]
+        this.btnSequence[this.playerSequence.length - 1]
       ) {
         this.gameOver()
         return
       }
 
       // Win
-      if (this.playerSequence.length === this.sequence.length) {
-        this.message = 'Félicitations ! Vous avez gagné !'
+      if (this.playerSequence.length === this.btnSequence.length) {
+        socket.emit('SimonUpdateMsg', 'Gagné')
 
         // Send score after 2s
         setTimeout(() => {
@@ -97,12 +127,12 @@ export default {
       // Next round
       if (this.playerSequence.length === this.level) {
         this.userCanPlay = false
-        setTimeout(this.nextRound, 1000)
+        setTimeout(socket.emit('SimonNextRound'), 1000)
       }
     },
 
     gameOver() {
-      this.message = 'Game Over !'
+      socket.emit('SimonUpdateMsg', 'Perdu')
 
       // Send score after 2s
       setTimeout(() => {
@@ -186,5 +216,6 @@ export default {
   color: rgba(0, 0, 0, 0.2);
   user-select: none;
   pointer-events: none;
+  text-align: center;
 }
 </style>

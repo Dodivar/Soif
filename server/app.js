@@ -22,8 +22,6 @@ const initRoomState = (socket, isRoomMaster) => {
         gameIdx: 0,
         actualGame: {
             name: null,
-            randomDelay: null,
-            sequence: []
         },
         players: [actualPlayer],
         player: actualPlayer,
@@ -34,24 +32,24 @@ const initRoomState = (socket, isRoomMaster) => {
 var roomState = []; // State of rooms
 
 const allGames = [
-    {
-        theme: 'qa',
-        games: [
-            {name: 'RedOrBlack', soif: 2}, 
-            {name: 'CardColors', soif: 4}, 
-            // {name: 'TTMC', soif: 5}
-        ],
-    },
-    {
-        theme: 'reflexe',
-        games: [
-            {name: 'StopSlider', soif: 4}, 
-            {name: 'ReactionClick', soif: 4}, 
-            {name: 'FastClick', soif: 4}, 
-            // {name: 'DotClick', soif: 4}, 
-            {name: 'SurvivalEmoji', soif: 4}
-        ],
-    },
+    // {
+    //     theme: 'qa',
+    //     games: [
+    //         {name: 'RedOrBlack', soif: 2}, 
+    //         {name: 'CardColors', soif: 4}, 
+    //         // {name: 'TTMC', soif: 5}
+    //     ],
+    // },
+    // {
+    //     theme: 'reflexe',
+    //     games: [
+    //         {name: 'StopSlider', soif: 4}, 
+    //         {name: 'ReactionClick', soif: 4}, 
+    //         {name: 'FastClick', soif: 4}, 
+    //         // {name: 'DotClick', soif: 4}, 
+    //         {name: 'SurvivalEmoji', soif: 4}
+    //     ],
+    // },
     {
         theme: 'reflexion',
         games: [
@@ -171,14 +169,24 @@ io.on("connection", socket => {
         }
     });
 
-    socket.on("score timeout", () => {
-        resetPlayersReady(socket.actualRoomId)
-        io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
-    })
-
     socket.on("playGame", (data) => {
         playGame(io, socket, data)
-    })
+    });
+
+    socket.on("SimonLightUpButton", (color) => {
+        socket.broadcast.emit("SimonLightUpButton", color)
+    });
+    socket.on("SimonNextRound", () => {
+        const actualGame = getRoom(socket.actualRoomId).actualGame
+        actualGame.level++
+        actualGame.message = `${actualGame.level}`
+        io.to(socket.actualRoomId).emit("UpdateActualGame", actualGame)
+    });
+    socket.on("SimonUpdateMsg", (msg) => {
+        const actualGame = getRoom(socket.actualRoomId).actualGame
+        actualGame.message = msg
+        io.to(socket.actualRoomId).emit("SimonUpdateMsg", actualGame.message)
+    });
 })
 
 function setActualGameData(room, nextGameName) {
@@ -191,12 +199,25 @@ function setActualGameData(room, nextGameName) {
             break
         case "Simon":
             const buttons = ['red', 'green', 'blue', 'yellow']
-            const sequence = []
+            const btnSequence = []
+            const gameTurn = []
+            let playerIdx = 0;
+
             for (let i = 0; i < 20; i++) {
+                // Sequence of btns
                 const button = buttons[Math.floor(Math.random() * buttons.length)]
-                sequence.push(button)
+                btnSequence.push(button)
+
+                // Sequence of players
+                gameTurn.push(room.players[playerIdx])
+                playerIdx++
+                playerIdx = playerIdx + 1 > room.players.length ? 0 : playerIdx 
             }
-            room.actualGame.sequence = sequence
+            room.actualGame.btnSequence = btnSequence
+            room.actualGame.gameTurn = gameTurn
+            room.actualGame.level = 0
+            room.actualGame.message = ""
+            room.actualGame.clickedBtn = null
             break
     }
 }
@@ -231,7 +252,7 @@ function playGame(io, socket, data) {
     player.hasPlayed = true
 
     // Send answer if all played has played
-    if (!room.players.every(e => e.hasPlayed && e.gameValue !== null) || room.actualGame.name === "Simon") {
+    if (!room.players.every(e => e.hasPlayed && e.gameValue !== null) && room.actualGame.name !== "Simon") {
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
         return;
     }
@@ -261,10 +282,13 @@ function playGame(io, socket, data) {
                 // If the score is > 0 then it's a win, else if the score = 0, it's a loose for this player  
                 if (data === 0) {
                     // Assign to other players the right value
-                    room.players.filter(e => e.socketId !== socket.id).forEach(e => e.gameValue = room.roundAnswer)
+                    room.players.filter(e => e.socketId !== socket.id).forEach(e => {
+                        e.gameValue = room.roundAnswer
+                        e.hasPlayed = true
+                    })
                 } 
                 else {
-                    room.roundAnswer = room.actualGame.sequence.length
+                    room.roundAnswer = room.actualGame.btnSequence.length
                 }
 
                 break
@@ -272,7 +296,6 @@ function playGame(io, socket, data) {
             default:
                 break
         }
-        console.log(`Réponse: ${room.roundAnswer}`)
 
         // Assign winner, if no one send next game
         const winners = room.players.filter(e => e.gameValue === room.roundAnswer)
@@ -283,7 +306,12 @@ function playGame(io, socket, data) {
             allGames.forEach(theme => {
                 const filter = theme.games.find(e => e.name === room.actualGame.name)
                 if (filter) {
-                    soifToGive = filter.soif
+                    if (filter.name === "Simon") {
+                        soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
+                    }
+                    else {
+                        soifToGive = filter.soif
+                    }
                     return;
                 }
             })
@@ -305,22 +333,6 @@ function playGame(io, socket, data) {
     }
 }
 
-// Generate a random string with a fixed length
-function makeid(length) {
-    let result             = '';
-    const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    for (let i = 0; i < length; i++) {
-       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
-
-function deleteRoomData(roomId) {
-    const roomIdx = roomState.findIndex(e => e.roomId === roomId)
-    roomState = roomState.splice(roomIdx, 1)
-    delete io.sockets.adapter.rooms[roomId];
-}
 
 function deletePlayer(roomId, socketId) {
     try {
@@ -329,14 +341,6 @@ function deletePlayer(roomId, socketId) {
         getPlayerRoomState(roomId) = getPlayerRoomState(roomId).splice(playerIdx, 1)
     }
     catch(e) {}
-}
-
-function resetPlayersReady(roomId) {
-    getPlayerRoomState(roomId).forEach(player => 
-    {
-        player.isReady = false
-        player.soifAdded = 0
-    })
 }
 
 function getRoom(roomId) {
@@ -373,4 +377,21 @@ function getGamesTour(number = 10) {
 
     tour.push({name: "ScoreSoif"})
     return tour
+}
+
+// Generate a random string with a fixed length
+function makeid(length) {
+    let result             = '';
+    const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
+function deleteRoomData(roomId) {
+    const roomIdx = roomState.findIndex(e => e.roomId === roomId)
+    roomState = roomState.splice(roomIdx, 1)
+    delete io.sockets.adapter.rooms[roomId];
 }

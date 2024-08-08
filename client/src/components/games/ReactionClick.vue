@@ -95,18 +95,11 @@ export default {
 </script>
 
 <style>
-/* body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #f0f0f0;
-} */
 #game-container {
   position: relative;
   width: 100vw;
   height: 100vh;
+  background-color: #585858;
 }
 
 #emoji-display {

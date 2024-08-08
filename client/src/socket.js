@@ -34,8 +34,13 @@ socket.on('refresh room', (room) => {
   console.log(room)
 })
 
-// Send a message to client
-socket.on('msg', (msg) => {
-  alert(msg)
-  console.info(msg)
+socket.on('UpdateActualGame', (actualGame) => {
+  state.room.actualGame = actualGame
+})
+
+socket.on('SimonLightUpButton', (color) => {
+  state.room.actualGame.clickedBtn = color
+})
+socket.on('SimonUpdateMsg', (msg) => {
+  state.room.actualGame.message = msg
 })
