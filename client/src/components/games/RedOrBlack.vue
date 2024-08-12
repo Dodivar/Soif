@@ -5,20 +5,20 @@
         <v-btn
           size="x-large"
           elevation="8"
-          @click="setChoice('red')"
+          @click="setChoice('ROUGE')"
           :disabled="hasChoose"
           color="red-darken-1"
-          >RED</v-btn
+          >ROUGE</v-btn
         >
       </v-col>
       <v-col cols="auto">
         <v-btn
           size="x-large"
           elevation="8"
-          @click="setChoice('black')"
+          @click="setChoice('NOIR')"
           :disabled="hasChoose"
           color="grey-darken-4"
-          >BLACK</v-btn
+          >NOIR</v-btn
         >
       </v-col>
     </v-row>

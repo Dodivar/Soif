@@ -20,7 +20,12 @@
         >
       </v-col>
       <v-col cols="auto">
-        <v-btn size="x-large" elevation="8" @click="setChoice('♣️')" :disabled="hasChoose"
+        <v-btn
+          size="x-large"
+          elevation="8"
+          class="pa-5"
+          @click="setChoice('♣️')"
+          :disabled="hasChoose"
           >♣️</v-btn
         >
       </v-col>

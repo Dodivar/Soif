@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Quiz Multi-thèmes Avancé</h1>
+    <h1>Tu te mets combien ?</h1>
     <h2 id="current-theme">Thème actuel : {{ theme.name }}</h2>
 
     <div
@@ -9,44 +9,48 @@
       v-for="(item, idx) in theme.questions"
       :key="idx"
     >
-      <v-card @click="selectQuestion(idx)" :disabled="hasSelect && currentQuestion !== idx">
-        <div class="card-number">{{ idx }}</div>
+      <v-card
+        @click="selectQuestion(idx)"
+        :disabled="playerChooseQuestionNumber.socketId !== state.player.socketId"
+      >
+        <!-- :class=" currentQuestionIdx !== idx || playerChooseQuestionNumber.socketId !==
+        state.player.socketId ? 'disabled' : '' " -->
+        <div class="card-number">{{ idx + 1 }}</div>
 
-        <div v-if="currentQuestion === idx">
-          <div class="card-question" v-if="hasSelect">
+        <div v-if="currentQuestionIdx === idx">
+          <div class="card-question">
             {{ item.question }}
-
-            <div v-if="!hasAnswered">
+            <!-- v-if="!hasAnswered" -->
+            <div>
               <v-text-field
                 v-model="userAnswer"
                 type="text"
                 placeholder="Votre réponse"
-                hint="La casse n'est pas importante"
                 clearable
               ></v-text-field>
-              <v-btn @click="checkAnswer">Soumettre</v-btn>
+              <v-btn class="bg-gradient-success" @click="checkAnswer">Soumettre</v-btn>
             </div>
-            <div class="card-response" v-else>
+            <!-- <div class="card-response" v-else>
               <span v-if="correctAnswer" style="color: green">Correct ! La réponse est bien :</span>
               <span v-else style="color: red">Incorrect. La bonne réponse était :</span>
               {{ item.answer }}
-            </div>
+            </div> -->
           </div>
         </div>
       </v-card>
     </div>
 
-    <div v-if="hasAnswered">
+    <!-- <div v-if="hasAnswered">
       <div id="next-button">
         <v-btn @click="nextTheme">Thème suivant</v-btn>
       </div>
-    </div>
+    </div> -->
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
-import { TtmcThemes } from './../../assets/TTMC_themes'
+// import { TtmcThemes } from './../../assets/TTMC_themes'
 
 export default {
   data() {
@@ -54,15 +58,22 @@ export default {
       state,
       theme: {},
       currentThemeIdx: 0,
-      currentQuestion: null,
-      hasSelect: false,
-      hasAnswered: false,
-      correctAnswer: false,
-      userAnswer: null
+      // currentQuestion: null,
+      // hasSelect: false,
+      // hasAnswered: false,
+      // correctAnswer: false,
+      userAnswer: null,
+      playerChooseQuestionNumber: {}
     }
   },
   created() {
-    this.theme = TtmcThemes[this.currentThemeIdx]
+    this.theme = state.room.actualGame.theme // TtmcThemes[this.currentThemeIdx]
+    this.playerChooseQuestionNumber = state.room.actualGame.playerChooseQuestionNumber
+  },
+  computed: {
+    currentQuestionIdx() {
+      return state.room.actualGame.chosenQuestionNumber
+    }
   },
   methods: {
     // createCards() {
@@ -82,10 +93,13 @@ export default {
     // },
 
     selectQuestion(index) {
-      this.hasSelect = true
-      if (this.currentQuestion !== null) return
+      if (
+        this.playerChooseQuestionNumber.socketId !== state.player.socketId ||
+        this.currentQuestionIdx !== null
+      )
+        return
 
-      this.currentQuestion = index
+      socket.emit('TTMCChosenQuestionNumber', index)
       // const cards = document.querySelectorAll('.card');
 
       // cards.forEach((card, i) => {
@@ -100,24 +114,27 @@ export default {
     },
 
     checkAnswer() {
-      this.hasAnswered = true
-      const correctAnswer = this.theme.questions[this.currentQuestion].answer.toLowerCase()
-      this.correctAnswer = this.userAnswer === correctAnswer
+      // this.hasAnswered = true
+      // const userAnswerLowerCase = this.userAnswer.toLowerCase()
+      // const correctAnswer = this.theme.questions[this.currentQuestion].answer.toLowerCase()
+      // this.correctAnswer = userAnswerLowerCase === correctAnswer
 
-      // document.getElementById('next-button').style.display = 'block';
-      // document.getElementById('answer-input').style.display = 'none';
-    },
-
-    nextTheme() {
-      this.hasSelect = false
-      this.hasAnswered = false
-      this.correctAnswer = false
-      this.userAnswer = null
-
-      this.currentThemeIdx = (this.currentThemeIdx + 1) % TtmcThemes.length
-      this.currentQuestion = null
-      this.theme = TtmcThemes[this.currentThemeIdx]
+      // Send score after 2s
+      setTimeout(() => {
+        socket.emit('playGame', this.userAnswer.toLowerCase())
+      }, 2000)
     }
+
+    // nextTheme() {
+    //   this.hasSelect = false
+    //   this.hasAnswered = false
+    //   this.correctAnswer = false
+    //   this.userAnswer = null
+
+    //   this.currentThemeIdx = (this.currentThemeIdx + 1) % TtmcThemes.length
+    //   this.currentQuestion = null
+    //   this.theme = TtmcThemes[this.currentThemeIdx]
+    // }
   }
 }
 </script>
@@ -134,7 +151,7 @@ h2 {
   gap: 15px;
   margin-bottom: 20px;
 }
-.card {
+.v-card {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -146,11 +163,11 @@ h2 {
     transform 0.3s ease,
     background-color 0.3s ease;
 }
-.card:hover:not(.disabled) {
+.v-card:hover:not(.disabled) {
   transform: translateX(5px);
   background-color: #e8f4fd;
 }
-.card.disabled {
+.v-card.disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -159,9 +176,11 @@ h2 {
   font-weight: bold;
   margin-right: 15px;
   min-width: 30px;
+  color: black;
 }
 .card-question {
   font-size: 16px;
+  color: black;
 }
 #answer-input,
 #result,

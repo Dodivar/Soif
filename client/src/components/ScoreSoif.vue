@@ -1,35 +1,44 @@
 <template>
-  <v-card class="mx-auto" max-width="300" :title="`La réponse était ${roundAnswer}`">
-    <h3 v-if="state.player.winner">Vous pouvez donner {{ state.player.soifToGive }} soif !</h3>
-    <v-list :items="playerItems">
-      <v-list-subheader inset>Liste des buveurs</v-list-subheader>
-      <v-list-item
-        v-for="player in playerItems"
-        :key="player.socketId"
-        :title="player.pseudo"
-        :subtitle="`Nombre de soif: ${player.soifTotal}`"
-        @click="state.player.winner ? giveSoif(player.socketId) : null"
-      >
-        <!-- Prepend -->
-        <template v-slot:prepend>
-          <v-avatar color="brown">
-            <span class="text">{{ player.pseudo }}</span>
-          </v-avatar>
-        </template>
+  <v-container>
+    <h2 class="ma-5 text-center">{{ state.room.actualGame.templateAnswer }}: {{ roundAnswer }}</h2>
+    <v-card title="Liste des soifeurs" class="rounded-lg">
+      <v-list>
+        <v-list-subheader v-if="state.player.winner"
+          >Vous pouvez donner {{ state.player.soifToGive }} soif !</v-list-subheader
+        >
+        <v-list-item
+          v-for="player in playerItems"
+          :key="player.socketId"
+          :subtitle="`Score ${player.gameValue}`"
+          @click="state.player.winner ? giveSoif(player.socketId) : null"
+        >
+          <template v-slot:title>
+            {{ player.pseudo }}
+            <v-chip v-if="state.player.winner" class="ma-2 bg-gradient-warning"
+              >Gagné : {{ player.soifToGive }}</v-chip
+            >
+          </template>
+          <!-- Prepend -->
+          <template v-slot:prepend>
+            <v-avatar color="brown">
+              <span class="text">{{ player.pseudo[0] }}</span>
+            </v-avatar>
+          </template>
 
-        <!-- Append -->
-        <template v-slot:append>
-          <v-chip v-if="player.soifAddedThisRound > 0" color="green" variant="flat">
-            + {{ player.soifAddedThisRound }}
-          </v-chip>
-          <span v-if="typeof player.gameValue === 'string' || typeof player.gameValue === 'number'">
-            {{ player.gameValue }}
-          </span>
-          <span v-else>A répondu</span>
-        </template>
-      </v-list-item>
-    </v-list>
-  </v-card>
+          <!-- Append -->
+          <template v-slot:append>
+            <v-chip v-if="player.soifAddedThisRound > 0" class="bg-gradient-success" variant="flat">
+              + {{ player.soifAddedThisRound }}
+            </v-chip>
+            <v-chip class="ma-2 bg-gradient-info">
+              {{ player.soifTotal }}
+            </v-chip>
+          </template>
+        </v-list-item>
+        <v-divider inset></v-divider>
+      </v-list>
+    </v-card>
+  </v-container>
 </template>
 
 <script>

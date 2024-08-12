@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <countdown @countdown-end="nextRound()"></countdown>
     <div id="game-container">
       <div class="simon-button" id="red" @click="playerTurn('red')"></div>
@@ -11,7 +11,7 @@
       <p v-if="message !== null">{{ message }}</p>
       <p>{{ actualPlayerPseudo }}</p>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -145,10 +145,7 @@ export default {
 
 <style scoped>
 #game-container {
-  display: flex;
   flex-wrap: wrap;
-  height: 100vh;
-  width: 100vw;
 }
 .simon-button {
   width: 50%;

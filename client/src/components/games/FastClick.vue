@@ -88,16 +88,6 @@ export default {
 </script>
 
 <style scoped>
-#game-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
 #timeline {
   width: 100%;
   height: 10px;

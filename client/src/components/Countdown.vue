@@ -46,7 +46,7 @@ export default {
   transform: translate(-50%, -50%);
   font-size: 10rem;
   font-weight: bold;
-  color: white;
+  color: #2a2a2a;
   z-index: 10;
 }
 </style>

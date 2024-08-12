@@ -38,9 +38,16 @@ socket.on('UpdateActualGame', (actualGame) => {
   state.room.actualGame = actualGame
 })
 
+// SIMON
 socket.on('SimonLightUpButton', (color) => {
   state.room.actualGame.clickedBtn = color
 })
 socket.on('SimonUpdateMsg', (msg) => {
   state.room.actualGame.message = msg
+})
+
+// TTMC
+socket.on('TTMCChosenQuestionNumber', (index) => {
+  state.room.actualGame.chosenQuestionNumber = index
+  console.log(state.room.actualGame)
 })

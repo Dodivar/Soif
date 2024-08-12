@@ -31,7 +31,10 @@ export default {
       let double = this.sliderValue * 2
       let negValue = double < 0 ? double : -double
       this.score = Math.round(negValue + 100)
-      socket.emit('playGame', this.score)
+      // Send score after 2s
+      setTimeout(() => {
+        socket.emit('playGame', this.score)
+      }, 1000)
     }
   },
   created() {

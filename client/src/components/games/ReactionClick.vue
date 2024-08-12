@@ -94,14 +94,7 @@ export default {
 }
 </script>
 
-<style>
-#game-container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  background-color: #585858;
-}
-
+<style scoped>
 #emoji-display {
   position: absolute;
   font-size: 5rem;
@@ -112,7 +105,7 @@ export default {
 #result {
   font-size: 1.2rem;
   margin-top: 1rem;
-  color: white;
+  color: black;
 }
 
 #countdown {

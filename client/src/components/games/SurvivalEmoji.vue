@@ -193,11 +193,8 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #game-container {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
   background-color: #f0f0f0;
   cursor: none;
 }

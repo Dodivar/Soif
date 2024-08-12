@@ -1,5 +1,7 @@
 <template>
-  <v-container>
+  <div id="game-container">
+    <countdown @countdown-end="startGame"></countdown>
+
     <canvas id="gameCanvas"></canvas>
     <div id="score" :style="{ color: scoreColor }">
       {{ score }}
@@ -7,23 +9,28 @@
     <div id="timer">
       <div id="timerBar" :style="{ width: timerBarWidth }"></div>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
+import countdown from '@/components/Countdown.vue'
 
 export default {
+  components: {
+    countdown
+  },
   data() {
     return {
       state,
       score: 0,
       scoreColor: '',
-      gameTime: 30000,
+      gameTime: 3000,
       startTime: 0,
       dots: [],
       canvas: null,
-      canvasCtx: null
+      canvasCtx: null,
+      timerBarWidth: '100%'
     }
   },
   mounted() {
@@ -138,7 +145,12 @@ export default {
     },
 
     endGame() {
-      alert(`Game Over! Your score: ${this.score}`)
+      // Send score after 2s
+      setTimeout(() => {
+        socket.emit('playGame', this.score)
+      }, 1000)
+
+      // alert(`Game Over! Your score: ${this.score}`)
     },
 
     startGame() {
@@ -174,7 +186,7 @@ export default {
 }
 #timer {
   position: absolute;
-  top: 0;
+  top: 15px;
   left: 0;
   width: 100%;
   height: 10px;

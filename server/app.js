@@ -6,10 +6,11 @@ const io = require("socket.io")(Http, {
     methods: ["GET", "POST"]
   }
 });
-
 Http.listen(3333, () => {
     console.log("Listening at : 3333");
 })
+const TtmcThemes = require("./games/TTMC_themes.json")
+
 
 var Player = require("./player.js");
 
@@ -32,29 +33,30 @@ const initRoomState = (socket, isRoomMaster) => {
 var roomState = []; // State of rooms
 
 const allGames = [
-    // {
-    //     theme: 'qa',
-    //     games: [
-    //         {name: 'RedOrBlack', soif: 2}, 
-    //         {name: 'CardColors', soif: 4}, 
-    //         // {name: 'TTMC', soif: 5}
-    //     ],
-    // },
-    // {
-    //     theme: 'reflexe',
-    //     games: [
-    //         {name: 'StopSlider', soif: 4}, 
-    //         {name: 'ReactionClick', soif: 4}, 
-    //         {name: 'FastClick', soif: 4}, 
-    //         // {name: 'DotClick', soif: 4}, 
-    //         {name: 'SurvivalEmoji', soif: 4}
-    //     ],
-    // },
+    {
+        theme: 'qa',
+        games: [
+            {name: 'RedOrBlack', soif: 2, templateAnswer: 'La réponse était '}, 
+            {name: 'CardColors', soif: 4, templateAnswer: 'La réponse était '}, 
+            {name: 'TTMC', soif: 5, templateAnswer: 'La réponse était '}
+        ],
+    },
+    {
+        theme: 'reflexe',
+        games: [
+            {name: 'StopSlider', soif: 4, templateAnswer: 'Le meilleur score '}, 
+            {name: 'ReactionClick', soif: 4, templateAnswer: 'Le meilleur score '}, 
+            {name: 'FastClick', soif: 4, templateAnswer: 'Le meilleur score '}, 
+            {name: 'DotClick', soif: 4, templateAnswer: 'Le meilleur score '}, 
+            {name: 'SurvivalEmoji', soif: 4, templateAnswer: 'Le meilleur score '}
+        ],
+    },
     {
         theme: 'reflexion',
         games: [
-            {name: 'Simon', soif: 4}, 
-            // {name: 'GuessNumber', soif: 4}
+            {name: 'Simon', soif: 4, templateAnswer: 'Le meilleur score '}, 
+            {name: 'GuessNumber', soif: 4, templateAnswer: 'Le meilleur score '},
+            // {name: 'FaceExpressionDetector', soif: 4}
         ],
     },
 ]
@@ -83,8 +85,6 @@ io.on("connection", socket => {
             let room = io.sockets.adapter.rooms[roomId];
 
             if (room) {
-                let players = null;
-
                 // Delete player in state
                 if (room.length > 1) {
                     delete roomState[roomId].players[playerSocket];
@@ -173,6 +173,7 @@ io.on("connection", socket => {
         playGame(io, socket, data)
     });
 
+    // SIMON
     socket.on("SimonLightUpButton", (color) => {
         socket.broadcast.emit("SimonLightUpButton", color)
     });
@@ -187,15 +188,25 @@ io.on("connection", socket => {
         actualGame.message = msg
         io.to(socket.actualRoomId).emit("SimonUpdateMsg", actualGame.message)
     });
+
+    // TTMC
+    socket.on("TTMCChosenQuestionNumber", (index) => {
+        getRoom(socket.actualRoomId).actualGame.chosenQuestionNumber = index
+        io.to(socket.actualRoomId).emit("TTMCChosenQuestionNumber", index)
+    });
 })
 
 function setActualGameData(room, nextGameName) {
     room.actualGame = {}
-    room.actualGame.name = nextGameName
+    room.actualGame.name = nextGameName.name
+    room.actualGame.templateAnswer = nextGameName.templateAnswer
 
     switch(room.actualGame.name) {
         case "ReactionClick":
             room.actualGame.randomDelay = Math.floor(Math.random() * 9000) + 1000 // Entre 1000ms et 10000ms
+            break
+        case "GuessNumber":
+            room.actualGame.targetNumber = Math.floor(Math.random() * 100) + 1 // Entre 1 et 100
             break
         case "Simon":
             const buttons = ['red', 'green', 'blue', 'yellow']
@@ -219,13 +230,23 @@ function setActualGameData(room, nextGameName) {
             room.actualGame.message = ""
             room.actualGame.clickedBtn = null
             break
+        case "TTMC":
+            const theme = TtmcThemes[Math.floor(Math.random() * TtmcThemes.length)]
+            const playerChooseQuestionNumber = room.players[Math.floor(Math.random() * room.players.length)]
+            
+            room.actualGame.theme = theme
+            room.actualGame.playerChooseQuestionNumber = playerChooseQuestionNumber
+            room.actualGame.chosenQuestionNumber = null
+            break
+        default:
+            break
     }
 }
 
 function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.actualRoomId)
-    const nextGameName = room.gamesTour[room.gameIdx].name
-    setActualGameData(room, nextGameName)
+    const nextGame = room.gamesTour[room.gameIdx]
+    setActualGameData(room, nextGame)
 
     // Re-init players state for next game
     room.players.forEach(e => {
@@ -244,10 +265,12 @@ function sendNextGame(io, socket, wait = 2000) {
 }
 
 function playGame(io, socket, data) {
-    let choices, bestScore
+    let choices
     let player = getPlayerState(socket.actualRoomId, socket.id)
     const room = getRoom(socket.actualRoomId)
+    let waitBeforeNextRound = 2000
 
+    // Assign value played at player
     player.gameValue = data
     player.hasPlayed = true
 
@@ -261,21 +284,22 @@ function playGame(io, socket, data) {
         // Check answer
         switch(room.actualGame.name) {
             case "RedOrBlack":
-                choices = ["red", "black"]
+                choices = ["ROUGE", "NOIR"]
                 room.roundAnswer = choices[Math.round(Math.random())]
                 break
 
             case "CardColors":
                 choices = ["♠️", "❤️", "🔶", "♣️"]
-                room.roundAnswer = choices[Math.floor(Math.random() * choices.length - 1)]
+                room.roundAnswer = choices[Math.floor(Math.random() * choices.length)]
                 break
 
+            // Best score of players
             case "StopSlider":
             case "ReactionClick":
             case "FastClick":
             case "SurvivalEmoji":
-                bestScore = Math.max.apply(Math, room.players.map(e => e.gameValue));
-                room.roundAnswer = bestScore
+            case "DotClick":
+                room.roundAnswer = Math.max.apply(Math, room.players.map(e => e.gameValue));
                 break
                 
             case "Simon":
@@ -290,9 +314,16 @@ function playGame(io, socket, data) {
                 else {
                     room.roundAnswer = room.actualGame.btnSequence.length
                 }
-
                 break
 
+            case "GuessNumber":
+                room.roundAnswer = room.actualGame.targetNumber
+                break
+                
+            case "TTMC":
+                room.roundAnswer = room.actualGame.theme.questions[room.actualGame.chosenQuestionNumber].answer.toLowerCase()
+                waitBeforeNextRound = 4000
+                break
             default:
                 break
         }
@@ -303,17 +334,19 @@ function playGame(io, socket, data) {
 
             // Get the number of soif to give
             let soifToGive = 2
+            console.log(room.actualGame)
             allGames.forEach(theme => {
+                console.log(theme)
                 const filter = theme.games.find(e => e.name === room.actualGame.name)
-                if (filter) {
-                    if (filter.name === "Simon") {
-                        soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
-                    }
-                    else {
-                        soifToGive = filter.soif
-                    }
-                    return;
+                if (!filter) return 
+                
+                if (filter.name === "Simon") {
+                    soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
                 }
+                else {
+                    soifToGive = filter.soif
+                }
+                return;
             })
             
             winners.forEach(e => { 
@@ -325,14 +358,13 @@ function playGame(io, socket, data) {
         }
         else {
             io.to(socket.actualRoomId).emit("refresh room", getRoom(socket.actualRoomId))
-            sendNextGame(io, socket)
+            sendNextGame(io, socket, waitBeforeNextRound)
         }
     }
     catch(e) {
         console.error(e)
     }
 }
-
 
 function deletePlayer(roomId, socketId) {
     try {

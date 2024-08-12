@@ -1,22 +1,22 @@
 <template>
   <v-container>
-    <div class="game-container">
-      <h1>Devinez le nombre entre 1 et 100</h1>
-      <p>Vous avez 3 essais !</p>
-      <input type="number" id="guess" min="1" max="100" v-model="inputNumber" />
-      <button id="submit" v-show="submitButtonVisible">Deviner</button>
-      <p id="message">
-        {{ message }}
-      </p>
-      <div class="arrow arrow-up" v-show="arrowToShow === 'up'">⬆️</div>
-      <div class="arrow arrow-down" v-show="arrowToShow === 'down'">⬇️</div>
-      <button id="replay" v-show="!submitButtonVisible" @click="initGame">Rejouer</button>
-      <ul id="guesses-list">
-        <li v-for="(guess, idx) in guesses" :key="idx">
-          {{ guess }}
-        </li>
-      </ul>
-    </div>
+    <h1>Devinez le nombre entre 1 et 100</h1>
+    <p>Vous avez 3 essais !</p>
+    <input type="number" id="guess" min="1" max="100" v-model="inputNumber" />
+    <v-btn class="bg-gradient-success" v-show="submitButtonVisible" @click="playerGuess"
+      >Deviner</v-btn
+    >
+    <p id="message">
+      {{ message }}
+    </p>
+    <div class="arrow arrow-up" v-show="arrowToShow === 'up'">⬆️</div>
+    <div class="arrow arrow-down" v-show="arrowToShow === 'down'">⬇️</div>
+    <!-- <button id="replay" v-show="!submitButtonVisible" @click="initGame">Rejouer</button> -->
+    <ul id="guesses-list">
+      <li v-for="(guess, idx) in guesses" :key="idx">
+        {{ guess }}
+      </li>
+    </ul>
     <canvas id="confetti"></canvas>
   </v-container>
 </template>
@@ -40,10 +40,10 @@ export default {
   },
   created() {
     this.initGame()
+    this.targetNumber = state.room.actualGame.targetNumber
   },
   methods: {
     initGame() {
-      this.targetNumber = Math.floor(Math.random() * 100) + 1
       this.attempts = 3
       this.guesses = []
       this.message = ''
@@ -75,16 +75,16 @@ export default {
 
       if (this.inputNumber === this.targetNumber) {
         this.message = `Bravo ! Vous avez trouvé le nombre ${this.targetNumber} !`
+        socket.emit('playGame', this.inputNumber)
         this.endGame(true)
       } else if (this.attempts === 0) {
         this.message = `Dommage ! Le nombre était ${this.targetNumber}. Vous avez épuisé vos essais.`
+        socket.emit('playGame', 0)
         this.endGame(false)
       } else {
         this.message = `Ce n'est pas le bon nombre. Il vous reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`
         this.arrowToShow = this.inputNumber < this.targetNumber ? 'up' : 'down'
       }
-
-      this.inputNumber = null
     }
   }
 }
@@ -119,25 +119,6 @@ button:hover {
 }
 .arrow {
   font-size: 3rem;
-  opacity: 0;
-  transition:
-    opacity 0.5s,
-    transform 0.5s;
-}
-.arrow.show {
-  opacity: 1;
-}
-.arrow-up {
-  transform: translateY(20px);
-}
-.arrow-up.show {
-  transform: translateY(0);
-}
-.arrow-down {
-  transform: translateY(-20px);
-}
-.arrow-down.show {
-  transform: translateY(0);
 }
 #confetti {
   position: fixed;

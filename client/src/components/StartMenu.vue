@@ -1,56 +1,85 @@
 <template>
-  <v-layout>
-    <v-sheet v-if="!state.room.roomId" class="mx-auto" width="300">
-      <v-text-field
-        v-model="state.player.pseudo"
-        :counter="10"
-        :rules="pseudoRules"
-        label="Pseudo"
-        required
-      ></v-text-field>
-
-      <!-- Create room -->
-      <v-btn @click="createRoom" color="success">Créer une partie</v-btn>
-
-      <!-- Join room -->
-      <v-row align="center" justify="center">
-        <v-col cols="auto">
+  <v-container class="fill-height" fluid>
+    <v-row>
+      <v-col cols="12">
+        <v-card v-if="!state.room.roomId" class="ma-5 rounded-xl" elevation="5">
           <v-text-field
-            v-model="roomToJoin"
-            :counter="6"
-            placeholder="RoomId"
-            label="RoomId"
+            v-model="state.player.pseudo"
+            :counter="10"
+            :rules="pseudoRules"
+            label="Pseudo"
+            required
           ></v-text-field>
-        </v-col>
-        <v-btn @click="joinRoom" color="warning">Rejoindre une partie</v-btn>
-      </v-row>
-    </v-sheet>
 
-    <!-- Saloon -->
-    <v-row v-else>
-      <div v-if="!allIsReady">
-        <h2>
-          {{ state.room.roomId }}
-        </h2>
+          <!-- Create room -->
+          <v-btn @click="createRoom" color="success">Créer une partie</v-btn>
 
-        <!-- Players -->
-        <p>Nombre de joueur: {{ players?.length }}</p>
-        <v-avatar v-for="player in players" :key="player.socketId" color="brown" size="large">
-          <span class="text">{{ player.pseudo }}</span>
-        </v-avatar>
+          <!-- Join room -->
+          <v-row align="center" justify="center">
+            <v-col cols="auto">
+              <v-text-field
+                v-model="roomToJoin"
+                :counter="6"
+                placeholder="RoomId"
+                label="RoomId"
+              ></v-text-field>
+            </v-col>
+            <v-btn @click="joinRoom" color="warning">Rejoindre une partie</v-btn>
+          </v-row>
+        </v-card>
 
-        <v-btn @click="readyToPlay" color="success">Prêt</v-btn>
-        <v-btn @click="quitRoom" color="error">Quitter la partie</v-btn>
-      </div>
-      <div v-else>
+        <!-- Saloon -->
+        <v-card v-else-if="!allIsReady" flat class="ma-5 rounded-xl" elevation="5">
+          <v-card-text class="pa-0 text-white">
+            <div class="bg-gradient-info align-items-center pa-5">
+              <div>
+                <h2 class="mb-1">Soif [ {{ state.room.roomId }} ]</h2>
+                <h5 class="text-subtitle-1">Liste des soifeurs</h5>
+              </div>
+            </div>
+            <div class="pa-4">
+              <v-list>
+                <v-list-item v-for="(player, i) in players" :key="i">
+                  <v-list-item-title>
+                    <div class="d-flex align-center py-3">
+                      <div class="mr-3">
+                        <v-badge
+                          bordered
+                          top
+                          :color="player.isReady ? 'green' : 'red'"
+                          dot
+                          offset-x="10"
+                          offset-y="10"
+                        >
+                          <v-avatar color="brown" size="large">
+                            <span class="text">{{ player.pseudo[0] }}</span>
+                          </v-avatar>
+                        </v-badge>
+                      </div>
+                      <div class="mx-3">
+                        <h6 class="text-h6 mt-n1 mb-1">{{ player.pseudo }}</h6>
+                        <!-- <h5 class="font-weight-medium"></h5> -->
+                        <span class="text--secondary descpart d-block truncate-text subtitle-2">
+                          <!-- {{ item.desc }} -->
+                        </span>
+                      </div>
+                    </div>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </div>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="readyToPlay" class="bg-gradient-sucess" color="success">Prêt</v-btn>
+            <v-btn @click="quitRoom" color="error">Quitter</v-btn>
+          </v-card-actions>
+        </v-card>
         <!-- GAMES -->
-        <div v-if="state.player.hasPlayed">
-          <ScoreSoif />
-        </div>
+        <ScoreSoif v-else-if="state.player.hasPlayed" />
         <component v-else :is="actualGameName" />
-      </div>
+      </v-col>
     </v-row>
-  </v-layout>
+  </v-container>
 </template>
 
 <script>
