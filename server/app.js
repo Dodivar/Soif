@@ -407,7 +407,7 @@ function getGamesTour(number = 10) {
         typeIdx = typeIdx + 1 === allGames.length ? 0 : typeIdx + 1
     }
 
-    tour.push({name: "ScoreSoif"})
+    tour.push({name: "PodiumSoif"})
     return tour
 }
 

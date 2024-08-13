@@ -12,17 +12,17 @@
       <v-bottom-navigation v-model="navigation" color="primary" grow>
         <v-btn>
           <v-icon>mdi-history</v-icon>
-          Créer
+          Classement
         </v-btn>
 
         <v-btn>
           <v-icon>mdi-heart</v-icon>
-          Rejoindre
+          Jouer
         </v-btn>
 
         <v-btn>
           <v-icon>mdi-map-marker</v-icon>
-          Réglages
+          Profil
         </v-btn>
       </v-bottom-navigation>
     </v-main>

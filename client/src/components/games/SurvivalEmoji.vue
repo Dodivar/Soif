@@ -1,10 +1,12 @@
 <template>
-  <v-container id="game-container">
+  <div id="game-area">
+    <!-- <div id="game-area"> -->
     <countdown @countdown-end="startGame"></countdown>
 
     <div id="player" v-show="!isGameOver"></div>
     <div id="score" :class="isGameOver ? 'finish' : ''">{{ score.toFixed(1) }}</div>
-  </v-container>
+    <!-- </div> -->
+  </div>
 </template>
 
 <script>
@@ -33,7 +35,7 @@ export default {
   },
   mounted() {
     this.player = document.getElementById('player')
-    this.gameArea = document.getElementById('game-container')
+    this.gameArea = document.getElementById('game-area')
     this.gameArea.addEventListener('mousemove', this.updatePlayerPosition)
     this.gameArea.addEventListener(
       'touchmove',
@@ -55,7 +57,7 @@ export default {
     spawnEmoji() {
       if (this.isGameOver) return
 
-      const emoji = document.createElement('div')
+      const emoji = document.createElement('span')
       emoji.classList.add('emoji')
       emoji.textContent = this.emojisLib[Math.floor(Math.random() * this.emojisLib.length)]
 
@@ -194,10 +196,19 @@ export default {
 </script>
 
 <style scoped>
-#game-container {
+#game-area {
+  width: 95vw;
+  height: 95vh;
+  position: relative;
   background-color: #f0f0f0;
   cursor: none;
+  overflow: hidden;
+  user-select: none;
 }
+/* #game-container {
+  background-color: #f0f0f0;
+  cursor: none;
+} */
 #player {
   width: 20px;
   height: 20px;

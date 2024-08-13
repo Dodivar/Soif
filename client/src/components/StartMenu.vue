@@ -2,46 +2,59 @@
   <v-container class="fill-height" fluid>
     <v-row>
       <v-col cols="12">
-        <v-card v-if="!state.room.roomId" class="ma-5 rounded-xl" elevation="5">
-          <v-text-field
-            v-model="state.player.pseudo"
-            :counter="10"
-            :rules="pseudoRules"
-            label="Pseudo"
-            required
-          ></v-text-field>
-
+        <div v-if="!state.room.roomId">
+          <div class="text-center ma-5">
+            <h1>Soifs !</h1>
+            <h2>Prépare ton gosier mon salop</h2>
+          </div>
           <!-- Create room -->
-          <v-btn @click="createRoom" color="success">Créer une partie</v-btn>
+          <v-form class="mb-10 text-center" @submit.prevent>
+            <v-text-field
+              v-model="state.player.pseudo"
+              :counter="10"
+              :rules="pseudoRules"
+              label="Pseudo"
+              required
+            ></v-text-field>
+            <v-btn @click="createRoom" class="bg-gradient-success text-white" type="submit"
+              >Créer une partie</v-btn
+            >
+          </v-form>
 
           <!-- Join room -->
-          <v-row align="center" justify="center">
-            <v-col cols="auto">
-              <v-text-field
-                v-model="roomToJoin"
-                :counter="6"
-                placeholder="RoomId"
-                label="RoomId"
-              ></v-text-field>
-            </v-col>
-            <v-btn @click="joinRoom" color="warning">Rejoindre une partie</v-btn>
-          </v-row>
-        </v-card>
+          <v-form class="mb-10 text-center" @submit.prevent>
+            <v-text-field
+              v-model="roomToJoin"
+              :counter="6"
+              placeholder="Numéro de partie"
+              label="RoomId"
+            ></v-text-field>
+            <v-btn @click="joinRoom" class="bg-gradient-warning text-white" type="submit"
+              >Rejoindre une partie</v-btn
+            >
+          </v-form>
+        </div>
 
         <!-- Saloon -->
-        <v-card v-else-if="!allIsReady" flat class="ma-5 rounded-xl" elevation="5">
-          <v-card-text class="pa-0 text-white">
-            <div class="bg-gradient-info align-items-center pa-5">
+        <v-card
+          v-else-if="!allIsReady"
+          flat
+          class="mx-5 mt-5 rounded-t-lg"
+          elevation="8"
+          max-width="600"
+        >
+          <v-card-text class="pa-0">
+            <div class="align-items-center pa-5">
               <div>
-                <h2 class="mb-1">Soif [ {{ state.room.roomId }} ]</h2>
+                <h2 class="mb-1">Partie {{ state.room.roomId }}</h2>
                 <h5 class="text-subtitle-1">Liste des soifeurs</h5>
               </div>
             </div>
-            <div class="pa-4">
+            <div class="px-4">
               <v-list>
                 <v-list-item v-for="(player, i) in players" :key="i">
                   <v-list-item-title>
-                    <div class="d-flex align-center py-3">
+                    <div class="d-flex align-center py-2">
                       <div class="mr-3">
                         <v-badge
                           bordered
@@ -69,9 +82,21 @@
               </v-list>
             </div>
           </v-card-text>
-          <v-card-actions>
-            <v-btn @click="readyToPlay" class="bg-gradient-sucess" color="success">Prêt</v-btn>
-            <v-btn @click="quitRoom" color="error">Quitter</v-btn>
+          <v-card-actions class="w-100">
+            <v-btn
+              @click="readyToPlay"
+              class="w-25 text-h6 text-uppercase"
+              color="success"
+              variant="outlined"
+              >Prêt</v-btn
+            >
+            <v-btn
+              @click="quitRoom"
+              class="w-25 text-h6 text-uppercase"
+              color="error"
+              variant="outlined"
+              >Quitter</v-btn
+            >
           </v-card-actions>
         </v-card>
         <!-- GAMES -->
@@ -95,6 +120,7 @@ import SurvivalEmoji from './games/SurvivalEmoji.vue'
 import Simon from './games/Simon.vue'
 import GuessNumber from './games/GuessNumber.vue'
 import ScoreSoif from './ScoreSoif.vue'
+import PodiumSoif from './PodiumSoif.vue'
 import { state, socket } from '@/socket'
 
 export default {
@@ -111,7 +137,8 @@ export default {
     DotClick,
     SurvivalEmoji,
     Simon,
-    GuessNumber
+    GuessNumber,
+    PodiumSoif
   },
   data() {
     return {

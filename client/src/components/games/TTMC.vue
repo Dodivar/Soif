@@ -11,46 +11,31 @@
     >
       <v-card
         @click="selectQuestion(idx)"
-        :disabled="playerChooseQuestionNumber.socketId !== state.player.socketId"
+        :class="
+          (playerChooseQuestionNumber.socketId === state.player.socketId && !currentQuestionIdx) ||
+          idx === currentQuestionIdx
+            ? ''
+            : 'disabled'
+        "
+        :title="idx + 1"
       >
-        <!-- :class=" currentQuestionIdx !== idx || playerChooseQuestionNumber.socketId !==
-        state.player.socketId ? 'disabled' : '' " -->
-        <div class="card-number">{{ idx + 1 }}</div>
-
-        <div v-if="currentQuestionIdx === idx">
-          <div class="card-question">
-            {{ item.question }}
-            <!-- v-if="!hasAnswered" -->
-            <div>
-              <v-text-field
-                v-model="userAnswer"
-                type="text"
-                placeholder="Votre réponse"
-                clearable
-              ></v-text-field>
-              <v-btn class="bg-gradient-success" @click="checkAnswer">Soumettre</v-btn>
-            </div>
-            <!-- <div class="card-response" v-else>
-              <span v-if="correctAnswer" style="color: green">Correct ! La réponse est bien :</span>
-              <span v-else style="color: red">Incorrect. La bonne réponse était :</span>
-              {{ item.answer }}
-            </div> -->
-          </div>
-        </div>
+        <v-card-text v-if="currentQuestionIdx === idx">
+          {{ item.question }}
+          <v-text-field
+            v-model="userAnswer"
+            type="text"
+            placeholder="Votre réponse"
+            clearable
+          ></v-text-field>
+          <v-btn class="bg-gradient-success" @click="checkAnswer">Soumettre</v-btn>
+        </v-card-text>
       </v-card>
     </div>
-
-    <!-- <div v-if="hasAnswered">
-      <div id="next-button">
-        <v-btn @click="nextTheme">Thème suivant</v-btn>
-      </div>
-    </div> -->
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
-// import { TtmcThemes } from './../../assets/TTMC_themes'
 
 export default {
   data() {
@@ -58,10 +43,6 @@ export default {
       state,
       theme: {},
       currentThemeIdx: 0,
-      // currentQuestion: null,
-      // hasSelect: false,
-      // hasAnswered: false,
-      // correctAnswer: false,
       userAnswer: null,
       playerChooseQuestionNumber: {}
     }
@@ -76,22 +57,6 @@ export default {
     }
   },
   methods: {
-    // createCards() {
-    //   const container = document.getElementById('question-cards');
-    //   container.innerHTML = '';
-
-    //   for (let i = 0; i < 10; i++) {
-    //     const card = document.createElement('div');
-    //     card.className = 'card';
-    //     card.innerHTML = `
-    //       <div class="card-number">${i + 1}</div>
-    //       <div class="card-question">Question ${i + 1}</div>
-    //     `;
-    //     card.onclick = () => selectQuestion(i);
-    //     container.appendChild(card);
-    //   }
-    // },
-
     selectQuestion(index) {
       if (
         this.playerChooseQuestionNumber.socketId !== state.player.socketId ||
@@ -171,17 +136,7 @@ h2 {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.card-number {
-  font-size: 24px;
-  font-weight: bold;
-  margin-right: 15px;
-  min-width: 30px;
-  color: black;
-}
-.card-question {
-  font-size: 16px;
-  color: black;
-}
+
 #answer-input,
 #result,
 #next-button {

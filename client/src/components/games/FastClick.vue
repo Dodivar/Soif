@@ -108,5 +108,6 @@ export default {
   font-size: 10vw;
   color: rgba(200, 200, 200, 0.3);
   transition: transform 0.1s ease;
+  user-select: none;
 }
 </style>

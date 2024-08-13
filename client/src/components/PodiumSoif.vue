@@ -1,30 +1,18 @@
 <template>
   <v-container>
     <div class="w-100 text-center ma-5">
-      <h2>{{ state.room.actualGame.templateAnswer }}: {{ roundAnswer }}</h2>
+      <h2>
+        <v-icon>mdi-podium</v-icon>
+      </h2>
     </div>
-    <v-card title="Liste des soifeurs" class="rounded-lg">
+    <v-card title="Classement des soifeurs" class="rounded-lg">
       <v-list>
-        <v-list-subheader v-if="state.player.winner"
-          >Vous pouvez donner {{ state.player.soifToGive }} soif !</v-list-subheader
-        >
+        <v-list-subheader>!</v-list-subheader>
         <v-list-item
-          v-for="player in playerItems"
+          v-for="(player, idx) in playerItems"
           :key="player.socketId"
           @click="state.player.winner ? giveSoif(player.socketId) : null"
         >
-          <template v-slot:title>
-            <div class="d-flex">
-              <p class="text-h6">{{ player.gameValue }}</p>
-              <v-chip v-if="state.player.winner" class="ml-2 bg-gradient-warning"
-                >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
-              </v-chip>
-            </div>
-          </template>
-
-          <template v-slot:subtitle>
-            {{ player.pseudo }}
-          </template>
           <!-- Prepend -->
           <template v-slot:prepend>
             <v-avatar color="brown">
@@ -32,18 +20,27 @@
             </v-avatar>
           </template>
 
+          <template v-slot:title>
+            <div class="d-flex">
+              <p class="text-h6">{{ player.pseudo }}</p>
+              <v-chip v-if="idx === 0" class="ml-2 bg-gradient-success">Premier</v-chip>
+              <v-chip v-else-if="idx === 1" class="ml-2 bg-gradient-warning">Deuxième</v-chip>
+              <v-chip v-else-if="idx === 2" class="ml-2 bg-gradient-info">Troisième</v-chip>
+            </div>
+          </template>
+          <!-- 
+          <template v-slot:subtitle>
+            {{ player.pseudo }}
+          </template> -->
+
           <!-- Append -->
           <template v-slot:append>
-            <v-chip v-if="player.soifAddedThisRound > 0" class="bg-gradient-success" variant="flat">
-              + {{ player.soifAddedThisRound }}
-            </v-chip>
             <v-chip class="ma-2 bg-gradient-info">
               {{ player.soifTotal }}
-              <v-icon>mdi-glass-mug-variant</v-icon>
             </v-chip>
           </template>
+          <v-divider inset></v-divider>
         </v-list-item>
-        <v-divider inset></v-divider>
       </v-list>
     </v-card>
   </v-container>
@@ -60,7 +57,7 @@ export default {
   },
   computed: {
     playerItems() {
-      return state.room.players
+      return state.room.players.sort((a, b) => a.soifTotal > b.soifTotal)
     },
     roundAnswer() {
       return state.room.roundAnswer
