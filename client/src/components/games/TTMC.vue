@@ -1,7 +1,16 @@
 <template>
   <v-container>
-    <h1>Tu te mets combien ?</h1>
-    <h2 id="current-theme">Thème actuel : {{ theme.name }}</h2>
+    <div class="d-flex">
+      <div class="mr-4 w-100">
+        <h1>Tu te mets combien ?</h1>
+        <h2 id="current-theme">Thème actuel : {{ theme.name }}</h2>
+      </div>
+      <PlayerAvatar
+        :player="playerChooseQuestionNumber"
+        :avatar-size="60"
+        :show-pseudo="true"
+      ></PlayerAvatar>
+    </div>
 
     <div
       class="card-container"
@@ -21,13 +30,15 @@
       >
         <v-card-text v-if="currentQuestionIdx === idx">
           {{ item.question }}
-          <v-text-field
-            v-model="userAnswer"
-            type="text"
-            placeholder="Votre réponse"
-            clearable
-          ></v-text-field>
-          <v-btn class="bg-gradient-success" @click="checkAnswer">Soumettre</v-btn>
+          <v-form @submit.prevent>
+            <v-text-field
+              v-model="userAnswer"
+              type="text"
+              placeholder="Votre réponse"
+              clearable
+            ></v-text-field>
+            <v-btn class="bg-gradient-success" @click="checkAnswer" type="submit">Soumettre</v-btn>
+          </v-form>
         </v-card-text>
       </v-card>
     </div>
@@ -36,19 +47,23 @@
 
 <script>
 import { state, socket } from '@/socket'
+import PlayerAvatar from '@/components/PlayerAvatar.vue'
 
 export default {
+  components: {
+    PlayerAvatar
+  },
   data() {
     return {
       state,
       theme: {},
       currentThemeIdx: 0,
-      userAnswer: null,
+      userAnswer: '',
       playerChooseQuestionNumber: {}
     }
   },
   created() {
-    this.theme = state.room.actualGame.theme // TtmcThemes[this.currentThemeIdx]
+    this.theme = state.room.actualGame.theme
     this.playerChooseQuestionNumber = state.room.actualGame.playerChooseQuestionNumber
   },
   computed: {
@@ -65,41 +80,14 @@ export default {
         return
 
       socket.emit('TTMCChosenQuestionNumber', index)
-      // const cards = document.querySelectorAll('.card');
-
-      // cards.forEach((card, i) => {
-      //   if (i === index) {
-      //     card.querySelector('.card-question').textContent = themes[this.currentThemeIdx].questions[i].question;
-      //   } else {
-      //     card.classList.add('disabled');
-      //   }
-      // });
-
-      // document.getElementById('answer-input').style.display = 'block';
     },
 
     checkAnswer() {
-      // this.hasAnswered = true
-      // const userAnswerLowerCase = this.userAnswer.toLowerCase()
-      // const correctAnswer = this.theme.questions[this.currentQuestion].answer.toLowerCase()
-      // this.correctAnswer = userAnswerLowerCase === correctAnswer
-
       // Send score after 2s
       setTimeout(() => {
         socket.emit('playGame', this.userAnswer.toLowerCase())
       }, 2000)
     }
-
-    // nextTheme() {
-    //   this.hasSelect = false
-    //   this.hasAnswered = false
-    //   this.correctAnswer = false
-    //   this.userAnswer = null
-
-    //   this.currentThemeIdx = (this.currentThemeIdx + 1) % TtmcThemes.length
-    //   this.currentQuestion = null
-    //   this.theme = TtmcThemes[this.currentThemeIdx]
-    // }
   }
 }
 </script>

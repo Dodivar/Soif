@@ -1,15 +1,9 @@
 <template>
   <v-app>
-    <!-- <v-app-bar :elevation="2">
-      <template v-slot:prepend>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
-      </template>
-      <v-app-bar-title>Soif !</v-app-bar-title>
-    </v-app-bar> -->
     <v-main>
       <StartMenu />
 
-      <v-bottom-navigation v-model="navigation" color="primary" grow>
+      <!-- <v-bottom-navigation v-model="navigation" color="primary" grow>
         <v-btn>
           <v-icon>mdi-history</v-icon>
           Classement
@@ -24,7 +18,7 @@
           <v-icon>mdi-map-marker</v-icon>
           Profil
         </v-btn>
-      </v-bottom-navigation>
+      </v-bottom-navigation> -->
     </v-main>
   </v-app>
 </template>
@@ -40,7 +34,8 @@ export default {
     return {
       navigation: 1
     }
-  }
+  },
+  created() {}
 }
 </script>
 

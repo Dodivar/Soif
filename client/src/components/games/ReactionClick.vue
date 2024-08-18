@@ -2,24 +2,7 @@
   <v-container id="game-container">
     <countdown @countdown-end="startGame"></countdown>
     <div id="emoji-display"></div>
-
-    <!-- <div id="countdown" v-if="countdown > 0">
-      {{ countdown }}
-    </div> -->
-
-    <div id="result" v-if="reactionTime !== null">
-      Votre temps de réaction : {{ this.reactionTime }}ms
-      <!-- <v-btn @click="startGame">Rejouer</v-btn> -->
-    </div>
-
-    <!-- <div id="info-panel">
-      <h1>Jeu de Rapidité de Réaction</h1>
-      <div v-if="!hasStarted">
-        <p>Cliquez sur l'emoji dès qu'il apparaît !</p>
-        <v-btn id="start-button" @click="startGame">Commencer</v-btn>
-      </div> -->
-
-    <!-- </div> -->
+    <h3 v-if="reactionTime !== null">Votre temps de réaction : {{ this.reactionTime }}ms</h3>
   </v-container>
 </template>
 
@@ -51,8 +34,6 @@ export default {
   mounted() {
     this.gameContainer = document.getElementById('game-container')
     this.emojiDisplay = document.getElementById('emoji-display')
-
-    this.startGame()
   },
   methods: {
     getRandomEmoji() {
@@ -100,12 +81,6 @@ export default {
   font-size: 5rem;
   cursor: pointer;
   user-select: none;
-}
-
-#result {
-  font-size: 1.2rem;
-  margin-top: 1rem;
-  color: black;
 }
 
 #countdown {

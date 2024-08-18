@@ -57,7 +57,7 @@ export default {
     spawnEmoji() {
       if (this.isGameOver) return
 
-      const emoji = document.createElement('span')
+      const emoji = document.createElement('div')
       emoji.classList.add('emoji')
       emoji.textContent = this.emojisLib[Math.floor(Math.random() * this.emojisLib.length)]
 
@@ -195,20 +195,16 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 #game-area {
-  width: 95vw;
-  height: 95vh;
+  width: 100vw;
+  height: 100vh;
   position: relative;
   background-color: #f0f0f0;
   cursor: none;
   overflow: hidden;
   user-select: none;
 }
-/* #game-container {
-  background-color: #f0f0f0;
-  cursor: none;
-} */
 #player {
   width: 20px;
   height: 20px;
@@ -234,17 +230,5 @@ export default {
   font-size: 150px;
   color: #ff0000;
   z-index: 1;
-}
-#game-over {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  display: none;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 </style>

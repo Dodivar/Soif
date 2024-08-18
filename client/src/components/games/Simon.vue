@@ -9,7 +9,7 @@
     </div>
     <div id="message">
       <p v-if="message !== null">{{ message }}</p>
-      <p>{{ actualPlayerPseudo }}</p>
+      <p v-if="level > 0">{{ actualPlayer.pseudo }}</p>
     </div>
   </div>
 </template>
@@ -29,8 +29,6 @@ export default {
       btnSequence: [],
       playerSequence: [],
       gameTurn: [],
-      // level: 0,
-      // message: null,
       userCanPlay: false
     }
   },
@@ -45,11 +43,11 @@ export default {
     message() {
       return state.room.actualGame.message
     },
-    actualPlayerPseudo() {
-      return this.gameTurn[this.level].pseudo
+    actualPlayer() {
+      return this.gameTurn[this.level]
     },
     isPlayerTurn() {
-      return this.gameTurn[this.level].socketId === state.player.socketId
+      return this.actualPlayer.socketId === state.player.socketId
     }
   },
   watch: {

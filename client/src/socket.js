@@ -9,12 +9,21 @@ export const state = reactive({
   player: {
     id: null,
     pseudo: null,
+    avatar: null,
     isRoomMaster: false
   },
   room: {}
 })
 
 export const socket = io(URL)
+
+socket.on('connect', () => {
+  state.connected = true
+})
+
+socket.on('disconnect', () => {
+  state.connected = false
+})
 
 // User joined the game
 socket.on('join room', (roomState) => {

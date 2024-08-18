@@ -2,8 +2,7 @@ const Express = require("express")();
 const Http = require("http").Server(Express);
 const io = require("socket.io")(Http, {
   cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
+    origin: "http://localhost:3000"
   }
 });
 Http.listen(3333, () => {
@@ -15,8 +14,8 @@ const TtmcThemes = require("./games/TTMC_themes.json")
 var Player = require("./player.js");
 
 // Init model of room
-const initRoomState = (socket, isRoomMaster) => {
-    const actualPlayer = new Player(socket.id, socket.pseudo, isRoomMaster)
+const initRoomState = (socket, avatar, isRoomMaster) => {
+    const actualPlayer = new Player(socket.id, socket.pseudo, avatar, isRoomMaster)
     return  {
         roomId: socket.actualRoomId,
         gamesTour: null,
@@ -27,6 +26,7 @@ const initRoomState = (socket, isRoomMaster) => {
         players: [actualPlayer],
         player: actualPlayer,
         roundAnswer: null,
+        nextGameDescription: null
     }
 }
 
@@ -36,26 +36,26 @@ const allGames = [
     {
         theme: 'qa',
         games: [
-            {name: 'RedOrBlack', soif: 2, templateAnswer: 'La réponse était '}, 
-            {name: 'CardColors', soif: 4, templateAnswer: 'La réponse était '}, 
-            {name: 'TTMC', soif: 5, templateAnswer: 'La réponse était '}
+            {name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 2, templateAnswer: 'La réponse était :'}, 
+            {name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 4, templateAnswer: 'La réponse était :'}, 
+            {name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}
         ],
     },
     {
         theme: 'reflexe',
         games: [
-            {name: 'StopSlider', soif: 4, templateAnswer: 'Le meilleur score '}, 
-            {name: 'ReactionClick', soif: 4, templateAnswer: 'Le meilleur score '}, 
-            {name: 'FastClick', soif: 4, templateAnswer: 'Le meilleur score '}, 
-            {name: 'DotClick', soif: 4, templateAnswer: 'Le meilleur score '}, 
-            {name: 'SurvivalEmoji', soif: 4, templateAnswer: 'Le meilleur score '}
+            {name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+            {name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+            {name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+            {name: 'DotClick', soif: 4, description: 'Les points bleu valent +3 points, les verts +5, mais les oranges -2 !', templateAnswer: 'Le meilleur score :'}, 
+            {name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'}
         ],
     },
     {
         theme: 'reflexion',
         games: [
-            {name: 'Simon', soif: 4, templateAnswer: 'Le meilleur score '}, 
-            {name: 'GuessNumber', soif: 4, templateAnswer: 'Le meilleur score '},
+            {name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
+            {name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
             // {name: 'FaceExpressionDetector', soif: 4}
         ],
     },
@@ -63,77 +63,61 @@ const allGames = [
 
 io.on("connection", socket => {
 
-    // Disconnect socket
-    socket.on('disconnect', () => {
-        console.log('user disconnected [' + socket.id + ']')
+    console.log("Connexion " + socket.id)
 
-        socket.rooms.forEach(roomId => {
-            deletePlayer(roomId, socket.id)
-        })
+    // Disconnect socket
+    socket.on('disconnect', (reason) => {
+        console.log('user disconnected [' + socket.id + '] cause ' + reason)
+        deletePlayer(socket.actualRoomId, socket.id)
     });
 
     // Disconnect socket room
-    socket.on('disconnecting', async () => {
+    socket.on('disconnecting', () => {
         // the rooms array contains at least the socket ID
-        const roomId = await Object.keys(socket.rooms)[1];
-        const playerSocket = await Object.keys(socket.rooms)[0];
-        console.log('disconnect : ' + playerSocket + ' to room ' + roomId);
-
-        if (typeof roomId !== 'undefined') {
-
-            // Get number of players
-            let room = io.sockets.adapter.rooms[roomId];
-
-            if (room) {
-                // Delete player in state
-                if (room.length > 1) {
-                    delete roomState[roomId].players[playerSocket];
-                    io.sockets.adapter.rooms[roomId].length -= 1;
-    
-                    // Send notif player has left
-                    io.to(roomId).emit('user_left_game', io.sockets.adapter.rooms[roomId].sockets);
-                } 
-                
-                // Delete room data 
-                else {
-                    deleteRoomData(roomId);
-                }
-            } else {
-                deleteRoomData(roomId);
-            }
-        }
+        console.log('disconnect : ' + socket.id + ' to room ');
     });
 
-    socket.on("create room", pseudo => {
-        const roomId = makeid(6);
-        socket.join(roomId);
-        socket.actualRoomId = roomId
-        socket.pseudo = pseudo
-        socket.isRoomMaster = true
+    socket.on("create room", player => {
+        let roomId = makeid(6);
 
-        const roomObj = initRoomState(socket, true);
+        // Check room exist already
+        while (roomState.find(e => e.roomId)) {
+            roomId = makeid(6);
+        }
+
+        socket.actualRoomId = roomId
+        socket.pseudo = player.pseudo
+        socket.isRoomMaster = true
+        socket.join(roomId);
+
+        const roomObj = initRoomState(socket, player.avatar, true);
         roomObj.gamesTour = getGamesTour()
         roomState.push(roomObj)
-        console.log(roomObj)
+        // console.log(roomObj)
 
         io.emit('join room', roomObj);
     });
 
-    socket.on("join room", (roomId, pseudo) => {
-        if (!roomId) {           
-            socket.emit('msg', "Aucun channel pour " + roomId);
-            return;
+    socket.on("join room", (roomId, player) => {
+        try {
+            if (!roomId) {           
+                socket.emit('msg', "Aucun channel pour " + roomId);
+                return;
+            }
+
+            socket.join(roomId);
+            socket.actualRoomId = roomId
+            socket.pseudo = player.pseudo
+
+            const newPlayer = new Player(socket.id, player.pseudo, player.avatar)
+            let room = getRoom(roomId)
+            room.players.push(newPlayer)
+
+            io.emit('join room', room);
         }
-
-        socket.join(roomId);
-        socket.actualRoomId = roomId
-        socket.pseudo = pseudo
-
-        const newPlayer = new Player(socket.id, pseudo)
-        let room = getRoom(roomId)
-        room.players.push(newPlayer)
-
-        io.emit('join room', room);
+        catch(e) {
+            console.error(e)
+        }
     });
 
     socket.on("quit room", () => {
@@ -150,14 +134,25 @@ io.on("connection", socket => {
         }
     });
 
+    socket.on("replay", () => {
+        if (!socket.isRoomMaster) return
+        resetRoom(socket.actualRoomId)
+        io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+    })
+    
+    socket.on("playGame", (data) => {
+        playGame(io, socket, data)
+    });
+
     socket.on("give soif", (socketId, soifNumber) => {
         // Give the soif
         const playerToGive = getPlayerState(socket.actualRoomId, socketId)
         playerToGive.soifTotal += soifNumber
-        playerToGive.soifAddedThisRound = soifNumber
+        playerToGive.soifAddedThisRound += soifNumber
 
         // Set soif has been gived
         const player = getPlayerState(socket.actualRoomId, socket.id)
+        player.totalSoifGived += soifNumber
         player.givedSoif = true
 
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
@@ -167,10 +162,6 @@ io.on("connection", socket => {
         if (winners.every(e => e.givedSoif)) {
             sendNextGame(io, socket)
         }
-    });
-
-    socket.on("playGame", (data) => {
-        playGame(io, socket, data)
     });
 
     // SIMON
@@ -214,7 +205,7 @@ function setActualGameData(room, nextGameName) {
             const gameTurn = []
             let playerIdx = 0;
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 21; i++) {
                 // Sequence of btns
                 const button = buttons[Math.floor(Math.random() * buttons.length)]
                 btnSequence.push(button)
@@ -243,10 +234,18 @@ function setActualGameData(room, nextGameName) {
     }
 }
 
+function nextGameDescription(room) {
+    const nextGameIdx = room.gameIdx + 1
+    if (nextGameIdx > room.gamesTour.length - 1) return null
+    return room.gamesTour[nextGameIdx].description
+}
+
 function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.actualRoomId)
     const nextGame = room.gamesTour[room.gameIdx]
+    
     setActualGameData(room, nextGame)
+    room.nextGameDescription = nextGameDescription(room)
 
     // Re-init players state for next game
     room.players.forEach(e => {
@@ -334,9 +333,7 @@ function playGame(io, socket, data) {
 
             // Get the number of soif to give
             let soifToGive = 2
-            console.log(room.actualGame)
             allGames.forEach(theme => {
-                console.log(theme)
                 const filter = theme.games.find(e => e.name === room.actualGame.name)
                 if (!filter) return 
                 
@@ -366,11 +363,30 @@ function playGame(io, socket, data) {
     }
 }
 
+function resetRoom(roomId) {
+    const room = getRoom(roomId)
+    
+    // Reset players
+    room.players.forEach(player => {
+        player.reset()
+    })
+
+    room.gamesTour = getGamesTour()
+    room.gameIdx = 0
+}
+
 function deletePlayer(roomId, socketId) {
     try {
         console.log("room to quit " + roomId)
         const playerIdx = getPlayerRoomState(roomId).findIndex(e => e.socketId === socketId)
         getPlayerRoomState(roomId) = getPlayerRoomState(roomId).splice(playerIdx, 1)
+        
+        const room = getRoom(roomId)
+        if (room.players.length === 0) {
+            // Room deleted
+            const roomIdx = roomState.findIndex(room)
+            roomState = roomState.splice(roomIdx, 1)
+        }
     }
     catch(e) {}
 }
@@ -384,10 +400,10 @@ function getPlayerRoomState(roomId) {
 }
 
 function getPlayerState(roomId, socketId) {
-    return getPlayerRoomState(roomId).find(e => e.socketId === socketId);
+    return getPlayerRoomState(roomId)?.find(e => e.socketId === socketId);
 }
 
-function getGamesTour(number = 10) {
+function getGamesTour(number = 2) {
     const tour = []
     let typeIdx = 0
 
@@ -414,11 +430,12 @@ function getGamesTour(number = 10) {
 // Generate a random string with a fixed length
 function makeid(length) {
     let result             = '';
-    const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters       = '0123456789'; // ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
     const charactersLength = characters.length;
     for (let i = 0; i < length; i++) {
        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
+
     return result;
 }
 

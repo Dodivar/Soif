@@ -1,8 +1,8 @@
 <template>
   <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
     <countdown @countdown-end="startGame"></countdown>
 
-    <canvas id="gameCanvas"></canvas>
     <div id="score" :style="{ color: scoreColor }">
       {{ score }}
     </div>
@@ -25,12 +25,13 @@ export default {
       state,
       score: 0,
       scoreColor: '',
-      gameTime: 3000,
+      gameTime: 30000,
       startTime: 0,
       dots: [],
       canvas: null,
       canvasCtx: null,
-      timerBarWidth: '100%'
+      timerBarWidth: '100%',
+      gameFinished: false
     }
   },
   mounted() {
@@ -44,6 +45,7 @@ export default {
       const y = e.clientY - rect.top
       this.checkCollision(x, y)
     })
+    this.resizeCanvas()
   },
   methods: {
     createDot() {
@@ -101,6 +103,8 @@ export default {
     },
 
     checkCollision(x, y) {
+      if (this.gameFinished) return
+
       this.dots.forEach((dot, index) => {
         const distance = Math.sqrt((x - dot.x) ** 2 + (y - dot.y) ** 2)
         if (distance < dot.radius) {
@@ -145,12 +149,12 @@ export default {
     },
 
     endGame() {
+      this.gameFinished = true
+
       // Send score after 2s
       setTimeout(() => {
         socket.emit('playGame', this.score)
       }, 1000)
-
-      // alert(`Game Over! Your score: ${this.score}`)
     },
 
     startGame() {
@@ -173,6 +177,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 10;
 }
 #score {
   position: absolute;

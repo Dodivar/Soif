@@ -7,49 +7,53 @@
     </div>
     <v-card title="Classement des soifeurs" class="rounded-lg">
       <v-list>
-        <v-list-subheader>!</v-list-subheader>
-        <v-list-item
-          v-for="(player, idx) in playerItems"
-          :key="player.socketId"
-          @click="state.player.winner ? giveSoif(player.socketId) : null"
-        >
-          <!-- Prepend -->
-          <template v-slot:prepend>
-            <v-avatar color="brown">
-              <span class="text">{{ player.pseudo[0] }}</span>
-            </v-avatar>
-          </template>
+        <template v-for="(player, idx) in playerItems" :key="player.socketId">
+          <v-list-item>
+            <template v-slot:prepend>
+              <PlayerAvatar :player="player" :avatar-size="60"> </PlayerAvatar>
+            </template>
 
-          <template v-slot:title>
-            <div class="d-flex">
-              <p class="text-h6">{{ player.pseudo }}</p>
-              <v-chip v-if="idx === 0" class="ml-2 bg-gradient-success">Premier</v-chip>
-              <v-chip v-else-if="idx === 1" class="ml-2 bg-gradient-warning">Deuxième</v-chip>
-              <v-chip v-else-if="idx === 2" class="ml-2 bg-gradient-info">Troisième</v-chip>
-            </div>
-          </template>
-          <!-- 
-          <template v-slot:subtitle>
-            {{ player.pseudo }}
-          </template> -->
+            <template v-slot:title>
+              <div class="d-flex ml-3">
+                <p class="text-h6">{{ player.pseudo }}</p>
+                <v-chip v-if="idx < 3" class="ml-2 bg-gradient-success">{{ idx + 1 }}</v-chip>
+              </div>
+            </template>
 
-          <!-- Append -->
-          <template v-slot:append>
-            <v-chip class="ma-2 bg-gradient-info">
-              {{ player.soifTotal }}
-            </v-chip>
-          </template>
-          <v-divider inset></v-divider>
-        </v-list-item>
+            <template v-slot:append>
+              <v-chip class="ma-2 bg-gradient-warning">
+                Donnée :
+                {{ player.totalSoifGived }}
+              </v-chip>
+              <v-chip class="ma-2 bg-gradient-info"> Total : {{ player.soifTotal }} </v-chip>
+            </template>
+          </v-list-item>
+          <v-divider inset v-if="idx < playerItems.length - 1" :key="`${idx}-divider`"></v-divider>
+        </template>
       </v-list>
+      <v-card-action>
+        <div class="text-center ma-2">
+          <v-btn
+            v-if="state.player.isRoomMaster"
+            class="w-100 bg-gradient-success text-white"
+            @click="replay"
+          >
+            Rejouer
+          </v-btn>
+        </div>
+      </v-card-action>
     </v-card>
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
+import PlayerAvatar from './PlayerAvatar.vue'
 
 export default {
+  components: {
+    PlayerAvatar
+  },
   data() {
     return {
       state
@@ -57,15 +61,15 @@ export default {
   },
   computed: {
     playerItems() {
-      return state.room.players.sort((a, b) => a.soifTotal > b.soifTotal)
+      return state.room.players.sort((a, b) => a.soifTotal - b.soifTotal)
     },
     roundAnswer() {
       return state.room.roundAnswer
     }
   },
   methods: {
-    giveSoif(socketId) {
-      socket.emit('give soif', socketId, state.player.soifToGive)
+    replay() {
+      socket.emit('replay')
     }
   }
 }
