@@ -50,8 +50,8 @@
         </template>
       </v-list>
     </v-card>
-    <div class="my-2">
-      <h4>Description du prochain jeu :</h4>
+    <div class="w-100 my-2 text-center">
+      <h4>Prochain jeu {{ state.room.gameIdx }}/{{ state.room.gamesTour.length - 1 }} :</h4>
       <p>{{ state.room.nextGameDescription }}</p>
     </div>
   </v-container>
@@ -67,8 +67,8 @@ export default {
   },
   data() {
     return {
-      state,
-      gived: false
+      state
+      // gived: false
     }
   },
   computed: {
@@ -84,9 +84,9 @@ export default {
   },
   methods: {
     giveSoif(socketId) {
-      if (this.gived) return
-      this.gived = true
-      socket.emit('give soif', socketId, state.player.soifToGive)
+      if (state.player.givedSoif) return
+      // this.gived = true
+      socket.emit('give soif', socketId, 1)
     }
   }
 }

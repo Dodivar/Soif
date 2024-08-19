@@ -3,7 +3,8 @@
     <v-row>
       <v-col cols="12">
         <!-- Set profil -->
-        <div v-if="!state.player.pseudo || !state.player.avatar">
+        <!-- || !avatar -->
+        <div v-if="!pseudo">
           <div class="text-center ma-5">
             <h1>Bienvue à Soifs !</h1>
             <h2>Créé ton profil</h2>
@@ -17,7 +18,7 @@
             >
             </PlayerAvatar>
             <v-text-field
-              v-model="pseudo"
+              v-model="pseudoInput"
               :counter="10"
               :rules="pseudoRules"
               label="Pseudo"
@@ -34,13 +35,14 @@
         </div>
 
         <!-- Create or join -->
-        <div v-else-if="!state.room.roomId" class="text-center">
+        <div v-else-if="!state.room.roomId">
           <div class="text-center ma-5">
             <h1>Soifs !</h1>
             <h2>Prépare ton gosier mon salop</h2>
           </div>
           <!-- Create room -->
           <PlayerAvatar
+            class="text-center"
             :player="state.player"
             :avatar-size="200"
             :can-be-modified="true"
@@ -49,7 +51,8 @@
           </PlayerAvatar>
 
           <v-btn
-            @click="createRoom"
+            v-if="!wantToCreateRoom && !wantToJoinRoom"
+            @click="wantToCreateRoom = true"
             elevation="4"
             class="w-100 bg-gradient-success text-white"
             type="submit"
@@ -59,19 +62,91 @@
           <!-- Join room -->
           <v-form class="mt-5 text-center" @submit.prevent>
             <v-text-field
+              v-if="wantToJoinRoom"
               v-model="roomToJoin"
               :counter="6"
               placeholder="Numéro de partie"
               label="Numéro de partie"
             ></v-text-field>
             <v-btn
-              @click="joinRoom"
+              v-if="!wantToCreateRoom"
+              @click="wantToJoinRoom ? joinRoom() : (wantToJoinRoom = true)"
               elevation="4"
               class="w-100 bg-gradient-warning text-white"
               type="submit"
-              >Rejoindre une partie</v-btn
+              >{{ wantToJoinRoom ? 'Valider' : 'Rejoindre une partie' }}</v-btn
             >
           </v-form>
+
+          <div v-if="wantToCreateRoom">
+            <h3>Quelle formule allez vous choisir ?</h3>
+            <v-sheet
+              elevation="5"
+              class="rounded-lg text-start pa-2 my-3 cursor-pointer"
+              @click="createRoom(10)"
+            >
+              <div class="d-flex align-center">
+                <v-avatar class="bg-gradient-success text-white">
+                  <span class="text-h6">10</span>
+                </v-avatar>
+                <div class="ml-3">
+                  <p class="text-h5">Le petit déj</p>
+                  <p>Parfait pour un petit déjeuner équilibré.</p>
+                </div>
+              </div>
+            </v-sheet>
+            <v-sheet
+              elevation="5"
+              class="rounded-lg text-start pa-2 my-3 cursor-pointer"
+              @click="createRoom(25)"
+            >
+              <div class="d-flex align-center">
+                <v-avatar class="bg-gradient-info text-white">
+                  <span class="text-h6">25</span>
+                </v-avatar>
+                <div class="ml-3">
+                  <p class="text-h5">L'apéro</p>
+                  <p>Idéal pour une mise en jambe.</p>
+                </div>
+              </div>
+            </v-sheet>
+            <v-sheet
+              elevation="5"
+              class="rounded-lg text-start pa-2 my-3 cursor-pointer"
+              @click="createRoom(50)"
+            >
+              <div class="d-flex align-center">
+                <v-avatar class="bg-gradient-yellow text-white">
+                  <span class="text-h6">50</span>
+                </v-avatar>
+                <div class="ml-3">
+                  <p class="text-h5">Le plat de résistance</p>
+                  <p>C'est l'heure de se carabiner la tronche !</p>
+                </div>
+              </div>
+            </v-sheet>
+            <v-sheet
+              elevation="5"
+              class="rounded-lg text-start pa-2 my-3 cursor-pointer"
+              @click="createRoom(100)"
+            >
+              <div class="d-flex align-center">
+                <v-avatar class="bg-gradient-danger text-white">
+                  <span class="text-h6">100</span>
+                </v-avatar>
+                <div class="ml-3">
+                  <p class="text-h5">Le digo</p>
+                  <p>Seul les vrais soldats tiendront encore debout !</p>
+                </div>
+              </div>
+            </v-sheet>
+
+            <v-btn
+              class="w-50 bg-gradient-warning text-white my-5"
+              @click="wantToCreateRoom = false"
+              >Retour</v-btn
+            >
+          </div>
         </div>
 
         <!-- Saloon -->
@@ -162,13 +237,15 @@ export default {
         (v) => !!v || 'Le pseudo est obligatoire',
         (v) => (v && v.length <= 10) || 'Le pseudo doit contenir moins de 10 characters'
       ],
-      pseudo: null
+      pseudoInput: null,
+      pseudo: null,
+      avatar: null,
+      wantToCreateRoom: false,
+      wantToJoinRoom: false
     }
   },
   created() {
-    state.player.pseudo = this.getLocalPlayerPseudo()
-    state.player.avatar = this.getLocalPlayerAvatar()
-    console.log(state.player)
+    this.setPlayerState()
   },
   mounted() {
     this.avatarCanvas = document.getElementById('avatarCanvas')
@@ -185,15 +262,15 @@ export default {
       return this.players?.every((e) => e.isReady)
     },
     isRoomMaster() {
-      return this.players.find((e) => e.socketId === state.player.socketId).isRoomMaster
+      return this.players.find((e) => e.socketId === state.player.socketId)?.isRoomMaster
     }
   },
   methods: {
-    createRoom() {
-      socket.emit('create room', state.player)
+    createRoom(roundNumber) {
+      socket.emit('create room', state.player, this.avatar, roundNumber)
     },
     joinRoom() {
-      socket.emit('join room', this.roomToJoin, state.player)
+      socket.emit('join room', this.roomToJoin, state.player, this.avatar)
     },
     quitRoom() {
       socket.emit('quit room')
@@ -203,14 +280,20 @@ export default {
       socket.emit('ready to play')
     },
     setProfile() {
-      localStorage.setItem('playerPseudo', this.pseudo)
-      state.player.pseudo = this.pseudo
+      localStorage.setItem('playerPseudo', this.pseudoInput)
+      this.setPlayerState()
     },
     getLocalPlayerPseudo() {
       return localStorage.getItem('playerPseudo')
     },
     getLocalPlayerAvatar() {
       return localStorage.getItem('playerAvatar')
+    },
+    setPlayerState() {
+      this.pseudo = this.getLocalPlayerPseudo()
+      this.avatar = this.getLocalPlayerAvatar()
+      state.player.pseudo = this.pseudo
+      state.player.avatar = this.avatar
     }
   }
 }

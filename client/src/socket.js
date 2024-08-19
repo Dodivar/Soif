@@ -7,7 +7,7 @@ const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhos
 export const state = reactive({
   connected: false,
   player: {
-    id: null,
+    socketId: null,
     pseudo: null,
     avatar: null,
     isRoomMaster: false
@@ -15,10 +15,13 @@ export const state = reactive({
   room: {}
 })
 
-export const socket = io(URL)
+export const socket = io(URL, {
+  transports: ['websocket', 'polling'] // utilisation du transport WebSocket en premier, si possible
+})
 
 socket.on('connect', () => {
   state.connected = true
+  state.player.socketId = socket.id
 })
 
 socket.on('disconnect', () => {
@@ -26,10 +29,19 @@ socket.on('disconnect', () => {
 })
 
 // User joined the game
-socket.on('join room', (roomState) => {
+socket.on('join room', (roomState, roomAvatars) => {
   state.room = roomState
   state.player = state.room.players.find((e) => e.socketId === socket.id)
-  console.log(roomState)
+
+  // Set each player avatars
+  roomAvatars.avatars.forEach((player) => {
+    if (
+      socket.id !== player.socketId &&
+      !sessionStorage.getItem(`playerAvatar-${player.socketId}`)
+    ) {
+      sessionStorage.setItem(`playerAvatar-${player.socketId}`, player.avatar)
+    }
+  })
 })
 
 socket.on('refresh players', (players) => {
@@ -59,4 +71,10 @@ socket.on('SimonUpdateMsg', (msg) => {
 socket.on('TTMCChosenQuestionNumber', (index) => {
   state.room.actualGame.chosenQuestionNumber = index
   console.log(state.room.actualGame)
+})
+
+socket.on('connect_error', (err) => {
+  alert(`connect_error due to ${err.message}`)
+  // retour au fonctionnement classique en cas d'erreur
+  socket.io.opts.transports = ['polling', 'websocket']
 })
