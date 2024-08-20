@@ -2,7 +2,7 @@ const Express = require("express")();
 const Http = require("http").Server(Express);
 const io = require("socket.io")(Http, {
   cors: {
-    origin: "http://localhost:3000"
+    origin: "http://192.168.1.15:3000"
   }
 });
 Http.listen(3333, () => {
@@ -11,26 +11,17 @@ Http.listen(3333, () => {
 const TtmcThemes = require("./games/TTMC_themes.json")
 
 
-var Player = require("./player.js");
+const Player = require("./player.js");
+const Room = require("./room.js");
 
 // Init model of room
-const initRoomState = (socket, avatar, isRoomMaster) => {
-    const actualPlayer = new Player(socket.id, socket.pseudo, avatar, isRoomMaster)
-    return  {
-        roomId: socket.actualRoomId,
-        gamesTour: null,
-        gameIdx: 0,
-        actualGame: {
-            name: null,
-        },
-        players: [actualPlayer],
-        player: actualPlayer,
-        roundAnswer: null,
-        nextGameDescription: null
-    }
+const initRoomState = (socket, isRoomMaster) => {
+    const actualPlayer = new Player(socket.id, socket.pseudo, isRoomMaster)
+    return new Room(socket, actualPlayer)
 }
 
 var roomState = []; // State of rooms
+var roomAvatars = []; // Avatar of players
 
 const allGames = [
     {
@@ -73,11 +64,10 @@ io.on("connection", socket => {
 
     // Disconnect socket room
     socket.on('disconnecting', () => {
-        // the rooms array contains at least the socket ID
         console.log('disconnect : ' + socket.id + ' to room ');
     });
 
-    socket.on("create room", player => {
+    socket.on("create room", (player, avatar, roundNumber) => {
         let roomId = makeid(6);
 
         // Check room exist already
@@ -85,35 +75,51 @@ io.on("connection", socket => {
             roomId = makeid(6);
         }
 
+        // Set socket data
         socket.actualRoomId = roomId
         socket.pseudo = player.pseudo
         socket.isRoomMaster = true
         socket.join(roomId);
 
-        const roomObj = initRoomState(socket, player.avatar, true);
-        roomObj.gamesTour = getGamesTour()
+        // Set new room
+        const roomObj = initRoomState(socket, true);
+        roomObj.gamesTour = getGamesTour(roundNumber)
         roomState.push(roomObj)
-        // console.log(roomObj)
 
-        io.emit('join room', roomObj);
+        // Save avatar
+        const avatarObj = { socketId: socket.id, avatar }
+        const newRoomAvatars = {
+            roomId,
+            avatars: [avatarObj]
+        }
+        roomAvatars.push(newRoomAvatars)
+
+        io.emit('join room', roomObj, newRoomAvatars);
     });
 
-    socket.on("join room", (roomId, player) => {
+    socket.on("join room", (roomId, player, avatar) => {
         try {
             if (!roomId) {           
                 socket.emit('msg', "Aucun channel pour " + roomId);
                 return;
             }
 
+            // Set socket data
             socket.join(roomId);
             socket.actualRoomId = roomId
             socket.pseudo = player.pseudo
 
-            const newPlayer = new Player(socket.id, player.pseudo, player.avatar)
+            // Set new player in room
+            const newPlayer = new Player(socket.id, player.pseudo)
             let room = getRoom(roomId)
             room.players.push(newPlayer)
+            
+            // Save avatar
+            const avatarObj = { socketId: socket.id, avatar }
+            const actualRoomAvatars = roomAvatars.find(e => e.roomId === roomId)
+            actualRoomAvatars.avatars.push(avatarObj)
 
-            io.emit('join room', room);
+            io.emit('join room', room, actualRoomAvatars);
         }
         catch(e) {
             console.error(e)
@@ -144,7 +150,7 @@ io.on("connection", socket => {
         playGame(io, socket, data)
     });
 
-    socket.on("give soif", (socketId, soifNumber) => {
+    socket.on("give soif", (socketId, soifNumber = 1) => {
         // Give the soif
         const playerToGive = getPlayerState(socket.actualRoomId, socketId)
         playerToGive.soifTotal += soifNumber
@@ -152,8 +158,9 @@ io.on("connection", socket => {
 
         // Set soif has been gived
         const player = getPlayerState(socket.actualRoomId, socket.id)
+        player.soifToGive -= soifNumber
         player.totalSoifGived += soifNumber
-        player.givedSoif = true
+        player.givedSoif = player.soifToGive === 0
 
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
 
@@ -365,13 +372,14 @@ function playGame(io, socket, data) {
 
 function resetRoom(roomId) {
     const room = getRoom(roomId)
+    const actualRoundNumber = room.gamesTour.length
     
     // Reset players
     room.players.forEach(player => {
         player.reset()
     })
 
-    room.gamesTour = getGamesTour()
+    room.gamesTour = getGamesTour(actualRoundNumber)
     room.gameIdx = 0
 }
 
@@ -387,12 +395,25 @@ function deletePlayer(roomId, socketId) {
             const roomIdx = roomState.findIndex(room)
             roomState = roomState.splice(roomIdx, 1)
         }
+
+        const avatarRoom = getAvatarRoom(roomId)
+        const avatarIdx = avatarRoom.avatars.findIndex(e => e.socketId === socketId)
+        avatarRoom.avatars = avatarRoom.avatars.splice(avatarIdx, 1)
+        if (avatarRoom.avatars.length === 0) {
+            // Room deleted
+            const roomIdx = roomAvatars.findIndex(avatarRoom)
+            roomAvatars = roomAvatars.splice(roomIdx, 1)
+        }
     }
     catch(e) {}
 }
 
 function getRoom(roomId) {
     return roomState.find(e => e.roomId === roomId)
+}
+
+function getAvatarRoom(roomId) {
+    return roomAvatars.find(e => e.roomId === roomId)
 }
 
 function getPlayerRoomState(roomId) {
