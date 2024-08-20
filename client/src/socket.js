@@ -6,6 +6,7 @@ const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhos
 
 export const state = reactive({
   connected: false,
+  errMsg: null,
   player: {
     socketId: null,
     pseudo: null,
@@ -22,14 +23,19 @@ export const socket = io(URL, {
 socket.on('connect', () => {
   state.connected = true
   state.player.socketId = socket.id
+  state.errMsg = null
 })
 
 socket.on('disconnect', () => {
   state.connected = false
+  state.errMsg = 'Connexion perdu'
 })
 
 // User joined the game
 socket.on('join room', (roomState, roomAvatars) => {
+  console.log(roomState)
+  console.log(roomAvatars)
+
   state.room = roomState
   state.player = state.room.players.find((e) => e.socketId === socket.id)
 
@@ -47,12 +53,12 @@ socket.on('join room', (roomState, roomAvatars) => {
 socket.on('refresh players', (players) => {
   state.room.players = players
   state.player = players.find((e) => e.socketId === socket.id)
+  console.log(players)
 })
 
 socket.on('refresh room', (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id)
-  console.log(room)
 })
 
 socket.on('UpdateActualGame', (actualGame) => {
@@ -74,7 +80,9 @@ socket.on('TTMCChosenQuestionNumber', (index) => {
 })
 
 socket.on('connect_error', (err) => {
-  alert(`connect_error due to ${err.message}`)
+  // alert(`connect_error due to ${err.message}`)
+  console.info(`connect_error due to ${err.message}`)
+  state.errMsg = err.message
   // retour au fonctionnement classique en cas d'erreur
-  socket.io.opts.transports = ['polling', 'websocket']
+  // socket.io.opts.transports = ['polling', 'websocket']
 })

@@ -3,7 +3,7 @@
     <div class="d-flex">
       <div class="mr-4 w-100">
         <h1>Tu te mets combien ?</h1>
-        <h2 id="current-theme">Thème actuel : {{ theme.name }}</h2>
+        <h2 id="current-theme">Thème actuel : {{ theme?.name }}</h2>
       </div>
       <PlayerAvatar
         :player="playerChooseQuestionNumber"

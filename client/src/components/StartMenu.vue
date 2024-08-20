@@ -72,7 +72,9 @@
               v-if="!wantToCreateRoom"
               @click="wantToJoinRoom ? joinRoom() : (wantToJoinRoom = true)"
               elevation="4"
-              class="w-100 bg-gradient-warning text-white"
+              :class="
+                (wantToJoinRoom ? 'bg-gradient-success' : 'bg-gradient-info') + ' w-100 text-white'
+              "
               type="submit"
               >{{ wantToJoinRoom ? 'Valider' : 'Rejoindre une partie' }}</v-btn
             >
@@ -140,13 +142,13 @@
                 </div>
               </div>
             </v-sheet>
-
-            <v-btn
-              class="w-50 bg-gradient-warning text-white my-5"
-              @click="wantToCreateRoom = false"
-              >Retour</v-btn
-            >
           </div>
+          <v-btn
+            v-if="wantToCreateRoom || wantToJoinRoom"
+            class="w-100 bg-gradient-warning text-white my-5"
+            @click="wantToCreateRoom = wantToJoinRoom = false"
+            >Retour</v-btn
+          >
         </div>
 
         <!-- Saloon -->
@@ -184,10 +186,21 @@
         </div>
         <!-- GAMES -->
         <div v-else>
-          <h3 v-if="!state.connected" class="text-error">Connexion perdu !</h3>
-          <ScoreSoif v-if="state.player.hasPlayed" />
+          <ScoreSoif v-if="state.player?.hasPlayed" />
           <component v-else :is="actualGameName" />
         </div>
+
+        <!-- ALERT -->
+        <v-alert
+          v-if="state.errMsg"
+          border="top"
+          type="warning"
+          variant="outlined"
+          closable
+          density="compact"
+        >
+          {{ state.errMsg }}
+        </v-alert>
       </v-col>
     </v-row>
   </v-container>
