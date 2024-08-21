@@ -1,12 +1,13 @@
-const Express = require("express")();
-const Http = require("http").Server(Express);
+const express = require("express")();
+const Http = require("http").Server(express);
 const io = require("socket.io")(Http, {
   cors: {
     origin: "http://192.168.1.15:3000"
   }
 });
-Http.listen(3333, () => {
-    console.log("Listening at : 3333");
+const PORT = process.env.PORT || 3333;
+Http.listen(PORT, () => {
+    console.log("Listening at : " + PORT);
 })
 const TtmcThemes = require("./games/TTMC_themes.json")
 
@@ -60,6 +61,8 @@ io.on("connection", socket => {
     socket.on('disconnect', (reason) => {
         console.log('user disconnected [' + socket.id + '] cause ' + reason)
         deletePlayer(socket.actualRoomId, socket.id)
+        io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
+        // TODO si c'était le dernier joueur qui devait jouer alors envoyer le prochain jeu
     });
 
     // Disconnect socket room
@@ -69,9 +72,9 @@ io.on("connection", socket => {
 
     socket.on("create room", (player, avatar, roundNumber) => {
         let roomId = makeid(6);
-
+        
         // Check room exist already
-        while (roomState.find(e => e.roomId)) {
+        while (roomState.find(e => e.roomId === roomId) !== undefined) {
             roomId = makeid(6);
         }
 
@@ -93,7 +96,7 @@ io.on("connection", socket => {
             avatars: [avatarObj]
         }
         roomAvatars.push(newRoomAvatars)
-
+        
         io.emit('join room', roomObj, newRoomAvatars);
     });
 
@@ -155,8 +158,9 @@ io.on("connection", socket => {
         const playerToGive = getPlayerState(socket.actualRoomId, socketId)
         playerToGive.soifTotal += soifNumber
         playerToGive.soifAddedThisRound += soifNumber
+        playerToGive.hasDrink = false
 
-        // Set soif has been gived
+        // Set soif has been gived by the player
         const player = getPlayerState(socket.actualRoomId, socket.id)
         player.soifToGive -= soifNumber
         player.totalSoifGived += soifNumber
@@ -164,9 +168,17 @@ io.on("connection", socket => {
 
         io.to(socket.actualRoomId).emit("refresh players", getPlayerRoomState(socket.actualRoomId))
 
-        // If all soif has been gived, launch next game
-        const winners = getPlayerRoomState(socket.actualRoomId).filter(e => e.winner)
-        if (winners.every(e => e.givedSoif)) {
+    });
+	
+    socket.on("HasDrink", () => {
+        const player = getPlayerState(socket.actualRoomId, socket.id)
+		player.hasDrink = true
+		
+		// If all soif has been gived soif, launch next game
+		const players = getPlayerRoomState(socket.actualRoomId)
+        const winnersHasGived = players.filter(e => e.winner).every(e => e.givedSoif)
+        const everyHasDrink = players.filter(e => e.soifAddedThisRound > 0).every(e => e.hasDrink)
+        if (winnersHasGived && everyHasDrink) {
             sendNextGame(io, socket)
         }
     });
@@ -273,6 +285,8 @@ function sendNextGame(io, socket, wait = 2000) {
 function playGame(io, socket, data) {
     let choices
     let player = getPlayerState(socket.actualRoomId, socket.id)
+	if (player.hasPlayed) return
+	
     const room = getRoom(socket.actualRoomId)
     let waitBeforeNextRound = 2000
 
@@ -383,29 +397,29 @@ function resetRoom(roomId) {
     room.gameIdx = 0
 }
 
+// TODO si le joueur supprimé était le roommaster le rajouter
 function deletePlayer(roomId, socketId) {
     try {
-        console.log("room to quit " + roomId)
-        const playerIdx = getPlayerRoomState(roomId).findIndex(e => e.socketId === socketId)
-        getPlayerRoomState(roomId) = getPlayerRoomState(roomId).splice(playerIdx, 1)
-        
+        console.log(`[${socketId}] quit room ${roomId}`)
         const room = getRoom(roomId)
+        room.players = room.players.filter(e => e.socketId !== socketId)
+        
+        // Room deleted
         if (room.players.length === 0) {
-            // Room deleted
-            const roomIdx = roomState.findIndex(room)
-            roomState = roomState.splice(roomIdx, 1)
+            roomState = roomState.filter(e => e.roomId !== roomId)
         }
 
-        const avatarRoom = getAvatarRoom(roomId)
-        const avatarIdx = avatarRoom.avatars.findIndex(e => e.socketId === socketId)
-        avatarRoom.avatars = avatarRoom.avatars.splice(avatarIdx, 1)
+        let avatarRoom = getAvatarRoom(roomId)
+        avatarRoom.avatars = avatarRoom.avatars.filter(e => e.socketId !== socketId)
+
+        // Avatar room deleted
         if (avatarRoom.avatars.length === 0) {
-            // Room deleted
-            const roomIdx = roomAvatars.findIndex(avatarRoom)
-            roomAvatars = roomAvatars.splice(roomIdx, 1)
+            roomAvatars = roomAvatars.filter(e => e.roomId !== roomId)
         }
     }
-    catch(e) {}
+    catch(e) {
+        console.log(`erreur dans la suppression du joueur: ${e}`)
+    }
 }
 
 function getRoom(roomId) {
