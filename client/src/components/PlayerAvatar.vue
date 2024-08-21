@@ -7,7 +7,7 @@
       @click="canBeModified ? makeAvatar() : null"
     >
       <!-- style="display: none" -->
-      <video v-if="canBeModified" autoplay muted playsinline id="videoPreview"></video>
+      <video v-if="canBeModified" v-show="stream" autoplay muted playsinline id="videoPreview"></video>
       <canvas v-if="canBeModified" id="avatarCanvas" style="display: none"></canvas>
 
       <v-img v-if="avatar" alt="Avatar" :src="avatar"></v-img>

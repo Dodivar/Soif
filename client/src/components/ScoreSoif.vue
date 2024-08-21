@@ -51,19 +51,29 @@
       </v-list>
     </v-card>
     <div class="w-100 my-2 text-center">
+      <v-btn
+        v-if="state.player.soifAddedThisRound > 0 && !state.player.hasDrink"
+        class="w-100 bg-gradient-success text-white text-h5 mb-3"
+        @click="hasDrink"
+      >
+        J'ai bu ! <v-icon>mdi mdi-check-circle-outline</v-icon>
+      </v-btn>
       <h4>Prochain jeu {{ state.room.gameIdx }}/{{ state.room.gamesTour.length - 1 }} :</h4>
       <p>{{ state.room.nextGameDescription }}</p>
     </div>
+    <JockerMenu />
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
 import PlayerAvatar from './PlayerAvatar.vue'
+import JockerMenu from './JockerMenu.vue'
 
 export default {
   components: {
-    PlayerAvatar
+    PlayerAvatar,
+    JockerMenu
   },
   data() {
     return {
@@ -87,6 +97,11 @@ export default {
       if (state.player.givedSoif) return
       // this.gived = true
       socket.emit('give soif', socketId, 1)
+    },
+
+    hasDrink() {
+      socket.emit('HasDrink')
+      state.player.hasDrink = true
     }
   }
 }

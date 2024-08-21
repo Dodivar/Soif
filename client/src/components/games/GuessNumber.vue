@@ -1,17 +1,44 @@
 <template>
-  <v-container>
+  <v-container class="text-center">
     <h1>Devinez le nombre entre 1 et 100</h1>
     <p>Vous avez 3 essais !</p>
-    <input type="number" id="guess" min="1" max="100" v-model="inputNumber" />
-    <v-btn class="bg-gradient-success" v-show="submitButtonVisible" @click="playerGuess"
-      >Deviner</v-btn
-    >
+    
+        <v-slider
+          :min="minNumber"
+          :max="maxNumber"
+          :step="1"
+          :thumb-size="36"
+          thumb-label="always"
+        >
+          <template v-slot:prepend>
+            <v-btn
+              color="red"
+              icon="mdi-minus"
+              size="small"
+              variant="text"
+              @click="decrement"
+            ></v-btn>
+          </template>
+
+          <template v-slot:append>
+            <v-btn
+              color="green"
+              icon="mdi-plus"
+              size="small"
+              variant="text"
+              @click="increment"
+            ></v-btn>
+          </template>
+        </v-slider>
+		
     <p id="message">
       {{ message }}
     </p>
+    <v-btn class="bg-gradient-success" v-show="submitButtonVisible" @click="playerGuess"
+      >Deviner</v-btn
+    >
     <div class="arrow arrow-up" v-show="arrowToShow === 'up'">⬆️</div>
     <div class="arrow arrow-down" v-show="arrowToShow === 'down'">⬇️</div>
-    <!-- <button id="replay" v-show="!submitButtonVisible" @click="initGame">Rejouer</button> -->
     <ul id="guesses-list">
       <li v-for="(guess, idx) in guesses" :key="idx">
         {{ guess }}
@@ -30,6 +57,8 @@ export default {
     return {
       state,
       inputNumber: 50,
+	  maxNumber: 100,
+	  minNumber: 1,
       targetNumber: null,
       submitButtonVisible: true,
       attempts: 3,
@@ -83,9 +112,32 @@ export default {
         this.endGame(false)
       } else {
         this.message = `Ce n'est pas le bon nombre. Il vous reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`
-        this.arrowToShow = this.inputNumber < this.targetNumber ? 'up' : 'down'
+        this.badGuess()
       }
-    }
+    },
+	
+	badGuess() {
+		const secretNumberIsBigger = this.inputNumber < this.targetNumber
+		this.arrowToShow = secretNumberIsBigger ? 'up' : 'down'
+		
+		if (secretNumberIsBigger) {
+			this.inputNumber++
+			this.minNumber = this.inputNumber
+		} else {
+			this.inputNumber--
+			this.maxNumber = this.inputNumber
+		}
+	},
+	
+	increment() {
+		if(this.inputNumber === this.maxNumber) return;
+		this.inputNumber++
+	},
+	
+	decrement() {
+		if(this.inputNumber === this.minNumber) return;
+		this.inputNumber--
+	},
   }
 }
 </script>
