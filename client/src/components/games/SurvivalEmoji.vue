@@ -28,7 +28,7 @@ export default {
       isGameOver: false,
       initialEmojis: 10,
       startTime: null,
-      emojisLib: ['😀', '😎', '🤖', '👻', '🚀', '🌈', '🍕', '🎉'],
+      emojisLib: ['🍆', '🍑', '🤖', '👻', '🚀', '🌈', '🍕', '🎉'],
       gameArea: null,
       player: null
     }

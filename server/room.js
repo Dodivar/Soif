@@ -4,12 +4,13 @@ module.exports = class Room {
         this.players = [newPlayer]
         this.player = newPlayer
         this.gamesTour = null
+        this.gamesNumber = null
         this.gameIdx = 0
         this.actualGame = {
             name: null
         }
         this.roundAnswer = null
-        this.nextGameDescription = null
+		this.showNextGamDesc = false
     }
   
     reset() {

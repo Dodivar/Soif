@@ -2,7 +2,10 @@ import { reactive } from 'vue'
 import { io } from 'socket.io-client'
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3333'
+const URL =
+  process.env.NODE_ENV === 'production'
+    ? 'https://evening-mesa-28216-d607b9d1a8af.herokuapp.com/'
+    : 'http://localhost:3333'
 
 export const state = reactive({
   connected: false,
@@ -33,9 +36,6 @@ socket.on('disconnect', () => {
 
 // User joined the game
 socket.on('join room', (roomState, roomAvatars) => {
-  console.log(roomState)
-  console.log(roomAvatars)
-
   state.room = roomState
   state.player = state.room.players.find((e) => e.socketId === socket.id)
 
@@ -59,6 +59,8 @@ socket.on('refresh players', (players) => {
 socket.on('refresh room', (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id)
+
+  console.dir(room)
 })
 
 socket.on('UpdateActualGame', (actualGame) => {

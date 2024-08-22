@@ -6,14 +6,15 @@
       class="elevation-8"
       @click="canBeModified ? makeAvatar() : null"
     >
-      <!-- style="display: none" -->
-      <video v-if="canBeModified" v-show="stream" autoplay muted playsinline id="videoPreview"></video>
-      <canvas v-if="canBeModified" id="avatarCanvas" style="display: none"></canvas>
-
+      <template v-if="canBeModified">
+        <video v-if="stream" autoplay muted playsinline id="videoPreview"></video>
+        <canvas id="avatarCanvas" style="display: none"></canvas>
+      </template>
       <v-img v-if="avatar" alt="Avatar" :src="avatar"></v-img>
-      <span v-else-if="player.pseudo" class="text">{{ player.pseudo[0] }}</span>
+      <v-icon v-else>mdi mdi-camera</v-icon>
     </v-avatar>
-    <p v-if="showPseudo" class="text-h5 text-center my-3">
+    <v-btn v-if="stream" class="bg-gradient-success" @click="makeAvatar">Valider la tronche</v-btn>
+    <p v-if="showPseudo" class="text-center text-h5 my-3">
       <v-icon v-if="showRoomMaster && player.isRoomMaster">mdi mdi-crown</v-icon>
       {{ player.pseudo }}
     </p>

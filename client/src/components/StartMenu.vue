@@ -1,10 +1,15 @@
 <template>
   <v-container class="fill-height" fluid>
+    <v-icon
+      v-if="!wantToCreateRoom && !wantToJoinRoom"
+      @click="wantToSetProfil = true"
+      class="position-fixed top-0 right-0 text-h4 ma-3"
+      >mdi mdi-account-edit</v-icon
+    >
     <v-row>
       <v-col cols="12">
         <!-- Set profil -->
-        <!-- || !avatar -->
-        <div v-if="!pseudo">
+        <div v-if="!pseudo || !avatar || wantToSetProfil">
           <div class="text-center ma-5">
             <h1>Bienvue à Soifs !</h1>
             <h2>Créé ton profil</h2>
@@ -173,20 +178,35 @@
               >
                 <PlayerAvatar
                   :player="player"
-                  :avatar-size="160"
+                  :avatar-size="80"
                   :show-pseudo="true"
                   :show-room-master="true"
                 ></PlayerAvatar>
               </v-badge>
             </v-col>
           </v-row>
-          <v-btn @click="readyToPlay" elevation="4" class="w-50 bg-gradient-success text-white"
-            >Prêt</v-btn
+          <v-btn
+            :disabled="launchGameIsDisabled"
+            @click="readyToPlay"
+            elevation="4"
+            class="w-50 bg-gradient-success text-white"
+            >{{ launchGameIsDisabled ? "En attente d'autres soifeurs..." : 'Prêt' }}</v-btn
           >
         </div>
         <!-- GAMES -->
         <div v-else>
-          <ScoreSoif v-if="state.player?.hasPlayed" />
+          <!-- GAME DESC -->
+          <div v-if="state.room.showNextGamDesc" class="w-100 d-flex justify-center">
+            <v-sheet class="w-50 pa-5 text-center rounded-lg" elevation="8">
+              <h2 class="mb-2">
+                {{ state.room.actualGame.description }}
+              </h2>
+              <p v-if="state.room.gameIdx + 1 <= state.room.gamesTour.length - 1">
+                Round {{ state.room.gameIdx + 1 }}/{{ state.room.gamesTour.length - 1 }}
+              </p>
+            </v-sheet>
+          </div>
+          <ScoreSoif v-else-if="state.player?.hasPlayed" />
           <component v-else :is="actualGameName" />
         </div>
 
@@ -218,6 +238,7 @@ import DotClick from './games/DotClick.vue'
 import SurvivalEmoji from './games/SurvivalEmoji.vue'
 import Simon from './games/Simon.vue'
 import GuessNumber from './games/GuessNumber.vue'
+import DoYouPrefer from './games/DoYouPrefer.vue'
 
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
@@ -239,6 +260,7 @@ export default {
     SurvivalEmoji,
     Simon,
     GuessNumber,
+    DoYouPrefer,
     PodiumSoif,
     PlayerAvatar
   },
@@ -254,7 +276,8 @@ export default {
       pseudo: null,
       avatar: null,
       wantToCreateRoom: false,
-      wantToJoinRoom: false
+      wantToJoinRoom: false,
+      wantToSetProfil: false
     }
   },
   created() {
@@ -276,6 +299,9 @@ export default {
     },
     isRoomMaster() {
       return this.players.find((e) => e.socketId === state.player.socketId)?.isRoomMaster
+    },
+    launchGameIsDisabled() {
+      return state.room.players.length < 2 && state.player.pseudo.toLowerCase() !== 'dodi'
     }
   },
   methods: {
@@ -295,6 +321,7 @@ export default {
     setProfile() {
       localStorage.setItem('playerPseudo', this.pseudoInput)
       this.setPlayerState()
+      this.wantToSetProfil = false
     },
     getLocalPlayerPseudo() {
       return localStorage.getItem('playerPseudo')

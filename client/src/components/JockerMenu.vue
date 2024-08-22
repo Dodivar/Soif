@@ -8,7 +8,7 @@
       class="text-white text-h6 cursor-pointer text-center"
       @click="isJockerMenuExpanded = !isJockerMenuExpanded"
     >
-      JOCKER {{ jockers.length }}
+      JOKER {{ jockers.length }}
     </h2>
     <v-expand-transition>
       <div v-show="isJockerMenuExpanded">
@@ -35,7 +35,7 @@ export default {
   props: {
     jockers: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data() {

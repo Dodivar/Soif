@@ -1,42 +1,49 @@
 <template>
   <v-container class="text-center">
-    <h1>Devinez le nombre entre 1 et 100</h1>
-    <p>Vous avez 3 essais !</p>
-    
-        <v-slider
-          :min="minNumber"
-          :max="maxNumber"
-          :step="1"
-          :thumb-size="36"
-          thumb-label="always"
-        >
-          <template v-slot:prepend>
-            <v-btn
-              color="red"
-              icon="mdi-minus"
-              size="small"
-              variant="text"
-              @click="decrement"
-            ></v-btn>
-          </template>
+    <h1 class="my-10">Devinez le nombre entre 1 et 100</h1>
 
-          <template v-slot:append>
-            <v-btn
-              color="green"
-              icon="mdi-plus"
-              size="small"
-              variant="text"
-              @click="increment"
-            ></v-btn>
-          </template>
-        </v-slider>
-		
-    <p id="message">
-      {{ message }}
-    </p>
-    <v-btn class="bg-gradient-success" v-show="submitButtonVisible" @click="playerGuess"
+    <v-slider
+      v-model="inputNumber"
+      :ticks="tickLabels"
+      show-ticks="always"
+      :min="minNumber"
+      :max="maxNumber"
+      :step="1"
+      :thumb-size="36"
+      thumb-label="always"
+    >
+      <template v-slot:prepend>
+        <v-btn
+          elevation="3"
+          color="red"
+          icon="mdi-minus"
+          size="small"
+          variant="outlined"
+          @click="decrement"
+        ></v-btn>
+      </template>
+
+      <template v-slot:append>
+        <v-btn
+          elevation="3"
+          color="green"
+          icon="mdi-plus"
+          size="small"
+          variant="outlined"
+          @click="increment"
+        ></v-btn>
+      </template>
+    </v-slider>
+
+    <v-btn
+      class="bg-gradient-success rounded-xl text-white my-5"
+      v-show="submitButtonVisible"
+      @click="playerGuess"
       >Deviner</v-btn
     >
+    <p>
+      {{ message }}
+    </p>
     <div class="arrow arrow-up" v-show="arrowToShow === 'up'">⬆️</div>
     <div class="arrow arrow-down" v-show="arrowToShow === 'down'">⬇️</div>
     <ul id="guesses-list">
@@ -57,14 +64,18 @@ export default {
     return {
       state,
       inputNumber: 50,
-	  maxNumber: 100,
-	  minNumber: 1,
+      maxNumber: 100,
+      minNumber: 1,
       targetNumber: null,
       submitButtonVisible: true,
       attempts: 3,
       guesses: [],
       arrowToShow: null,
-      message: ''
+      message: 'Tu as 3 essais',
+      tickLabels: {
+        1: '1',
+        100: '100'
+      }
     }
   },
   created() {
@@ -75,7 +86,6 @@ export default {
     initGame() {
       this.attempts = 3
       this.guesses = []
-      this.message = ''
       this.inputNumber = 50
       this.submitButtonVisible = true
       this.arrowToShow = null
@@ -103,7 +113,7 @@ export default {
       this.guesses.push(this.inputNumber)
 
       if (this.inputNumber === this.targetNumber) {
-        this.message = `Bravo ! Vous avez trouvé le nombre ${this.targetNumber} !`
+        this.message = `Bravo ! Tu as trouvé le nombre ${this.targetNumber} !`
         socket.emit('playGame', this.inputNumber)
         this.endGame(true)
       } else if (this.attempts === 0) {
@@ -111,33 +121,37 @@ export default {
         socket.emit('playGame', 0)
         this.endGame(false)
       } else {
-        this.message = `Ce n'est pas le bon nombre. Il vous reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`
+        this.message = `Ce n'est pas le bon nombre. Il te reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`
         this.badGuess()
       }
     },
-	
-	badGuess() {
-		const secretNumberIsBigger = this.inputNumber < this.targetNumber
-		this.arrowToShow = secretNumberIsBigger ? 'up' : 'down'
-		
-		if (secretNumberIsBigger) {
-			this.inputNumber++
-			this.minNumber = this.inputNumber
-		} else {
-			this.inputNumber--
-			this.maxNumber = this.inputNumber
-		}
-	},
-	
-	increment() {
-		if(this.inputNumber === this.maxNumber) return;
-		this.inputNumber++
-	},
-	
-	decrement() {
-		if(this.inputNumber === this.minNumber) return;
-		this.inputNumber--
-	},
+
+    badGuess() {
+      const secretNumberIsBigger = this.inputNumber < this.targetNumber
+      this.arrowToShow = secretNumberIsBigger ? 'up' : 'down'
+
+      if (secretNumberIsBigger) {
+        this.inputNumber++
+        delete this.tickLabels[this.minNumber]
+        this.minNumber = this.inputNumber
+        this.tickLabels[this.minNumber] = this.minNumber.toString()
+      } else {
+        this.inputNumber--
+        delete this.tickLabels[this.maxNumber]
+        this.maxNumber = this.inputNumber
+        this.tickLabels[this.maxNumber] = this.maxNumber.toString()
+      }
+    },
+
+    increment() {
+      if (this.inputNumber === this.maxNumber) return
+      this.inputNumber++
+    },
+
+    decrement() {
+      if (this.inputNumber === this.minNumber) return
+      this.inputNumber--
+    }
   }
 }
 </script>
@@ -146,29 +160,7 @@ export default {
 h1 {
   color: #333;
 }
-input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  width: 100px;
-  margin-right: 0.5rem;
-}
-button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-button:hover {
-  background-color: #45a049;
-}
-#message {
-  margin-top: 1rem;
-  font-weight: bold;
-}
+
 .arrow {
   font-size: 3rem;
 }

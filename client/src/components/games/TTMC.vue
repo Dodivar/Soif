@@ -85,7 +85,7 @@ export default {
     checkAnswer() {
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', this.userAnswer.toLowerCase())
+        socket.emit('playGame', this.userAnswer.toLowerCase().trim())
       }, 2000)
     }
   }

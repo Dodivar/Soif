@@ -13,7 +13,7 @@ module.exports = class Player {
     this.givedSoif = false // A donner les soifs du round
     this.totalSoifGived = 0 // Soif donné au total
     this.winner = false // Gagnant du round
-	  this.hasDrink = true // Indique si le joueur a validé avoir bu ses soifs
+	  this.readyForNextRound = true // Indique si le joueur a validé avoir bu ses soifs
   }
 
   reset() {
@@ -26,6 +26,6 @@ module.exports = class Player {
     this.givedSoif = false
     this.totalSoifGived = 0
     this.winner = false
-	  this.hasDrink = true
+	  this.readyForNextRound = true
   }
 }

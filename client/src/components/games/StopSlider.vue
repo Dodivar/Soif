@@ -1,14 +1,17 @@
 <template>
-  <v-container>
+  <v-container class="d-flex flex-column align-center">
     <v-slider
       direction="vertical"
       :min="-50"
       :max="50"
+      :color="color"
+      :ticks="tickLabels"
+      show-ticks="always"
       :model-value="sliderValue"
-      disabled
+      :thumb-size="24"
     ></v-slider>
 
-    <v-btn @click="stopSlider">STOP</v-btn>
+    <v-btn class="bg-gradient-success rounded-xl text-white" @click="stopSlider">STOP</v-btn>
   </v-container>
 </template>
 
@@ -22,7 +25,12 @@ export default {
       state,
       score: null,
       sliderValue: -50,
-      interval: null
+      interval: null,
+      tickLabels: {
+        '-50': '0',
+        0: '100',
+        50: '0'
+      }
     }
   },
   methods: {
@@ -55,6 +63,19 @@ export default {
       else this.sliderValue -= 1 * velocity
     }, 100)
   },
-  computed: {}
+  computed: {
+    color() {
+      if (this.sliderValue < -30 || this.sliderValue > 30) return 'red'
+      if (this.sliderValue < -20 || this.sliderValue > 20) return 'orange'
+      if (this.sliderValue < -10 || this.sliderValue > 10) return 'yellow'
+      return 'green'
+    }
+  }
 }
 </script>
+
+<style scoped>
+.v-slider {
+  transition: color 0.1s linear;
+}
+</style>

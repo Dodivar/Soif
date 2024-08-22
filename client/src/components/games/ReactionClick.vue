@@ -28,7 +28,7 @@ export default {
       endTime: null,
       reactionTime: null,
       timeoutId: null,
-      emojis: ['😃', '😎', '🤠', '🤩', '😻', '🦄', '🌈', '⚡️', '🍕', '🎉']
+      emojis: ['🍆', '🍑', '🤠', '🤩', '😻', '🦄', '🌈', '⚡️', '🍕', '🎉']
     }
   },
   mounted() {

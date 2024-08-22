@@ -8,7 +8,7 @@
         <span v-else>En attente des autres soifeurs...</span>
       </h2>
     </div>
-    <v-card title="Liste des soifeurs" class="rounded-lg">
+    <v-card title="Liste des soifeurs" class="rounded-lg" elevation="5">
       <v-list lines="two">
         <v-list-subheader v-if="state.player.winner"
           >Vous pouvez donner {{ state.player.soifToGive }} soif !</v-list-subheader
@@ -20,15 +20,15 @@
             </template>
 
             <template v-slot:title>
-              <div class="d-flex">
+              <div class="d-flex justify-content-space-around">
                 <p class="text-h6">{{ player.gameValue }}</p>
-                <v-chip v-if="player.soifToGive > 0" class="ml-2 bg-gradient-warning"
-                  >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
-                </v-chip>
               </div>
             </template>
 
             <template v-slot:subtitle>
+              <v-chip v-if="player.soifToGive > 0" class="bg-gradient-warning mr-1"
+                >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
+              </v-chip>
               {{ player.pseudo }}
             </template>
 
@@ -50,17 +50,15 @@
         </template>
       </v-list>
     </v-card>
-    <div class="w-100 my-2 text-center">
-      <v-btn
-        v-if="state.player.soifAddedThisRound > 0 && !state.player.hasDrink"
-        class="w-100 bg-gradient-success text-white text-h5 mb-3"
-        @click="hasDrink"
-      >
-        J'ai bu ! <v-icon>mdi mdi-check-circle-outline</v-icon>
-      </v-btn>
-      <h4>Prochain jeu {{ state.room.gameIdx }}/{{ state.room.gamesTour.length - 1 }} :</h4>
-      <p>{{ state.room.nextGameDescription }}</p>
-    </div>
+    <!-- <div class="w-100 my-2 text-center"> -->
+    <v-btn
+      v-if="!state.player.readyForNextRound"
+      class="w-100 bg-gradient-success text-white text-h5 mt-5 rounded-xl"
+      @click="readyForNextRound"
+    >
+      Je suis prêt
+    </v-btn>
+    <!-- </div> -->
     <JockerMenu />
   </v-container>
 </template>
@@ -99,9 +97,9 @@ export default {
       socket.emit('give soif', socketId, 1)
     },
 
-    hasDrink() {
-      socket.emit('HasDrink')
-      state.player.hasDrink = true
+    readyForNextRound() {
+      socket.emit('ReadyForNextRound')
+      state.player.readyForNextRound = true
     }
   }
 }
