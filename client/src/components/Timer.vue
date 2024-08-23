@@ -1,42 +1,56 @@
 <template>
-  <div id="timer">
-    <div id="timerBar" :style="{ width: `${timerBarWidth}%` }"></div>
-  </div>
+  <v-progress-linear
+    class="position-fixed top-0 left-0"
+    :bg-color="`${color}-lighten-3`"
+    :color="color"
+    height="6"
+    v-model="progressValue"
+  ></v-progress-linear>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      // timerBarWidth: '100%'
+      progressValue: 100,
+      interval: null,
+      toReduce: 1
     }
   },
   props: {
-    timerBarWidth: {
+    time: {
       type: Number,
-      default: 100
+      default: 10
     }
   },
-  created() {},
-  mounted() {},
-  methods: {}
+  created() {
+    this.toReduce = this.progressValue / this.time
+  },
+  mounted() {
+    this.startTimer()
+  },
+  computed: {
+    color() {
+      if (this.progressValue <= 20) return 'red'
+      if (this.progressValue < 40) return 'orange'
+      if (this.progressValue < 60) return 'yellow'
+      return 'green'
+    }
+  },
+  methods: {
+    startTimer() {
+      setTimeout(() => {
+        this.progressValue -= this.toReduce
+        if (this.progressValue > 0) {
+          this.startTimer()
+          return
+        }
+        this.endTimer()
+      }, 1000)
+    },
+    endTimer() {
+      this.$emit('end-timer')
+    }
+  }
 }
 </script>
-
-<style>
-#timer {
-  position: absolute;
-  top: 0px;
-  left: 0;
-  width: 100%;
-  height: 10px;
-  background-color: #ddd;
-}
-#timerBar {
-  width: 100%;
-  height: 100%;
-  background-color: #4caf50;
-  /* background: linear-gradient(90deg, rgb(241 0 2), rgb(255 110 0), rgb(241 178 0), rgb(49 211 0)); */
-  transition: width 0.1s linear;
-}
-</style>

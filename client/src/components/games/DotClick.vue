@@ -1,31 +1,34 @@
 <template>
   <div id="game-container">
+    <Timer :time="gameTime / 1000" @end-timer="endGame()"></Timer>
     <canvas id="gameCanvas"></canvas>
-    <countdown @countdown-end="startGame"></countdown>
+    <Countdown @countdown-end="startGame"></Countdown>
 
     <div id="score" :style="{ color: scoreColor }">
       {{ score }}
     </div>
-    <div id="timer">
+    <!-- <div id="timer">
       <div id="timerBar" :style="{ width: timerBarWidth }"></div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
-import countdown from '@/components/Countdown.vue'
+import Countdown from '@/components/Countdown.vue'
+import Timer from '@/components/Timer.vue'
 
 export default {
   components: {
-    countdown
+    Countdown,
+    Timer
   },
   data() {
     return {
       state,
       score: 0,
       scoreColor: '',
-      gameTime: 30000,
+      gameTime: 15000,
       startTime: 0,
       dots: [],
       canvas: null,
@@ -143,9 +146,10 @@ export default {
 
       if (this.updateTimer()) {
         requestAnimationFrame(this.gameLoop)
-      } else {
-        this.endGame()
       }
+      //  else {
+      //   this.endGame()
+      // }
     },
 
     endGame() {

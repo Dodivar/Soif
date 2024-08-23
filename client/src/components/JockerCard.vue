@@ -6,7 +6,7 @@
         <p>{{ description }}</p>
       </div>
       <v-btn variant="tonal" color="success" size="large" @click="jockerAction">
-        <v-icon>mdi mdi-{{ icon }}</v-icon>
+        <v-icon v-if="icon">mdi mdi-{{ icon }}</v-icon>
       </v-btn>
     </div>
   </v-card>

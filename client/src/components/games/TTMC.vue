@@ -19,6 +19,7 @@
       :key="idx"
     >
       <v-card
+        v-show="!currentQuestionIdx"
         @click="selectQuestion(idx)"
         :class="
           (playerChooseQuestionNumber.socketId === state.player.socketId && !currentQuestionIdx) ||
@@ -37,7 +38,12 @@
               placeholder="Votre réponse"
               clearable
             ></v-text-field>
-            <v-btn class="bg-gradient-success" @click="checkAnswer" type="submit">Soumettre</v-btn>
+            <v-btn
+              class="bg-gradient-success text-white text-h5 rounded-xl"
+              @click="checkAnswer"
+              type="submit"
+              >Soumettre</v-btn
+            >
           </v-form>
         </v-card-text>
       </v-card>

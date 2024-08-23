@@ -32,7 +32,7 @@
             <v-btn
               @click="setProfile"
               elevation="4"
-              class="bg-gradient-success text-white"
+              class="bg-gradient-success text-white rounded-xl my-3"
               type="submit"
               >Jouer</v-btn
             >
@@ -59,7 +59,7 @@
             v-if="!wantToCreateRoom && !wantToJoinRoom"
             @click="wantToCreateRoom = true"
             elevation="4"
-            class="w-100 bg-gradient-success text-white"
+            class="w-100 bg-gradient-success text-white rounded-xl"
             type="submit"
             >Créer une partie</v-btn
           >
@@ -78,7 +78,8 @@
               @click="wantToJoinRoom ? joinRoom() : (wantToJoinRoom = true)"
               elevation="4"
               :class="
-                (wantToJoinRoom ? 'bg-gradient-success' : 'bg-gradient-info') + ' w-100 text-white'
+                (wantToJoinRoom ? 'bg-gradient-success' : 'bg-gradient-info') +
+                ' w-100 text-white rounded-xl'
               "
               type="submit"
               >{{ wantToJoinRoom ? 'Valider' : 'Rejoindre une partie' }}</v-btn
@@ -162,34 +163,29 @@
             <h1>Numéro de la partie</h1>
             <h2>{{ state.room.roomId }}</h2>
           </div>
-          <v-row>
-            <v-col
-              cols="3"
-              class="d-flex flex-column align-center"
+          <div class="f-flex flex-align-center justify-space-between">
+            <v-badge
               v-for="(player, i) in players"
               :key="i"
+              bordered
+              top
+              :color="player.isReady ? 'green' : 'red'"
+              offset-x="20"
+              offset-y="20"
             >
-              <v-badge
-                bordered
-                top
-                :color="player.isReady ? 'green' : 'red'"
-                offset-x="20"
-                offset-y="20"
-              >
-                <PlayerAvatar
-                  :player="player"
-                  :avatar-size="80"
-                  :show-pseudo="true"
-                  :show-room-master="true"
-                ></PlayerAvatar>
-              </v-badge>
-            </v-col>
-          </v-row>
+              <PlayerAvatar
+                :player="player"
+                :avatar-size="120"
+                :show-pseudo="true"
+                :show-room-master="true"
+              ></PlayerAvatar>
+            </v-badge>
+          </div>
           <v-btn
             :disabled="launchGameIsDisabled"
             @click="readyToPlay"
             elevation="4"
-            class="w-50 bg-gradient-success text-white"
+            class="w-50 bg-gradient-success text-white rounded-xl"
             >{{ launchGameIsDisabled ? "En attente d'autres soifeurs..." : 'Prêt' }}</v-btn
           >
         </div>
@@ -197,7 +193,7 @@
         <div v-else>
           <!-- GAME DESC -->
           <div v-if="state.room.showNextGamDesc" class="w-100 d-flex justify-center">
-            <v-sheet class="w-50 pa-5 text-center rounded-lg" elevation="8">
+            <v-sheet class="w-100 pa-5 text-center rounded-lg" elevation="8">
               <h2 class="mb-2">
                 {{ state.room.actualGame.description }}
               </h2>
@@ -239,6 +235,7 @@ import SurvivalEmoji from './games/SurvivalEmoji.vue'
 import Simon from './games/Simon.vue'
 import GuessNumber from './games/GuessNumber.vue'
 import DoYouPrefer from './games/DoYouPrefer.vue'
+import PersonnalQuestion from './games/PersonnalQuestion.vue'
 
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
@@ -261,6 +258,7 @@ export default {
     Simon,
     GuessNumber,
     DoYouPrefer,
+    PersonnalQuestion,
     PodiumSoif,
     PlayerAvatar
   },

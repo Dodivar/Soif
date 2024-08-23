@@ -50,7 +50,6 @@
         </template>
       </v-list>
     </v-card>
-    <!-- <div class="w-100 my-2 text-center"> -->
     <v-btn
       v-if="!state.player.readyForNextRound"
       class="w-100 bg-gradient-success text-white text-h5 mt-5 rounded-xl"
@@ -58,7 +57,6 @@
     >
       Je suis prêt
     </v-btn>
-    <!-- </div> -->
     <JockerMenu />
   </v-container>
 </template>

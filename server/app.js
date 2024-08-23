@@ -11,6 +11,7 @@ Http.listen(PORT, () => {
 })
 const TtmcThemes = require("./games/TTMC_themes.json")
 const DoYouPreferQuestions = require("./games/DoYouPrefer.json")
+const PersonnalQuestion = require("./games/PersonnalQuestion.json")
 
 
 const Player = require("./player.js");
@@ -29,7 +30,7 @@ const allGames = [
 	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 2, templateAnswer: 'La réponse était :'}, 
 	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 4, templateAnswer: 'La réponse était :'}, 
 	{name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}, 
-	// {name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
+	{name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
 	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
@@ -37,7 +38,7 @@ const allGames = [
 	{name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
 	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
 	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
-	{name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 0},
+	{name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 2},
 	// {name: 'FaceExpressionDetector', soif: 4}
 ]
 
@@ -199,6 +200,12 @@ io.on("connection", socket => {
         getRoom(socket.actualRoomId).actualGame.chosenQuestionNumber = index
         io.to(socket.actualRoomId).emit("TTMCChosenQuestionNumber", index)
     });
+
+    // Personnal question
+    socket.on("PersonnalAnswer", personnalAnswer => {
+        getRoom(socket.actualRoomId).actualGame.playerAskingTheQuestionAnswer = personnalAnswer
+        playGame(io, socket, '')
+    })
 })
 
 function setActualGameData(room, nextGame) {
@@ -207,7 +214,7 @@ function setActualGameData(room, nextGame) {
 
     switch(room.actualGame.name) {
         case "ReactionClick":
-            room.actualGame.randomDelay = Math.floor(Math.random() * 9000) + 1000 // Entre 1000ms et 10000ms
+            room.actualGame.randomDelay = Math.floor(Math.random() * 10000) // Entre 0ms et 10000ms
             break
         case "GuessNumber":
             room.actualGame.targetNumber = Math.floor(Math.random() * 100) + 1 // Entre 1 et 100
@@ -235,32 +242,30 @@ function setActualGameData(room, nextGame) {
             room.actualGame.clickedBtn = null
             break
         case "TTMC":
-            const theme = TtmcThemes[Math.floor(Math.random() * TtmcThemes.length)]
-            const playerChooseQuestionNumber = room.players[Math.floor(Math.random() * room.players.length)]
+            const theme = GetRandomElement(TtmcThemes)
+            const playerChooseQuestionNumber = GetRandomElement(room.players)
             
             room.actualGame.theme = theme
             room.actualGame.playerChooseQuestionNumber = playerChooseQuestionNumber
             room.actualGame.chosenQuestionNumber = null
             break
         case "DoYouPrefer":
-            room.actualGame.questions = DoYouPreferQuestions[Math.floor(Math.random() * DoYouPreferQuestions.length)]
+            room.actualGame.questions = GetRandomElement(DoYouPreferQuestions)
             break
         case "PersonnalQuestion":
 			// Assign a player to choose the answer, a
-            // room.actualGame.question = DoYouPreferQuestions[Math.floor(Math.random() * DoYouPreferQuestions.length)]
-            // room.actualGame.playerAskingTheQuestion = room.players[Math.floor(Math.random() * room.players.length)]
-            // room.actualGame.playerAskingTheQuestionAnswer = null
+            room.actualGame.question = GetRandomElement(PersonnalQuestion)
+            room.actualGame.playerAskingTheQuestion = GetRandomElement(room.players)
+            room.actualGame.playerAskingTheQuestionAnswer = null
             break
         default:
             break
     }
 }
 
-// function nextGameDescription(room) {
-//     const nextGameIdx = room.gameIdx + 1
-//     if (nextGameIdx > room.gamesTour.length - 1) return null
-//     return room.gamesTour[nextGameIdx].description
-// }
+function GetRandomElement(elements) {
+    return elements[Math.floor(Math.random() * elements.length)]
+}
 
 function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.actualRoomId)
@@ -297,7 +302,6 @@ function playGame(io, socket, data) {
 	if (player.hasPlayed) return
 	
     const room = getRoom(socket.actualRoomId)
-    let waitBeforeNextRound = 2000
 
     // Assign value played at player
     player.gameValue = data
@@ -315,12 +319,12 @@ function playGame(io, socket, data) {
         switch(room.actualGame.name) {
             case "RedOrBlack":
                 choices = ["ROUGE", "NOIR"]
-                room.roundAnswer = choices[Math.round(Math.random())]
+                room.roundAnswer = GetRandomElement(choices)
                 break
 
             case "CardColors":
                 choices = ["♠️", "❤️", "🔶", "♣️"]
-                room.roundAnswer = choices[Math.floor(Math.random() * choices.length)]
+                room.roundAnswer = GetRandomElement(choices)
                 break
 
             // Bigger score of players
@@ -356,14 +360,16 @@ function playGame(io, socket, data) {
                 
             case "TTMC":
                 room.roundAnswer = room.actualGame.theme.questions[room.actualGame.chosenQuestionNumber].answer.toLowerCase()
-                waitBeforeNextRound = 4000
                 break
 				
             case "DoYouPrefer":
 				let question1 = question2 = 0
 				room.players.forEach(e => e.gameValue === room.actualGame.questions[1] ? question1++ : question2++)
                 room.roundAnswer = question1 === question2 ? 'Aucune, c\'est une égalité' : question1 > question2 ? room.actualGame.questions[1] : room.actualGame.questions[2] 
-                waitBeforeNextRound = 4000
+                break
+                
+            case "PersonnalQuestion":
+                room.roundAnswer = room.actualGame.playerAskingTheQuestionAnswer
                 break
             default:
                 break
@@ -392,7 +398,6 @@ function playGame(io, socket, data) {
         else {
             // Si personne n'a gagné
             io.to(socket.actualRoomId).emit("refresh room", getRoom(socket.actualRoomId))
-            // sendNextGame(io, socket, waitBeforeNextRound)
         }
     }
     catch(e) {
@@ -468,7 +473,7 @@ function getGamesTour(number = 2, nbPlayers) {
 	})
 
     while (tour.length != number) {
-		tour.push(gamesPlayable[Math.floor(Math.random() * gamesPlayable.length)])
+		tour.push(GetRandomElement(gamesPlayable))
     }
 
     tour.push({name: "PodiumSoif", description: "Tableau des scores"})

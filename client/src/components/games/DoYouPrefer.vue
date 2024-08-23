@@ -1,5 +1,6 @@
 <template>
   <v-container class="text-center">
+    <Timer :time="10" @end-timer="userAnswer('Trop bourré pour répondre')"></Timer>
     <h1>Tu préfères ?</h1>
     <div class="d-flex flex-column align-center justify-space-around ma-5">
       <v-sheet
@@ -33,9 +34,12 @@
 
 <script>
 import { state, socket } from '@/socket'
+import Timer from '@/components/Timer.vue'
 
 export default {
-  components: {},
+  components: {
+    Timer
+  },
   data() {
     return {
       state,

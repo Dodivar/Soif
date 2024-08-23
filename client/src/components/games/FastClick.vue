@@ -4,13 +4,10 @@
     @click="clickAction"
     id="game-container"
   >
+    <Timer :time="10" @end-timer="endGame()"></Timer>
     <countdown @countdown-end="startGame"></countdown>
 
-    <div id="timeline">
-      <div id="progress" :style="{ width: progressBarWidth }"></div>
-    </div>
-
-    <span id="click-count" v-show="hasStart || clickCount.value > 0" :style="clickCount.style">
+    <span id="click-count" v-show="hasStart" :style="clickCount.style">
       {{ clickCount.value }}
     </span>
   </v-container>
@@ -19,9 +16,11 @@
 <script>
 import { state, socket } from '@/socket'
 import countdown from '@/components/Countdown.vue'
+import Timer from '@/components/Timer.vue'
 
 export default {
   components: {
+    Timer,
     countdown
   },
   data() {
@@ -29,7 +28,7 @@ export default {
       state,
       hasStart: false,
       timeLeft: 10,
-      progressBarWidth: '100%',
+      // progressBarWidth: '100%',
       backgroundColor: '#f0f0f0',
       clickCount: {
         style: {},
@@ -40,16 +39,6 @@ export default {
   methods: {
     startGame() {
       this.hasStart = true
-
-      const gameInterval = setInterval(() => {
-        this.timeLeft -= 0.1
-        this.progressBarWidth = `${(this.timeLeft / 10) * 100}%`
-
-        if (this.timeLeft <= 0) {
-          clearInterval(gameInterval)
-          this.endGame()
-        }
-      }, 100)
     },
 
     endGame() {

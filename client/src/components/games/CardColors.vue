@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <Timer :time="10" @end-timer="socket.emit('playGame', 'Trop bourré pour répondre')"></Timer>
     <v-row align="center" justify="center">
       <v-col cols="auto">
         <v-btn size="x-large" elevation="8" @click="setChoice('♠️')" :disabled="hasChoose"
@@ -35,9 +36,12 @@
 
 <script>
 import { state, socket } from '@/socket'
+import Timer from '@/components/Timer.vue'
 
 export default {
-  components: {},
+  components: {
+    Timer
+  },
   data() {
     return {
       state,

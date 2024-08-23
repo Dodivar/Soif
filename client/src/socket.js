@@ -4,7 +4,7 @@ import { io } from 'socket.io-client'
 // "undefined" means the URL will be computed from the `window.location` object
 const URL =
   process.env.NODE_ENV === 'production'
-    ? 'https://evening-mesa-28216-d607b9d1a8af.herokuapp.com/'
+    ? 'https://young-crag-84444-1d9b3543036e.herokuapp.com/'
     : 'http://localhost:3333'
 
 export const state = reactive({

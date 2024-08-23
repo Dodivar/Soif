@@ -1,6 +1,6 @@
 <template>
   <v-sheet
-    class="rounded-t-xl bg-orange pa-2 position-fixed bottom-0 left-0 right-0 top-50"
+    class="rounded-t-xl bg-gradient-primary pa-2 position-fixed bottom-0 left-0 right-0 top-50"
     elevation="6"
     :class="isJockerMenuExpanded ? 'expandedSheet' : ''"
   >

@@ -7,15 +7,17 @@
       @click="canBeModified ? makeAvatar() : null"
     >
       <template v-if="canBeModified">
-        <video v-if="stream" autoplay muted playsinline id="videoPreview"></video>
+        <video v-show="stream" autoplay muted playsinline id="videoPreview"></video>
         <canvas id="avatarCanvas" style="display: none"></canvas>
       </template>
       <v-img v-if="avatar" alt="Avatar" :src="avatar"></v-img>
       <v-icon v-else>mdi mdi-camera</v-icon>
     </v-avatar>
-    <v-btn v-if="stream" class="bg-gradient-success" @click="makeAvatar">Valider la tronche</v-btn>
+    <v-btn v-if="stream" class="bg-gradient-success text-h5 text-white ma-3" @click="makeAvatar"
+      >Valider la tronche</v-btn
+    >
     <p v-if="showPseudo" class="text-center text-h5 my-3">
-      <v-icon v-if="showRoomMaster && player.isRoomMaster">mdi mdi-crown</v-icon>
+      <span v-if="showRoomMaster && player.isRoomMaster">👑</span>
       {{ player.pseudo }}
     </p>
   </div>
