@@ -29,7 +29,7 @@ var roomAvatars = []; // Avatar of players
 const allGames = [
 	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 2, templateAnswer: 'La réponse était :'}, 
 	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 4, templateAnswer: 'La réponse était :'}, 
-	{name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}, 
+	// {name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}, 
 	{name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
 	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
