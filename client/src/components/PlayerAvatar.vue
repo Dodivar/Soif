@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="d-flex flex-column align-center">
     <v-avatar
       :size="avatarSize"
       :color="avatar ? null : 'white'"
@@ -10,7 +10,12 @@
         <video v-show="stream" autoplay muted playsinline id="videoPreview"></video>
         <canvas id="avatarCanvas" style="display: none"></canvas>
       </template>
-      <v-img v-if="avatar" alt="Avatar" :src="avatar"></v-img>
+      <v-img
+        v-if="avatar"
+        alt="Avatar"
+        :src="avatar"
+        :class="player.isOffline ? 'offline' : ''"
+      ></v-img>
       <v-icon v-else>mdi mdi-camera</v-icon>
     </v-avatar>
     <v-btn v-if="stream" class="bg-gradient-success text-h5 text-white ma-3" @click="makeAvatar"
@@ -117,4 +122,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-img.offline {
+  opacity: 0.4;
+}
+</style>

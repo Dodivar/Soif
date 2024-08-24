@@ -14,6 +14,7 @@ module.exports = class Player {
     this.totalSoifGived = 0 // Soif donné au total
     this.winner = false // Gagnant du round
 	  this.readyForNextRound = true // Indique si le joueur a validé avoir bu ses soifs
+    this.isOffline = false // Indique si l'utilisateur est connecté
   }
 
   reset() {

@@ -16,7 +16,14 @@
         <template v-for="(player, idx) in playerItems" :key="player.socketId">
           <v-list-item @click="state.player.winner ? giveSoif(player.socketId) : null">
             <template v-slot:prepend>
-              <PlayerAvatar :player="player" :avatar-size="60" class="mr-3"></PlayerAvatar>
+              <v-badge
+                dot
+                :color="player.readyForNextRound ? 'green' : 'red'"
+                offset-x="0"
+                offset-y="8"
+              >
+                <PlayerAvatar :player="player" :avatar-size="60" />
+              </v-badge>
             </template>
 
             <template v-slot:title>
@@ -74,7 +81,6 @@ export default {
   data() {
     return {
       state
-      // gived: false
     }
   },
   computed: {
@@ -91,7 +97,6 @@ export default {
   methods: {
     giveSoif(socketId) {
       if (state.player.givedSoif) return
-      // this.gived = true
       socket.emit('give soif', socketId, 1)
     },
 
@@ -102,3 +107,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-card {
+  user-select: none;
+}
+</style>

@@ -2,10 +2,18 @@
   <div>
     <countdown @countdown-end="nextRound()"></countdown>
     <div id="game-container">
-      <div class="simon-button" id="red" @click="playerTurn('red')"></div>
-      <div class="simon-button" id="green" @click="playerTurn('green')"></div>
-      <div class="simon-button" id="blue" @click="playerTurn('blue')"></div>
-      <div class="simon-button" id="yellow" @click="playerTurn('yellow')"></div>
+      <div class="simon-button" @click="playerTurn('red')">
+        <div class="button-content" id="red"></div>
+      </div>
+      <div class="simon-button" @click="playerTurn('green')">
+        <div class="button-content" id="green"></div>
+      </div>
+      <div class="simon-button" @click="playerTurn('blue')">
+        <div class="button-content" id="blue"></div>
+      </div>
+      <div class="simon-button" @click="playerTurn('yellow')">
+        <div class="button-content" id="yellow"></div>
+      </div>
     </div>
     <div id="message">
       <p v-if="message !== null">{{ message }}</p>
@@ -148,9 +156,7 @@ export default {
 .simon-button {
   width: 50%;
   height: 50%;
-  opacity: 0.7;
   cursor: pointer;
-  transition: all 0.3s;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -158,12 +164,16 @@ export default {
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
-.simon-button:hover {
-  opacity: 0.9;
+.simon-button > .button-content {
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease-out;
 }
-.simon-button.lit {
+.simon-button > .button-content.lit {
   opacity: 1;
   box-shadow: inset 0 0 50px 30px white;
+  width: 80%;
+  height: 80%;
 }
 #red {
   background-color: #ff4136;
@@ -184,7 +194,7 @@ export default {
   background-color: #0000ff;
 }
 #yellow {
-  background-color: #ffdc00;
+  background-color: #d4b700;
 }
 #yellow.lit {
   background-color: #ffff00;

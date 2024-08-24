@@ -19,7 +19,7 @@
       :key="idx"
     >
       <v-card
-        v-show="!currentQuestionIdx"
+        v-show="!currentQuestionIdx || idx === currentQuestionIdx"
         @click="selectQuestion(idx)"
         :class="
           (playerChooseQuestionNumber.socketId === state.player.socketId && !currentQuestionIdx) ||

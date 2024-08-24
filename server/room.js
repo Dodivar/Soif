@@ -1,6 +1,6 @@
 module.exports = class Room {
     constructor(socket, newPlayer) {
-        this.roomId = socket.actualRoomId
+        this.roomId = socket.data.actualRoomId
         this.players = [newPlayer]
         this.player = newPlayer
         this.gamesTour = null

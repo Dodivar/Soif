@@ -3,7 +3,7 @@
     class="position-fixed top-0 left-0"
     :bg-color="`${color}-lighten-3`"
     :color="color"
-    height="6"
+    height="10"
     v-model="progressValue"
   ></v-progress-linear>
 </template>

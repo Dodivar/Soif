@@ -1,16 +1,12 @@
 <template>
-  <v-container
-    :style="{ 'background-color': backgroundColor }"
-    @click="clickAction"
-    id="game-container"
-  >
-    <Timer :time="10" @end-timer="endGame()"></Timer>
+  <div :style="{ 'background-color': backgroundColor }" @click="clickAction" id="game-container">
     <countdown @countdown-end="startGame"></countdown>
+    <Timer v-if="hasStart" :time="10" @end-timer="endGame()"></Timer>
 
     <span id="click-count" v-show="hasStart" :style="clickCount.style">
       {{ clickCount.value }}
     </span>
-  </v-container>
+  </div>
 </template>
 
 <script>

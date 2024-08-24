@@ -20,25 +20,35 @@ export const state = reactive({
 })
 
 export const socket = io(URL, {
-  transports: ['websocket', 'polling'] // utilisation du transport WebSocket en premier, si possible
+  transports: ['websocket', 'polling'], // utilisation du transport WebSocket en premier, si possible
+  reconnectionDelay: 2000, // Seconds before trying to reconnect
+  reconnectionDelayMax: 2000
 })
 
 socket.on('connect', () => {
-  state.connected = true
+  if (socket.recovered) {
+    // any event missed during the disconnection period will be received now
+    console.log('connection recovered')
+  }
+
+  state.connected = socket.connected
+  state.player.isOffline = !socket.connected
   state.player.socketId = socket.id
   state.errMsg = null
 })
 
 socket.on('disconnect', () => {
-  state.connected = false
   state.errMsg = 'Connexion perdu'
+  state.connected = socket.connected
+  state.player.isOffline = !socket.connected
 })
 
 // User joined the game
 socket.on('join room', (roomState, roomAvatars) => {
   state.room = roomState
-  state.player = state.room.players.find((e) => e.socketId === socket.id)
+  state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
 
+  console.log(state.room)
   // Set each player avatars
   roomAvatars.avatars.forEach((player) => {
     if (
@@ -52,13 +62,13 @@ socket.on('join room', (roomState, roomAvatars) => {
 
 socket.on('refresh players', (players) => {
   state.room.players = players
-  state.player = players.find((e) => e.socketId === socket.id)
+  state.player = players.find((e) => e.socketId === socket.id) ?? state.player
   console.log(players)
 })
 
 socket.on('refresh room', (room) => {
   state.room = room
-  state.player = state.room.players.find((e) => e.socketId === socket.id)
+  state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
 
   console.dir(room)
 })
