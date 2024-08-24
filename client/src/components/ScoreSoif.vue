@@ -28,7 +28,7 @@
 
             <template v-slot:title>
               <div class="d-flex justify-content-space-around">
-                <p class="text-h6">{{ player.gameValue }}</p>
+                <p class="text-h6">{{ player.gameValueLabel }}</p>
               </div>
             </template>
 

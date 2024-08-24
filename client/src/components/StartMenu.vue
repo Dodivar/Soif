@@ -239,6 +239,7 @@ import Simon from './games/Simon.vue'
 import GuessNumber from './games/GuessNumber.vue'
 import DoYouPrefer from './games/DoYouPrefer.vue'
 import PersonnalQuestion from './games/PersonnalQuestion.vue'
+import Blackjack from './games/Blackjack.vue'
 
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
@@ -262,6 +263,8 @@ export default {
     GuessNumber,
     DoYouPrefer,
     PersonnalQuestion,
+    Blackjack,
+
     PodiumSoif,
     PlayerAvatar
   },

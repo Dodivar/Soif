@@ -33,18 +33,19 @@ var roomState = []; // State of rooms
 var roomAvatars = []; // Avatar of players
 
 const allGames = [
-	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 2, templateAnswer: 'La réponse était :'}, 
-	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 4, templateAnswer: 'La réponse était :'}, 
-	{name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}, 
-	{name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
-	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'DotClick', soif: 4, description: 'Les points bleu valent +3 points, les verts +5, mais les oranges -2 !', templateAnswer: 'Le meilleur score :'}, 
-	{name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
-	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
-	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
-	{name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 2},
+	// {name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 2, templateAnswer: 'La réponse était :'}, 
+	// {name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 4, templateAnswer: 'La réponse était :'}, 
+	// {name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}, 
+	// {name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
+	// {name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'DotClick', soif: 4, description: 'Les points bleu valent +3 points, les verts +5, mais les oranges -2 !', templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
+	// {name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
+	// {name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
+	// {name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
+	{name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: '' },
 	// {name: 'FaceExpressionDetector', soif: 4}
 ]
 
@@ -319,6 +320,7 @@ function playGame(io, socket, data) {
 
     // Assign value played at player
     player.gameValue = data
+    player.gameValueLabel = data
     player.hasPlayed = true
     player.readyForNextRound = false
 
@@ -386,12 +388,17 @@ function playGame(io, socket, data) {
             case "PersonnalQuestion":
                 room.roundAnswer = room.actualGame.playerAskingTheQuestionAnswer
                 break
+
+            case "Blackjack":
+                room.roundAnswer = true
+                player.gameValueLabel = player.gameValue.win ? 'Gagné' : 'Perdu'
+                break
             default:
                 break
         }
 
         // Assign winner, if no one send next game
-        const winners = room.players.filter(e => e.gameValue === room.roundAnswer)
+        const winners = room.players.filter(e => e.gameValue === room.roundAnswer || (room.actualGame.name === "Blackjack" && e.gameValue.win))
         if (winners.length > 0) {
 
             // Get the number of soif to give
@@ -400,20 +407,15 @@ function playGame(io, socket, data) {
                 soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             }
             else {
-                soifToGive = room.actualGame.soif
+                soifToGive = room.actualGame.soif ?? data.soif
             }
             
             winners.forEach(e => { 
                 e.winner = true
                 e.soifToGive = soifToGive
              })
-             
-            io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
         }
-        else {
-            // Si personne n'a gagné
-            io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
-        }
+        io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
     }
     catch(e) {
         console.error(e)
