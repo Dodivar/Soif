@@ -1,11 +1,9 @@
 <template>
   <div id="game-area">
-    <!-- <div id="game-area"> -->
     <countdown @countdown-end="startGame"></countdown>
 
     <div id="player" v-show="!isGameOver"></div>
     <div id="score" :class="isGameOver ? 'finish' : ''">{{ score.toFixed(1) }}</div>
-    <!-- </div> -->
   </div>
 </template>
 

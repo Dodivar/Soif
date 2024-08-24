@@ -90,7 +90,7 @@ export default {
 }
 
 #click-count {
-  font-size: 10vw;
+  font-size: 10em;
   color: rgba(200, 200, 200, 0.3);
   transition: transform 0.1s ease;
   user-select: none;

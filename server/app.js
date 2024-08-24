@@ -40,7 +40,7 @@ const allGames = [
 	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'DotClick', soif: 4, description: 'Les points bleu valent +3 points, les verts +5, mais les oranges -2 !', templateAnswer: 'Le meilleur score :'}, 
+	{name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -2 !', templateAnswer: 'Le meilleur score :'}, 
 	{name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
 	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
 	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},

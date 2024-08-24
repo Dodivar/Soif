@@ -77,6 +77,6 @@ export default {
 
 <style scoped>
 .v-sheet {
-  font-size: 10em;
+  font-size: 8em;
 }
 </style>

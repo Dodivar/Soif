@@ -1,15 +1,12 @@
 <template>
   <div id="game-container">
-    <Timer :time="gameTime / 1000" @end-timer="endGame()"></Timer>
-    <canvas id="gameCanvas"></canvas>
+    <Timer v-if="startTime" :time="gameTime / 1000" @end-timer="endGame()"></Timer>
     <Countdown @countdown-end="startGame"></Countdown>
 
+    <canvas id="gameCanvas"></canvas>
     <div id="score" :style="{ color: scoreColor }">
       {{ score }}
     </div>
-    <!-- <div id="timer">
-      <div id="timerBar" :style="{ width: timerBarWidth }"></div>
-    </div> -->
   </div>
 </template>
 

@@ -1,5 +1,6 @@
 <template>
   <v-container class="text-center">
+    <Timer :time="60" @end-timer="play('Trop bourré pour répondre')"></Timer>
     <template v-if="state.player.socketId === playerAskingTheQuestion.socketId">
       <h2>{{ question }}</h2>
       <v-form @submit.prevent>
@@ -13,7 +14,7 @@
           elevation="3"
           type="submit"
           @click="validPersonnalAnswer"
-          >Valider</v-btn
+          >VALIDER</v-btn
         >
       </v-form>
     </template>
@@ -27,8 +28,8 @@
           class="w-100 bg-gradient-success text-white text-h5 rounded-xl my-5"
           elevation="3"
           type="submit"
-          @click="play"
-          >Valider</v-btn
+          @click="play(playerAnswer.trim().toLowerCase())"
+          >VALIDER</v-btn
         >
       </v-form>
     </template>
@@ -38,16 +39,18 @@
 <script>
 import { state, socket } from '@/socket'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
+import Timer from '@/components/Timer.vue'
 
 export default {
   components: {
-    PlayerAvatar
+    PlayerAvatar,
+    Timer
   },
   data() {
     return {
       state,
       question: null,
-      playerAnswer: null,
+      playerAnswer: '',
       playerAskingTheQuestion: null,
       playerAskingTheQuestionAnswer: null
     }
@@ -61,8 +64,8 @@ export default {
     validPersonnalAnswer() {
       socket.emit('PersonnalAnswer', this.playerAskingTheQuestionAnswer.trim().toLowerCase())
     },
-    play() {
-      socket.emit('playGame', this.playerAnswer.trim().toLowerCase())
+    play(answer) {
+      socket.emit('playGame', answer)
     }
   }
 }

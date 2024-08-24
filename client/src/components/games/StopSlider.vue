@@ -1,5 +1,6 @@
 <template>
   <v-container class="d-flex flex-column align-center">
+    <Timer :time="10" @end-timer="stopSlider"></Timer>
     <v-slider
       direction="vertical"
       :min="-50"
@@ -11,15 +12,20 @@
       :thumb-size="24"
     ></v-slider>
 
-    <v-btn class="bg-gradient-success rounded-xl text-white" @click="stopSlider">STOP</v-btn>
+    <v-btn
+      class="w-100 ma-5 position-fixed bottom-0 bg-gradient-success rounded-xl text-white"
+      @click="stopSlider"
+      >STOP</v-btn
+    >
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
+import Timer from '@/components/Timer.vue'
 
 export default {
-  components: {},
+  components: { Timer },
   data() {
     return {
       state,

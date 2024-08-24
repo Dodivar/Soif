@@ -38,7 +38,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 #countdown {
   position: absolute;
   top: 50%;

@@ -1,18 +1,21 @@
 <template>
-  <v-container id="game-container">
+  <div id="game-container">
+    <Timer :time="11" @end-timer="play('Trop bourré pour répondre')"></Timer>
     <countdown @countdown-end="startGame"></countdown>
     <div id="emoji-display"></div>
     <h3 v-if="reactionTime !== null">Votre temps de réaction : {{ this.reactionTime }}ms</h3>
-  </v-container>
+  </div>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
 import countdown from '@/components/Countdown.vue'
+import Timer from '@/components/Timer.vue'
 
 export default {
   components: {
-    countdown
+    countdown,
+    Timer
   },
   data() {
     return {
@@ -81,15 +84,5 @@ export default {
   font-size: 5rem;
   cursor: pointer;
   user-select: none;
-}
-
-#countdown {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 10rem;
-  font-weight: bold;
-  color: white;
 }
 </style>

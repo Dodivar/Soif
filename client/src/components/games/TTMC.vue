@@ -1,5 +1,10 @@
 <template>
   <v-container>
+    <Timer
+      v-if="currentQuestionIdx"
+      :time="20"
+      @end-timer="setChoice('Trop bourré pour répondre')"
+    ></Timer>
     <div class="d-flex">
       <div class="mr-4 w-100">
         <h1>Tu te mets combien ?</h1>
@@ -42,7 +47,7 @@
               class="bg-gradient-success text-white text-h5 rounded-xl"
               @click="checkAnswer"
               type="submit"
-              >Soumettre</v-btn
+              >VALIDER</v-btn
             >
           </v-form>
         </v-card-text>

@@ -1,5 +1,6 @@
 <template>
   <v-container class="text-center">
+    <Timer :time="60" @end-timer="endGame(false)"></Timer>
     <h1 class="my-10">Devinez le nombre entre 1 et 100</h1>
 
     <v-slider
@@ -58,8 +59,12 @@
 <script>
 import { state, socket } from '@/socket'
 import confetti from 'canvas-confetti'
+import Timer from '@/components/Timer.vue'
 
 export default {
+  components: {
+    Timer
+  },
   data() {
     return {
       state,
