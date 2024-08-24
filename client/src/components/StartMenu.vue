@@ -6,8 +6,6 @@
       class="position-fixed top-0 right-0 text-h4 ma-3"
       >mdi mdi-account-edit</v-icon
     >
-    <!-- <v-row>
-      <v-col cols="12" class="pa-0"> -->
     <div class="w-100">
       <!-- Set profil -->
       <div v-if="!pseudo || !avatar || wantToSetProfil" class="mx-5">
@@ -219,9 +217,6 @@
         {{ state.errMsg }}
       </v-alert>
     </div>
-    <!-- </v-col>
-    </v-row> -->
-    <!-- <v-btn @click="tryRecconection">Reconnexion</v-btn> -->
   </v-container>
 </template>
 
@@ -309,12 +304,6 @@ export default {
     }
   },
   methods: {
-    tryRecconection() {
-      if (socket.io.engine) {
-        // close the low-level connection and trigger a reconnection
-        socket.io.engine.close()
-      }
-    },
     createRoom(roundNumber) {
       socket.emit('create room', state.player, this.avatar, roundNumber)
     },

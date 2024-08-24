@@ -1,25 +1,22 @@
 <template>
-  <v-container>
-    <Timer :time="10" @end-timer="socket.emit('playGame', 'Trop bourré pour répondre')"></Timer>
-    <div class="d-flex flex-column align-center justify-space-between">
-      <v-btn
-        size="x-large"
-        elevation="8"
-        @click="setChoice('ROUGE')"
-        :disabled="hasChoose"
-        color="red-darken-1"
-        >ROUGE</v-btn
-      >
-      <v-btn
-        size="x-large"
-        elevation="8"
-        @click="setChoice('NOIR')"
-        :disabled="hasChoose"
-        color="grey-darken-4"
-        >NOIR</v-btn
-      >
-    </div>
-  </v-container>
+  <div>
+    <Timer :time="10" @end-timer="setChoice('Trop bourré pour répondre')"></Timer>
+
+    <v-sheet
+      id="red"
+      class="bg-red text-h1 d-flex align-center justify-center"
+      @click="setChoice('ROUGE')"
+    >
+      ROUGE
+    </v-sheet>
+    <v-sheet
+      id="black"
+      class="bg-black text-h1 d-flex align-center justify-center"
+      @click="setChoice('NOIR')"
+    >
+      NOIR
+    </v-sheet>
+  </div>
 </template>
 
 <script>
@@ -50,3 +47,25 @@ export default {
   created() {}
 }
 </script>
+
+<style scoped>
+.v-sheet {
+  width: 100%;
+  height: 50%;
+  position: fixed;
+  user-select: none;
+}
+
+.v-sheet:hover {
+  text-decoration: underline;
+}
+
+#red {
+  top: 0;
+  left: 0;
+}
+#black {
+  bottom: 0;
+  left: 0;
+}
+</style>

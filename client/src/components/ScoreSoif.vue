@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <p class="position-fixed top-0 right-0 ma-5">{{ state.room.roomId }}</p>
     <div class="w-100 text-center ma-5">
       <h2>
         <span v-if="allPlayerHasPlayed"

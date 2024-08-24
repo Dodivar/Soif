@@ -1,36 +1,48 @@
 <template>
   <v-container>
-    <Timer :time="10" @end-timer="socket.emit('playGame', 'Trop bourré pour répondre')"></Timer>
-    <v-row align="center" justify="center">
-      <v-col cols="auto">
-        <v-btn size="x-large" elevation="8" @click="setChoice('♠️')" :disabled="hasChoose"
-          >♠️</v-btn
-        >
-      </v-col>
-      <v-col cols="auto">
-        <v-btn size="x-large" elevation="8" @click="setChoice('❤️')" :disabled="hasChoose"
-          >❤️</v-btn
-        >
-      </v-col>
-    </v-row>
+    <Timer :time="10" @end-timer="setChoice('Trop bourré pour répondre')"></Timer>
 
-    <v-row align="center" justify="center">
-      <v-col cols="auto">
-        <v-btn size="x-large" elevation="8" @click="setChoice('🔶')" :disabled="hasChoose"
-          >🔶</v-btn
-        >
-      </v-col>
-      <v-col cols="auto">
-        <v-btn
-          size="x-large"
-          elevation="8"
-          class="pa-5"
-          @click="setChoice('♣️')"
-          :disabled="hasChoose"
-          >♣️</v-btn
-        >
-      </v-col>
-    </v-row>
+    <div class="d-flex align-center justify-space-around mb-10">
+      <v-sheet
+        class="text-black d-flex align-center justify-center cursor-pointer text-center"
+        :height="150"
+        :width="150"
+        elevation="10"
+        @click="setChoice('♠️')"
+        :disabled="hasChoose"
+        >♠️</v-sheet
+      >
+
+      <v-sheet
+        class="text-red d-flex align-center justify-center cursor-pointer"
+        :height="150"
+        :width="150"
+        elevation="10"
+        @click="setChoice('♥')"
+        :disabled="hasChoose"
+        >♥</v-sheet
+      >
+    </div>
+    <div class="d-flex align-center justify-space-around">
+      <v-sheet
+        class="text-red d-flex align-center justify-center cursor-pointer"
+        :height="150"
+        :width="150"
+        elevation="10"
+        @click="setChoice('♦')"
+        :disabled="hasChoose"
+        >♦</v-sheet
+      >
+      <v-sheet
+        class="text-black d-flex align-center justify-center cursor-pointer"
+        :height="150"
+        :width="150"
+        elevation="10"
+        @click="setChoice('♣️')"
+        :disabled="hasChoose"
+        >♣️</v-sheet
+      >
+    </div>
   </v-container>
 </template>
 
@@ -62,3 +74,9 @@ export default {
   created() {}
 }
 </script>
+
+<style scoped>
+.v-sheet {
+  font-size: 10em;
+}
+</style>

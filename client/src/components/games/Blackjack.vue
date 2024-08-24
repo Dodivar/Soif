@@ -1,5 +1,5 @@
 <template>
-  <div id="game-container">
+  <div id="game-blackjack">
     <Timer v-if="started && !hasStand" :time="20" @end-timer="stand"></Timer>
 
     <div id="deck"></div>
@@ -162,8 +162,6 @@ export default {
       this.message = message
       this.snackbar = true
 
-      // this.updateScores()
-
       setTimeout(() => {
         socket.emit('playGame', { win, soif: this.currentBet })
       }, 2000)
@@ -231,9 +229,15 @@ export default {
 </script>
 
 <style>
-#game-container {
+#game-blackjack {
   background-color: #27ae60;
   position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
 #table {
