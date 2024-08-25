@@ -60,10 +60,11 @@
     </v-card>
     <v-btn
       v-if="!state.player.readyForNextRound"
+      :disabled="state.player.soifToGive > 0"
       class="w-100 bg-gradient-success text-white text-h6 mt-5 rounded-xl"
       @click="readyForNextRound"
     >
-      PRÊT
+      {{ state.player.soifToGive > 0 ? 'Donnes tes soifs...' : 'PRÊT' }}
     </v-btn>
     <JockerMenu />
   </v-container>

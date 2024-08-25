@@ -15,6 +15,7 @@ dist
 dist-ssr
 coverage
 *.local
+README.txt
 
 /cypress/videos/
 /cypress/screenshots/

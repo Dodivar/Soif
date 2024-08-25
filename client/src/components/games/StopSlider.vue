@@ -1,5 +1,5 @@
 <template>
-  <v-container class="d-flex flex-column align-center">
+  <div class="d-flex flex-column align-center justify-space-around">
     <Timer :time="10" @end-timer="stopSlider"></Timer>
     <v-slider
       direction="vertical"
@@ -9,15 +9,15 @@
       :ticks="tickLabels"
       show-ticks="always"
       :model-value="sliderValue"
-      :thumb-size="24"
+      :thumb-size="0"
     ></v-slider>
 
-    <v-btn
-      class="w-100 ma-5 position-fixed bottom-0 bg-gradient-success rounded-xl text-white"
-      @click="stopSlider"
-      >STOP</v-btn
-    >
-  </v-container>
+    <div class="pa-5 w-100">
+      <v-btn class="w-100 bg-gradient-success rounded-xl text-white" @click="stopSlider"
+        >STOP</v-btn
+      >
+    </div>
+  </div>
 </template>
 
 <script>

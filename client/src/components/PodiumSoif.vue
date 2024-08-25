@@ -31,18 +31,16 @@
           <v-divider inset v-if="idx < playerItems.length - 1" :key="`${idx}-divider`"></v-divider>
         </template>
       </v-list>
-      <v-card-action>
-        <div class="text-center ma-2">
-          <v-btn
-            v-if="state.player.isRoomMaster"
-            class="w-100 bg-gradient-success text-white"
-            @click="replay"
-          >
-            Rejouer
-          </v-btn>
-        </div>
-      </v-card-action>
     </v-card>
+    <div class="pa-5 w-100">
+      <v-btn
+        v-if="state.player.isRoomMaster"
+        class="w-100 bg-gradient-success text-white"
+        @click="replay"
+      >
+        Rejouer
+      </v-btn>
+    </div>
   </v-container>
 </template>
 

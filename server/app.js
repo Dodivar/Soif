@@ -1,8 +1,10 @@
+const isProd = process.env.NODE_ENV === 'production'
+
 const express = require("express")();
 const Http = require("http").Server(express);
 const io = require("socket.io")(Http, {
     cors: {
-        origin: process.env.NODE_ENV === 'production' ?  "https://dodivar.github.io/Soif/" : "http://192.168.1.15:3000"
+        origin: isProd ?  "https://dodivar.github.io/Soif/" : "http://192.168.1.15:3000"
     },
     connectionStateRecovery: {
         // the backup duration of the sessions and the packets
@@ -81,6 +83,7 @@ io.on("connection", socket => {
         console.log('disconnect : ' + socket.id + ' to room ');
     });
 
+    // ROOM
     socket.on("Room:Create", (player, avatar, roundNumber) => {
         let roomId = makeid(6);
         
@@ -170,6 +173,9 @@ io.on("connection", socket => {
     });
 
     socket.on("give soif", (socketId, soifNumber = 1) => {
+        const player = getPlayerState(socket.data.actualRoomId, socket.id)
+        if (player.givedSoif) return
+
         // Give the soif
         const playerToGive = getPlayerState(socket.data.actualRoomId, socketId)
         playerToGive.soifTotal += soifNumber
@@ -177,10 +183,9 @@ io.on("connection", socket => {
         playerToGive.readyForNextRound = false
 
         // Set soif has been gived by the player
-        const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.soifToGive -= soifNumber
         player.totalSoifGived += soifNumber
-        player.givedSoif = player.soifToGive === 0
+        player.givedSoif = player.soifToGive <= 0
 
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
 
@@ -196,7 +201,7 @@ io.on("connection", socket => {
         const everyIsReady = players.every(e => e.readyForNextRound)
         if (winnersHasGived && everyIsReady) {
 			// Send next game after 4s
-			sendNextGame(io, socket, 4000)
+			sendNextGame(io, socket, isProd ? 4000 : 500)
         }
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     });
@@ -364,15 +369,9 @@ function sendNextGame(io, socket, wait = 2000) {
     setTimeout(() => {
 		room.showNextGamDesc = false
 		
-
 		// Re-init players state for next game
 		room.players.forEach(e => {
-			e.hasPlayed = false
-			e.winner = false
-			e.soifToGive = 0
-			e.gameValue = null
-			e.soifAddedThisRound = 0
-			e.givedSoif = false
+			e.resetRoundData()
 		})
 		
 		io.to(socket.data.actualRoomId).emit("refresh room", room)
