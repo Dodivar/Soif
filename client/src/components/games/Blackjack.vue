@@ -129,7 +129,7 @@ export default {
       const deck = document.getElementById('deck')
       const deckRect = deck.getBoundingClientRect()
       console.log(deckRect)
-      const table = document.getElementById('game-container')
+      const table = document.getElementById('game-blackjack')
       const tableRect = table.getBoundingClientRect()
 
       cardElement.style.position = 'absolute'
