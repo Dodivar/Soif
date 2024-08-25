@@ -45,7 +45,9 @@ const allGames = [
 	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
 	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
 	{name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
-	{name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: '' },
+	{name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
+    {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
+    {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
 	// {name: 'FaceExpressionDetector', soif: 4}
 ]
 
@@ -79,7 +81,7 @@ io.on("connection", socket => {
         console.log('disconnect : ' + socket.id + ' to room ');
     });
 
-    socket.on("create room", (player, avatar, roundNumber) => {
+    socket.on("Room:Create", (player, avatar, roundNumber) => {
         let roomId = makeid(6);
         
         // Check room exist already
@@ -106,10 +108,10 @@ io.on("connection", socket => {
         }
         roomAvatars.push(newRoomAvatars)
         
-        io.emit('join room', roomObj, newRoomAvatars);
+        io.to(roomId).emit('join room', roomObj, newRoomAvatars);
     });
 
-    socket.on("join room", (roomId, player, avatar) => {
+    socket.on("Room:Join", (roomId, player, avatar) => {
         try {
             if (!roomId) {           
                 socket.emit('msg', "Aucun channel pour " + roomId);
@@ -131,12 +133,20 @@ io.on("connection", socket => {
             const actualRoomAvatars = roomAvatars.find(e => e.roomId === roomId)
             actualRoomAvatars.avatars.push(avatarObj)
 
-            io.emit('join room', room, actualRoomAvatars);
+            io.to(roomId).emit('join room', room, actualRoomAvatars);
         }
         catch(e) {
             console.error(e)
         }
     });
+
+    socket.on("Room:Quit", () => {
+        const roomId = socket.data.actualRoomId
+        socket.leave(roomId)
+        deletePlayer(roomId, socket.id)
+        socket.data = {}
+        io.to(roomId).emit("refresh players", getPlayerRoomState(roomId))
+    })
 
     socket.on("ready to play", () => {
         getPlayerState(socket.data.actualRoomId, socket.id).isReady = true
@@ -188,6 +198,7 @@ io.on("connection", socket => {
 			// Send next game after 4s
 			sendNextGame(io, socket, 4000)
         }
+        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     });
 
     // SIMON
@@ -216,6 +227,56 @@ io.on("connection", socket => {
     socket.on("PersonnalAnswer", personnalAnswer => {
         getRoom(socket.data.actualRoomId).actualGame.playerAskingTheQuestionAnswer = personnalAnswer
         playGame(io, socket, '')
+    })
+
+    // Naval battle
+    socket.on("NavalBattle:PlaceShip", position => {
+        const ship = {
+            player: getPlayerState(socket.data.actualRoomId, socket.id),
+            isAlive: true,
+            position,
+            playerHitted: 0
+        }
+        const room = getRoom(socket.data.actualRoomId)
+        room.actualGame.playerShips.push(ship)
+        
+        if (room.actualGame.playerShips.length === room.players.length) {
+            room.actualGame.shipsArePlaced = true
+        }
+        
+        io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
+    })
+    socket.on("NavalBattle:Shoot", position => {
+
+        const room = getRoom(socket.data.actualRoomId)
+        room.actualGame.playerShoots.push(position)
+
+        room.actualGame.playerShips.forEach(e => {
+            if (e.position === position) {
+                e.isAlive = false
+                room.actualGame.playerShips.find(e => e.player.socketId === socket.id).playerHitted++
+            }
+        })
+
+        // Check if all ships left are on the same position
+        const AllIsOnTheSamePosition = room.actualGame.playerShips.filter(e => e.isAlive).every(val => val.position === room.actualGame.playerShips[0].position);
+
+        // Next player turn 
+        if (room.actualGame.playerShips.filter(e => e.isAlive).length > 1 && !AllIsOnTheSamePosition) {
+            do {
+                room.actualGame.playerTurnIdx++
+                if (room.actualGame.playerTurnIdx >= room.players.length) {
+                    room.actualGame.playerTurnIdx = 0
+                }
+                room.actualGame.playerTurn = room.players[room.actualGame.playerTurnIdx]
+            }
+            while (room.actualGame.playerShips.find(e => e.player.socketId === room.actualGame.playerTurn.socketId && !e.isAlive))
+        }
+        else {
+            room.actualGame.allShipsDestroyed = true
+        } 
+
+        io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
 })
 
@@ -264,10 +325,20 @@ function setActualGameData(room, nextGame) {
             room.actualGame.questions = GetRandomElement(DoYouPreferQuestions)
             break
         case "PersonnalQuestion":
-			// Assign a player to choose the answer, a
+			// Assign a player to choose the answer, and a random question
             room.actualGame.question = GetRandomElement(PersonnalQuestion)
             room.actualGame.playerAskingTheQuestion = GetRandomElement(room.players)
             room.actualGame.playerAskingTheQuestionAnswer = null
+            break
+        case "NavalBattle":
+            room.actualGame.message = ''
+            room.actualGame.playerShips = []
+            room.actualGame.playerShoots = []
+            room.actualGame.shipsArePlaced = false
+            room.actualGame.allShipsDestroyed = false
+            room.actualGame.playerTurnIdx = 0
+            room.actualGame.playerTurn = room.players[room.actualGame.playerTurnIdx]
+            
             break
         default:
             break
@@ -338,7 +409,7 @@ function playGame(io, socket, data) {
                 break
 
             case "CardColors":
-                choices = ["♠️", "❤️", "🔶", "♣️"]
+                choices = ["♠️", "♥", "♦", "♣️"]
                 room.roundAnswer = GetRandomElement(choices)
                 break
 
@@ -352,6 +423,7 @@ function playGame(io, socket, data) {
 				
             // Lower score of players
             case "ReactionClick":
+            case "Labyrinth":
                 room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue));
                 break
                 
@@ -389,36 +461,79 @@ function playGame(io, socket, data) {
                 break
 
             case "Blackjack":
-                room.roundAnswer = true
-                player.gameValueLabel = player.gameValue.win ? 'Gagné' : 'Perdu'
+            case "NavalBattle":
+                room.roundAnswer = null
                 break
             default:
                 break
         }
 
-        // Assign winner, if no one send next game
-        const winners = room.players.filter(e => e.gameValue === room.roundAnswer || (room.actualGame.name === "Blackjack" && e.gameValue.win))
-        if (winners.length > 0) {
-
-            // Get the number of soif to give
-            let soifToGive = 2
-            if (room.actualGame.name === "Simon"){
-                soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
-            }
-            else {
-                soifToGive = room.actualGame.soif ?? data.soif
-            }
-            
-            winners.forEach(e => { 
-                e.winner = true
-                e.soifToGive = soifToGive
-             })
-        }
+        // Assign soif to winner
+        setGameValueLabel(room, data)
+        setWinnersSoif(room, data)
+      
         io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
     }
     catch(e) {
         console.error(e)
     }
+}
+
+function setGameValueLabel(room, data) {
+    room.players.forEach(e => {
+        switch(room.actualGame.name) {
+            case "Blackjack":
+                e.gameValueLabel = `${e.gameValue.playerScore} contre ${e.gameValue.dealerScore}` + (e.gameValue.hasDoubled ? ' + a doublé' : '')
+                break
+            case "NavalBattle":
+                e.gameValueLabel = `${e.gameValue.soif} touché` + (e.gameValue.isStillAlive ? ' + dernier en vie' : '')
+                break
+        }
+    })
+}
+
+function setWinnersSoif(room, data) {
+    let winners
+    let soifToGive = null
+
+    // Find winners
+    switch(room.actualGame.name) {
+        case "Simon":
+            winners = room.players.filter(e => e.gameValue.win)
+            soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
+            break;
+        case "Blackjack":
+            winners = room.players.filter(e => e.gameValue.win)
+            break;
+        case "NavalBattle":
+            winners = room.players.filter(e => e.gameValue.soif > 0 || e.gameValue.isStillAlive)
+            break;
+        default:
+            winners = room.players.filter(e => e.gameValue === room.roundAnswer)
+            soifToGive = room.actualGame.soif ?? data.soif
+            break
+    }
+
+    // Assign soif
+    winners.forEach(e => { 
+        e.winner = true
+
+        // If soif to give is different between players
+        if (soifToGive === null) {
+            switch(room.actualGame.name) {
+                case "Blackjack":
+                    e.soifToGive = e.gameValue.soif
+                    break
+                case "NavalBattle":
+                    e.soifToGive = e.gameValue.soif + (e.gameValue.isStillAlive ? 2 : 0)
+                    break
+            }
+        } else {
+            e.soifToGive = soifToGive
+        }
+    })
+
+    return winners
 }
 
 function resetRoom(roomId) {
@@ -465,6 +580,10 @@ function getRoom(roomId) {
 
 function getAvatarRoom(roomId) {
     return roomAvatars.find(e => e.roomId === roomId)
+}
+
+function getAvatarPlayer(roomId, socketId) {
+    return getAvatarRoom(roomId).avatars?.find(e => e.socketId === socketId)?.avatar
 }
 
 function getPlayerRoomState(roomId) {

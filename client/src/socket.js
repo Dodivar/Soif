@@ -63,14 +63,11 @@ socket.on('join room', (roomState, roomAvatars) => {
 socket.on('refresh players', (players) => {
   state.room.players = players
   state.player = players.find((e) => e.socketId === socket.id) ?? state.player
-  console.log(players)
 })
 
 socket.on('refresh room', (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
-
-  console.dir(room)
 })
 
 socket.on('UpdateActualGame', (actualGame) => {
@@ -92,9 +89,6 @@ socket.on('TTMCChosenQuestionNumber', (index) => {
 })
 
 socket.on('connect_error', (err) => {
-  // alert(`connect_error due to ${err.message}`)
   console.info(`connect_error due to ${err.message}`)
   state.errMsg = err.message
-  // retour au fonctionnement classique en cas d'erreur
-  // socket.io.opts.transports = ['polling', 'websocket']
 })

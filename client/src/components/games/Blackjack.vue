@@ -64,7 +64,8 @@ export default {
       currentBet: 2,
       message: null,
       started: false,
-      hasStand: false
+      hasStand: false,
+      hasDoubled: false
     }
   },
 
@@ -163,7 +164,13 @@ export default {
       this.snackbar = true
 
       setTimeout(() => {
-        socket.emit('playGame', { win, soif: this.currentBet })
+        socket.emit('playGame', {
+          win,
+          hasDoubled: this.hasDoubled,
+          playerScore: this.playerScore,
+          dealerScore: this.dealerScore,
+          soif: this.currentBet
+        })
       }, 2000)
     },
 
@@ -200,6 +207,7 @@ export default {
     },
 
     double() {
+      this.hasDoubled = true
       this.currentBet *= 2
       this.hit()
       if (!this.gameOver) {
@@ -279,6 +287,7 @@ export default {
   background-size: cover;
   background-position: center;
   font-size: 2.5em;
+  z-index: 5;
 }
 #controls {
   display: flex;

@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <p class="position-fixed top-0 right-0 ma-5">{{ state.room.roomId }}</p>
-    <div class="w-100 text-center ma-5">
+    <div class="w-100 text-center my-5">
       <h2>
         <span v-if="allPlayerHasPlayed"
           >{{ state.room.actualGame.templateAnswer }} {{ roundAnswer }}</span
@@ -60,10 +60,10 @@
     </v-card>
     <v-btn
       v-if="!state.player.readyForNextRound"
-      class="w-100 bg-gradient-success text-white text-h5 mt-5 rounded-xl"
+      class="w-100 bg-gradient-success text-white text-h6 mt-5 rounded-xl"
       @click="readyForNextRound"
     >
-      Je suis prêt
+      PRÊT
     </v-btn>
     <JockerMenu />
   </v-container>

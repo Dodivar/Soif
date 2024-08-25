@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import { VitePWA } from 'vite-plugin-pwa'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
@@ -9,6 +10,7 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineConfig({
   base: '/Soif/',
   plugins: [
+    basicSsl(),
     Vue({
       template: { transformAssetUrls }
     }),

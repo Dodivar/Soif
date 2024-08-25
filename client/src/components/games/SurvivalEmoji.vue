@@ -1,6 +1,6 @@
 <template>
   <div id="game-area">
-    <countdown @countdown-end="startGame"></countdown>
+    <Countdown @countdown-end="startGame"></Countdown>
 
     <div id="player" v-show="!isGameOver"></div>
     <div id="score" :class="isGameOver ? 'finish' : ''">{{ score.toFixed(1) }}</div>
@@ -9,11 +9,11 @@
 
 <script>
 import { state, socket } from '@/socket'
-import countdown from '@/components/Countdown.vue'
+import Countdown from '@/components/Countdown.vue'
 
 export default {
   components: {
-    countdown
+    Countdown
   },
   data() {
     return {
@@ -35,17 +35,12 @@ export default {
     this.player = document.getElementById('player')
     this.gameArea = document.getElementById('game-area')
     this.gameArea.addEventListener('mousemove', this.updatePlayerPosition)
-    this.gameArea.addEventListener(
-      'touchmove',
-      (e) => {
-        e.preventDefault()
-        this.updatePlayerPosition(e)
-      },
-      { passive: false }
-    )
+    this.gameArea.addEventListener('touchmove', this.updatePlayerPosition, { passive: false })
+    this.gameArea.addEventListener('touchend', this.handleBadEnd, { passive: false })
   },
   methods: {
     updatePlayerPosition(e) {
+      e.preventDefault()
       const x = e.clientX || e.touches[0].clientX
       const y = e.clientY || e.touches[0].clientY
       this.player.style.left = `${x - 10}px`
@@ -140,6 +135,13 @@ export default {
       // Randomly increase spawn rate
       if (Math.random() < 0.2) {
         this.spawnRate = Math.max(200, this.spawnRate - 50)
+      }
+    },
+
+    handleBadEnd(e) {
+      e.preventDefault()
+      if (this.startTime !== null) {
+        this.gameOver()
       }
     },
 

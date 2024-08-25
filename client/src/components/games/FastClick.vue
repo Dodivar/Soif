@@ -24,7 +24,6 @@ export default {
       state,
       hasStart: false,
       timeLeft: 10,
-      // progressBarWidth: '100%',
       backgroundColor: '#f0f0f0',
       clickCount: {
         style: {},

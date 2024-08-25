@@ -13,7 +13,7 @@
           <h1>Bienvue à Soifs !</h1>
           <h2>Créé ton profil</h2>
         </div>
-        <v-form class="text-center" @submit.prevent>
+        <v-form class="text-center" ref="profile" @submit.prevent>
           <PlayerAvatar
             :player="state.player"
             :avatar-size="200"
@@ -31,7 +31,7 @@
           <v-btn
             @click="setProfile"
             elevation="4"
-            class="bg-gradient-success text-white rounded-xl my-3"
+            class="w-100 bg-gradient-success text-white rounded-xl my-3"
             type="submit"
             >Jouer</v-btn
           >
@@ -150,7 +150,7 @@
         </div>
         <v-btn
           v-if="wantToCreateRoom || wantToJoinRoom"
-          class="w-100 bg-gradient-warning text-white my-5"
+          class="w-100 bg-gradient-warning text-white rounded-xl my-5"
           @click="wantToCreateRoom = wantToJoinRoom = false"
           >Retour</v-btn
         >
@@ -184,8 +184,11 @@
           :disabled="launchGameIsDisabled"
           @click="readyToPlay"
           elevation="4"
-          class="w-50 bg-gradient-success text-white rounded-xl"
-          >{{ launchGameIsDisabled ? "En attente d'autres soifeurs..." : 'Prêt' }}</v-btn
+          class="w-100 bg-gradient-success text-white rounded-xl"
+          >{{ launchGameIsDisabled ? "En attente d'autres soifeurs..." : 'PRÊT' }}</v-btn
+        >
+        <v-btn class="w-100 bg-gradient-warning text-white rounded-xl my-5" @click="quitRoom"
+          >QUITTER</v-btn
         >
       </div>
       <!-- GAMES -->
@@ -224,7 +227,6 @@
 import StopSlider from './games/StopSlider.vue'
 import RedOrBlack from './games/RedOrBlack.vue'
 import CardColors from './games/CardColors.vue'
-import MovableList from './games/MovableList.vue'
 import TTMC from './games/TTMC.vue'
 import ReactionClick from './games/ReactionClick.vue'
 import FastClick from './games/FastClick.vue'
@@ -235,6 +237,8 @@ import GuessNumber from './games/GuessNumber.vue'
 import DoYouPrefer from './games/DoYouPrefer.vue'
 import PersonnalQuestion from './games/PersonnalQuestion.vue'
 import Blackjack from './games/Blackjack.vue'
+import Labyrinth from './games/Labyrinth.vue'
+import NavalBattle from './games/NavalBattle.vue'
 
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
@@ -248,7 +252,6 @@ export default {
     RedOrBlack,
     CardColors,
     ScoreSoif,
-    MovableList,
     TTMC,
     ReactionClick,
     FastClick,
@@ -259,6 +262,8 @@ export default {
     DoYouPrefer,
     PersonnalQuestion,
     Blackjack,
+    Labyrinth,
+    NavalBattle,
 
     PodiumSoif,
     PlayerAvatar
@@ -305,19 +310,21 @@ export default {
   },
   methods: {
     createRoom(roundNumber) {
-      socket.emit('create room', state.player, this.avatar, roundNumber)
+      socket.emit('Room:Create', state.player, this.avatar, roundNumber)
     },
     joinRoom() {
-      socket.emit('join room', this.roomToJoin, state.player, this.avatar)
+      socket.emit('Room:Join', this.roomToJoin, state.player, this.avatar)
     },
     quitRoom() {
-      socket.emit('quit room')
-      state.room.roomId = null
+      socket.emit('Room:Quit')
+      state.room = {}
     },
     readyToPlay() {
       socket.emit('ready to play')
     },
-    setProfile() {
+    async setProfile() {
+      const { valid } = await this.$refs.profile.validate()
+      if (!valid) return
       localStorage.setItem('playerPseudo', this.pseudoInput)
       this.setPlayerState()
       this.wantToSetProfil = false
@@ -338,4 +345,78 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style>
+.game-container {
+  text-align: center;
+}
+.grid-container {
+  display: inline-grid;
+  grid-template-columns: auto repeat(5, 1fr);
+  gap: 5px;
+  margin-top: 20px;
+}
+.grid {
+  display: contents;
+}
+.cell {
+  width: 60px;
+  height: 60px;
+  background-image: url('https://images.unsplash.com/photo-1523633589114-88eaf4b4f1a8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE3fHx8ZW58MHx8fHx8');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid #2980b9;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+.cell:hover {
+  filter: brightness(1.2);
+}
+.cell.hit {
+  background-image: none;
+  background-color: #e74c3c;
+}
+.cell.miss {
+  background-image: none;
+  background-color: #95a5a6;
+}
+.cell.ship {
+  background-image: url('https://st3.depositphotos.com/1041725/37656/v/450/depositphotos_376562852-stock-illustration-small-boat-water-illustration-vector.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #2c3e50;
+}
+#message {
+  margin-top: 20px;
+  font-weight: bold;
+}
+#restartButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+#restartButton:hover {
+  background-color: #27ae60;
+}
+.attack-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
+}
+</style>
