@@ -1,3 +1,12 @@
+const Player = require("./player.js");
+const Room = require("./room.js");
+const JokerTools = require("./jokers/JokerTools.js");
+const utils = require("./utils.js");
+
+const TtmcThemes = require("./games/TTMC_themes.json")
+const DoYouPreferQuestions = require("./games/DoYouPrefer.json")
+const PersonnalQuestion = require("./games/PersonnalQuestion.json")
+
 const isProd = process.env.NODE_ENV === 'production'
 
 const express = require("express")();
@@ -13,17 +22,11 @@ const io = require("socket.io")(Http, {
         skipMiddlewares: true,
     }
 });
+
 const PORT = process.env.PORT || 3333;
 Http.listen(PORT, () => {
     console.log("Listening at : " + PORT);
 })
-const TtmcThemes = require("./games/TTMC_themes.json")
-const DoYouPreferQuestions = require("./games/DoYouPrefer.json")
-const PersonnalQuestion = require("./games/PersonnalQuestion.json")
-
-
-const Player = require("./player.js");
-const Room = require("./room.js");
 
 // Init model of room
 const initRoomState = (socket, isRoomMaster) => {
@@ -35,14 +38,14 @@ var roomState = []; // State of rooms
 var roomAvatars = []; // Avatar of players
 
 const allGames = [
-	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 2, templateAnswer: 'La réponse était :'}, 
-	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 4, templateAnswer: 'La réponse était :'}, 
-	{name: 'TTMC', description: 'Répond correctement à la question !', soif: 5, templateAnswer: 'La réponse était :'}, 
+	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 1, templateAnswer: 'La réponse était :'}, 
+	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 2, templateAnswer: 'La réponse était :'}, 
+	{name: 'TTMC', description: 'Répond correctement à la question !', soif: null, templateAnswer: 'La réponse était :'}, 
 	{name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
 	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
 	{name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -2 !', templateAnswer: 'Le meilleur score :'}, 
+	{name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -5 !', templateAnswer: 'Le meilleur score :'}, 
 	{name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
 	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
 	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
@@ -58,7 +61,10 @@ io.on("connection", socket => {
 
     if (socket.recovered) {
         if (!socket.data.actualRoomId) return 
-        getPlayerState(socket.data.actualRoomId, socket.id).isOffline = false
+        const player = getPlayerState(socket.data.actualRoomId, socket.id)
+        console.log(player)
+        player.isOffline = false
+        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     }
 
     // Disconnect socket
@@ -151,7 +157,7 @@ io.on("connection", socket => {
         io.to(roomId).emit("refresh players", getPlayerRoomState(roomId))
     })
 
-    socket.on("ready to play", () => {
+    socket.on("Room:ReadyToPlay", () => {
         getPlayerState(socket.data.actualRoomId, socket.id).isReady = true
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
 
@@ -161,6 +167,11 @@ io.on("connection", socket => {
             sendNextGame(io, socket, 3000)
         }
     });
+    
+    socket.on("Room:NotReadyToPlay", () => {
+        getPlayerState(socket.data.actualRoomId, socket.id).isReady = false
+        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+    });
 
     socket.on("replay", () => {
         if (!socket.data.isRoomMaster) return
@@ -168,30 +179,25 @@ io.on("connection", socket => {
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     })
     
-    socket.on("playGame", (data) => {
+    socket.on("Game:PlayGame", (data) => {
         playGame(io, socket, data)
     });
 
-    socket.on("give soif", (socketId, soifNumber = 1) => {
+    socket.on("Game:GiveSoif", (socketId, soifNumber = 1) => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         if (player.givedSoif) return
 
         // Give the soif
         const playerToGive = getPlayerState(socket.data.actualRoomId, socketId)
-        playerToGive.soifTotal += soifNumber
-        playerToGive.soifAddedThisRound += soifNumber
-        playerToGive.readyForNextRound = false
+        playerToGive.addSoifToDrink(soifNumber, player)
 
         // Set soif has been gived by the player
         player.soifToGive -= soifNumber
-        player.totalSoifGived += soifNumber
-        player.givedSoif = player.soifToGive <= 0
 
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
-
     });
 	
-    socket.on("ReadyForNextRound", () => {
+    socket.on("Game:ReadyForNextRound", () => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
 		player.readyForNextRound = true
 		
@@ -205,6 +211,25 @@ io.on("connection", socket => {
         }
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     });
+
+    socket.on("Game:GetJokerOfRarity", (rarity) => {
+        const jokerOfPlayer = getPlayerState(socket.data.actualRoomId, socket.id).jokers
+        const availableJoker = JokerTools.GetRarity(rarity).filter(e => !jokerOfPlayer.includes(e.id) )
+        const joker = utils.GetRandomElement(availableJoker)
+        if (joker) {
+            jokerOfPlayer.push(joker)
+        }
+        // TODO : Manage msg if no joker available
+        socket.emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+    })
+    
+    socket.on("Game:UseJoker", (joker, data) => {
+        const player = getPlayerState(socket.data.actualRoomId, socket.id)
+        const players = getPlayerRoomState(socket.data.actualRoomId)
+        const msg = joker.effect(player, players)
+        player.jokers = player.jokers.filter(e => e.id !== joker.id)
+        io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg)
+    })
 
     // SIMON
     socket.on("SimonLightUpButton", (color) => {
@@ -317,22 +342,23 @@ function setActualGameData(room, nextGame) {
             room.actualGame.level = 0
             room.actualGame.message = ""
             room.actualGame.clickedBtn = null
+            room.actualGame.isLooserDrinking = false
             break
         case "TTMC":
-            const theme = GetRandomElement(TtmcThemes)
-            const playerChooseQuestionNumber = GetRandomElement(room.players)
+            const theme = utils.GetRandomElement(TtmcThemes)
+            const playerChooseQuestionNumber = utils.GetRandomElement(room.players)
             
             room.actualGame.theme = theme
             room.actualGame.playerChooseQuestionNumber = playerChooseQuestionNumber
             room.actualGame.chosenQuestionNumber = null
             break
         case "DoYouPrefer":
-            room.actualGame.questions = GetRandomElement(DoYouPreferQuestions)
+            room.actualGame.questions = utils.GetRandomElement(DoYouPreferQuestions)
             break
         case "PersonnalQuestion":
 			// Assign a player to choose the answer, and a random question
-            room.actualGame.question = GetRandomElement(PersonnalQuestion)
-            room.actualGame.playerAskingTheQuestion = GetRandomElement(room.players)
+            room.actualGame.question = utils.GetRandomElement(PersonnalQuestion)
+            room.actualGame.playerAskingTheQuestion = utils.GetRandomElement(room.players)
             room.actualGame.playerAskingTheQuestionAnswer = null
             break
         case "NavalBattle":
@@ -343,16 +369,14 @@ function setActualGameData(room, nextGame) {
             room.actualGame.allShipsDestroyed = false
             room.actualGame.playerTurnIdx = 0
             room.actualGame.playerTurn = room.players[room.actualGame.playerTurnIdx]
-            
             break
+
         default:
             break
     }
 }
 
-function GetRandomElement(elements) {
-    return elements[Math.floor(Math.random() * elements.length)]
-}
+
 
 function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.data.actualRoomId)
@@ -404,12 +428,12 @@ function playGame(io, socket, data) {
         switch(room.actualGame.name) {
             case "RedOrBlack":
                 choices = ["ROUGE", "NOIR"]
-                room.roundAnswer = GetRandomElement(choices)
+                room.roundAnswer = utils.GetRandomElement(choices)
                 break
 
             case "CardColors":
                 choices = ["♠️", "♥", "♦", "♣️"]
-                room.roundAnswer = GetRandomElement(choices)
+                room.roundAnswer = utils.GetRandomElement(choices)
                 break
 
             // Bigger score of players
@@ -435,6 +459,7 @@ function playGame(io, socket, data) {
                         e.hasPlayed = true
                     })
                     room.roundAnswer = room.actualGame.level
+                    room.actualGame.isLooserDrinking = true
                 } 
                 else {
                     room.roundAnswer = room.actualGame.btnSequence.length
@@ -469,7 +494,7 @@ function playGame(io, socket, data) {
 
         // Assign soif to winner
         setGameValueLabel(room, data)
-        setWinnersSoif(room, data)
+        setSoif(room, data)
       
         io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
     }
@@ -491,15 +516,20 @@ function setGameValueLabel(room, data) {
     })
 }
 
-function setWinnersSoif(room, data) {
-    let winners
+function setSoif(room, data) {
+    let winners = []
     let soifToGive = null
 
     // Find winners
     switch(room.actualGame.name) {
         case "Simon":
-            winners = room.players.filter(e => e.gameValue.win)
-            soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
+            if (room.actualGame.isLooserDrinking) {
+                room.players.find(e => e.gameValue === 0)?.addSoifToDrink(room.actualGame.soif)
+            } else {
+                room.players.find(e => e.gameValue === room.roundAnswer)?.addSoifToDrink(room.roundAnswer)
+            }
+            // winners = room.players.filter(e => e.gameValue.win)
+            // soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             break;
         case "Blackjack":
             winners = room.players.filter(e => e.gameValue.win)
@@ -507,9 +537,12 @@ function setWinnersSoif(room, data) {
         case "NavalBattle":
             winners = room.players.filter(e => e.gameValue.soif > 0 || e.gameValue.isStillAlive)
             break;
+        case "TTMC":
+            winners = room.players.filter(e => e.gameValue === room.roundAnswer || room.roundAnswer.split(" ").filter(e => e).includes(e.gameValue))
+            break;
         default:
             winners = room.players.filter(e => e.gameValue === room.roundAnswer)
-            soifToGive = room.actualGame.soif ?? data.soif
+            soifToGive = room.actualGame.soif
             break
     }
 
@@ -520,19 +553,20 @@ function setWinnersSoif(room, data) {
         // If soif to give is different between players
         if (soifToGive === null) {
             switch(room.actualGame.name) {
+                case "TTMC":
+                    e.addSoifToGive(room.actualGame.chosenQuestionNumber + 1)
+                    break
                 case "Blackjack":
-                    e.soifToGive = e.gameValue.soif
+                    e.addSoifToGive(e.gameValue.soif)
                     break
                 case "NavalBattle":
-                    e.soifToGive = e.gameValue.soif + (e.gameValue.isStillAlive ? 2 : 0)
+                    e.addSoifToGive(e.gameValue.soif + (e.gameValue.isStillAlive ? 2 : 0))
                     break
             }
         } else {
-            e.soifToGive = soifToGive
+            e.addSoifToGive(soifToGive)
         }
     })
-
-    return winners
 }
 
 function resetRoom(roomId) {
@@ -607,7 +641,7 @@ function getGamesTour(number = 2, nbPlayers) {
 	})
 
     while (tour.length != number) {
-		tour.push(GetRandomElement(gamesPlayable))
+		tour.push(utils.GetRandomElement(gamesPlayable))
     }
 
     tour.push({name: "PodiumSoif", description: "Tableau des scores"})

@@ -156,7 +156,7 @@ export default {
 
       // Send score
       setTimeout(() => {
-        socket.emit('playGame', this.score)
+        socket.emit('Game:PlayGame', this.score)
       }, 4000)
     },
 

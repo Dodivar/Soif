@@ -3,10 +3,10 @@
     <Timer v-if="startTime" :time="gameTime / 1000" @end-timer="endGame()"></Timer>
     <Countdown @countdown-end="startGame"></Countdown>
 
-    <canvas id="gameCanvas"></canvas>
     <div id="score" :style="{ color: scoreColor }">
       {{ score }}
     </div>
+    <canvas id="gameCanvas"></canvas>
   </div>
 </template>
 
@@ -30,7 +30,6 @@ export default {
       dots: [],
       canvas: null,
       canvasCtx: null,
-      timerBarWidth: '100%',
       gameFinished: false
     }
   },
@@ -120,33 +119,23 @@ export default {
       })
     },
 
-    updateTimer() {
-      const elapsed = Date.now() - this.startTime
-      const remaining = Math.max(0, this.gameTime - elapsed)
-      this.timerBarWidth = `${(remaining / this.gameTime) * 100}%`
-      return remaining > 0
-    },
-
     gameLoop() {
+      if (this.gameFinished) return
+
       this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
       // Remove dots that have exceeded their lifespan
       const currentTime = Date.now()
-      this.dots.filter((dot) => currentTime - dot.creationTime < dot.lifespan)
+      this.dots = this.dots.filter((dot) => currentTime - dot.creationTime < dot.lifespan)
 
       this.drawDots()
 
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.1) {
         // Adjust this value to control dot creation frequency
         this.createDot()
       }
 
-      if (this.updateTimer()) {
-        requestAnimationFrame(this.gameLoop)
-      }
-      //  else {
-      //   this.endGame()
-      // }
+      requestAnimationFrame(this.gameLoop)
     },
 
     endGame() {
@@ -154,7 +143,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', this.score)
+        socket.emit('Game:PlayGame', this.score)
       }, 1000)
     },
 
@@ -178,7 +167,6 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10;
 }
 #score {
   position: absolute;
@@ -189,6 +177,7 @@ export default {
   color: rgba(255, 255, 255, 0.2);
   pointer-events: none;
   transition: color 0.3s ease;
+  z-index: 1;
 }
 #timer {
   position: absolute;

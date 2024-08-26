@@ -54,3 +54,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-progress-linear {
+  z-index: 1;
+}
+</style>

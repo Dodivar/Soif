@@ -65,7 +65,7 @@ export default {
       socket.emit('PersonnalAnswer', this.playerAskingTheQuestionAnswer.trim().toLowerCase())
     },
     play(answer) {
-      socket.emit('playGame', answer)
+      socket.emit('Game:PlayGame', answer)
     }
   }
 }

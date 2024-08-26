@@ -10,6 +10,10 @@ const URL =
 export const state = reactive({
   connected: false,
   errMsg: null,
+  snackbarElement: {
+    visible: false,
+    message: null
+  },
   player: {
     socketId: null,
     pseudo: null,
@@ -74,6 +78,13 @@ socket.on('UpdateActualGame', (actualGame) => {
   state.room.actualGame = actualGame
 })
 
+socket.on("Game:UseJoker", (message) => {
+  state.snackbarElement = {
+    visible: true,
+    message
+  }
+})
+
 // SIMON
 socket.on('SimonLightUpButton', (color) => {
   state.room.actualGame.clickedBtn = color
@@ -92,3 +103,5 @@ socket.on('connect_error', (err) => {
   console.info(`connect_error due to ${err.message}`)
   state.errMsg = err.message
 })
+
+// https://jsfiddle.net/ywm3zbc4/7/

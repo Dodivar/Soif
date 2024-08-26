@@ -58,7 +58,7 @@ export default {
       if (this.qstChoose !== null) return
       this.qstChoose = question
       setTimeout(() => {
-        socket.emit('playGame', question)
+        socket.emit('Game:PlayGame', question)
       }, 2000)
     }
   }

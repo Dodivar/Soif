@@ -47,7 +47,7 @@ export default {
       this.score = Math.round(negValue + 100)
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', this.score)
+        socket.emit('Game:PlayGame', this.score)
       }, 1000)
     }
   },

@@ -47,7 +47,11 @@
         <div class="cell" data-id="24" data-coords="E5" @click="handleCellClick"></div>
       </div>
     </div>
-    <p>{{ message }}</p>
+    <h2 class="ma-5">
+      <template v-if="!playerShip">Choisissez une case pour placer votre navire !</template>
+      <template v-else-if="!shipsArePlaced">En attente des navires des autres soifeurs</template>
+      <template v-else>Au tour de {{ actualPlayer.pseudo }}</template>
+    </h2>
     <p v-if="shipsArePlaced">Joueur encore en vit : {{ playerAlivePseudo }}</p>
 
     <v-alert
@@ -76,16 +80,11 @@ export default {
       state,
       gridSize: 5,
       playerShip: null,
-      computerShip: null,
       currentPlayer: 'player',
       gameOver: false,
       letters: ['A', 'B', 'C', 'D', 'E'],
-      message: null,
       hasShoot: false
     }
-  },
-  mounted() {
-    this.message = 'Choisissez une case pour placer votre navire !'
   },
   computed: {
     actualPlayer() {
@@ -119,8 +118,10 @@ export default {
           (e) => e.player.socketId === socket.id
         )
 
+        this.gameOver = true
+
         setTimeout(() => {
-          socket.emit('playGame', {
+          socket.emit('Game:PlayGame', {
             soif: personnalShip.playerHitted,
             isStillAlive: personnalShip.isAlive
           })
@@ -145,7 +146,6 @@ export default {
       const cell = document.querySelector(`[data-id="${cellId}"]`)
       cell.classList.add('ship')
       socket.emit('NavalBattle:PlaceShip', cell.dataset.coords)
-      // this.setMessage('Cliquez sur une case pour attaquer !')
     },
 
     attackCell(cellId) {
@@ -181,45 +181,11 @@ export default {
       })
     },
 
-    computerAttack() {
-      if (this.gameOver) return
-      let attackId
-      do {
-        attackId = Math.floor(Math.random() * (this.gridSize * this.gridSize))
-      } while (attackId === this.computerShip)
-
-      const cell = document.querySelector(`[data-id="${attackId}"]`)
-      const coords = cell.dataset.coords
-      if (attackId === this.playerShip) {
-        cell.classList.add('hit')
-        this.addAttackIndicator(cell, 'Touché !')
-        this.setMessage(`L'ordinateur a coulé votre navire en ${coords} ! Vous avez perdu !`)
-        this.endGame()
-      } else {
-        cell.classList.add('miss')
-        this.addAttackIndicator(cell, 'Raté')
-        this.setMessage(`L'ordinateur a raté en ${coords}. À votre tour !`)
-        this.currentPlayer = 'player'
-      }
-    },
-
     addAttackIndicator(cell, text) {
       const indicator = document.createElement('div')
       indicator.className = 'attack-indicator'
       indicator.textContent = text
       cell.appendChild(indicator)
-    },
-
-    setMessage(msg) {
-      this.message = msg
-    },
-
-    endGame() {
-      this.gameOver = true
-      document.querySelectorAll('.cell').forEach((cell) => {
-        cell.removeEventListener('click', this.handleCellClick)
-      })
-      document.querySelector(`[data-id="${this.computerShip}"]`).classList.add('ship')
     }
   },
   created() {}
@@ -227,6 +193,12 @@ export default {
 </script>
 
 <style scoped>
+.v-alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .v-sheet {
   width: 100%;
   height: 50%;

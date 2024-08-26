@@ -99,11 +99,11 @@ export default {
   methods: {
     giveSoif(socketId) {
       if (state.player.givedSoif) return
-      socket.emit('give soif', socketId, 1)
+      socket.emit('Game:GiveSoif', socketId, 1)
     },
 
     readyForNextRound() {
-      socket.emit('ReadyForNextRound')
+      socket.emit('Game:ReadyForNextRound')
       state.player.readyForNextRound = true
     }
   }

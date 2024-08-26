@@ -10,11 +10,51 @@ module.exports = class Player {
     this.soifTotal = 0 // Soif total
     this.soifAddedThisRound = 0 // Soif ajouter ce round
     this.soifToGive = 0 // Soif à donner ce round
-    this.givedSoif = false // A donner les soifs du round
     this.totalSoifGived = 0 // Soif donné au total
+    this.soifGivedBy = [] // Indique par qui les soifs ont été donnés
     this.winner = false // Gagnant du round
 	  this.readyForNextRound = true // Indique si le joueur a validé avoir bu ses soifs
     this.isOffline = false // Indique si l'utilisateur est connecté
+    this.jokers = [] // Les jokers du joueur
+  }
+
+  /**
+   * A donner les soifs du round
+   */
+  get givedSoif() {
+    return this.soifToGive <= 0
+  }
+
+  /**
+   * Add soif to drink. Add player who give the soif (can't be the same player that receive)
+   * @param {*} number 
+   * @param {*} player 
+   * @returns 
+   */
+  addSoifToDrink(number, player = null) {
+    this.soifTotal += number
+    this.soifAddedThisRound += number
+    this.readyForNextRound = false
+
+    if (player === null || player.socketId === this.socketId) return
+
+    // Track the player who's gived soif
+    const playerGiving = this.soifGivedBy.find(e => e.socketId === player.socketId)
+    if (playerGiving) {
+      playerGiving.gived += number
+    } else {
+      const playerGive = { socketId: player.socketId, gived: number }
+      this.soifGivedBy.push(playerGive)
+    }
+  }
+  
+  addSoifToGive(number) {
+    this.soifToGive = this.soifToGive + number < 0 ? 0 : this.soifToGive + number
+    this.addTotalSoifGived(number) 
+  }
+
+  addTotalSoifGived(number) {
+    this.totalSoifGived += number
   }
 
   resetRoundData() {
@@ -23,9 +63,10 @@ module.exports = class Player {
     this.gameValueLabel = null
     this.soifAddedThisRound = 0
     this.soifToGive = 0
-    this.givedSoif = false 
     this.winner = false
 	  this.readyForNextRound = false
+    this.soidGivedBy = []
+    this.soifGivedBy = []
   }
 
   reset() {
@@ -35,9 +76,10 @@ module.exports = class Player {
     this.soifTotal = 0
     this.soifAddedThisRound = 0
     this.soifToGive = 0
-    this.givedSoif = false
     this.totalSoifGived = 0
     this.winner = false
 	  this.readyForNextRound = true
+    this.jokers = []
+    this.soifGivedBy = []
   }
 }

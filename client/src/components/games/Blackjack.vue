@@ -164,7 +164,7 @@ export default {
       this.snackbar = true
 
       setTimeout(() => {
-        socket.emit('playGame', {
+        socket.emit('Game:PlayGame', {
           win,
           hasDoubled: this.hasDoubled,
           playerScore: this.playerScore,
@@ -191,6 +191,10 @@ export default {
         if (this.dealerScore < 17) {
           this.dealCard(this.dealerHand, true)
           this.updateScores()
+
+          if (this.dealerHand.length === 2) {
+            this.checkBlackjack()
+          }
         } else {
           clearInterval(dealerDraw)
           if (this.dealerScore > 21) {

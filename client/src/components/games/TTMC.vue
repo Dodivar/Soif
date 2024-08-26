@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <Timer
-      v-if="currentQuestionIdx"
+      v-if="currentQuestionIdx !== null"
       :time="20"
       @end-timer="setChoice('Trop bourré pour répondre')"
     ></Timer>
@@ -24,7 +24,7 @@
       :key="idx"
     >
       <v-card
-        v-show="!currentQuestionIdx || idx === currentQuestionIdx"
+        v-show="currentQuestionIdx === null || idx === currentQuestionIdx"
         @click="selectQuestion(idx)"
         :class="
           (playerChooseQuestionNumber.socketId === state.player.socketId && !currentQuestionIdx) ||
@@ -96,7 +96,7 @@ export default {
     checkAnswer() {
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', this.userAnswer.toLowerCase().trim())
+        socket.emit('Game:PlayGame', this.userAnswer.toLowerCase().trim())
       }, 2000)
     }
   }

@@ -99,7 +99,7 @@ export default {
     },
 
     playerTurn(color) {
-      if (!this.userCanPlay || !this.isPlayerTurn) {
+      if (!this.userCanPlay || !this.isPlayerTurn || this.finished) {
         return
       }
       socket.emit('SimonLightUpButton', color)
@@ -122,10 +122,11 @@ export default {
       // Win
       if (this.playerSequence.length === this.btnSequence.length) {
         socket.emit('SimonUpdateMsg', 'Gagné')
+        this.finished = true
 
         // Send score after 2s
         setTimeout(() => {
-          socket.emit('playGame', this.level)
+          socket.emit('Game:PlayGame', this.level)
         }, 2000)
         return
       }
@@ -138,11 +139,12 @@ export default {
     },
 
     gameOver() {
+      this.finished = true
       socket.emit('SimonUpdateMsg', 'Perdu')
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', 0)
+        socket.emit('Game:PlayGame', 0)
       }, 2000)
     }
   }

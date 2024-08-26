@@ -162,7 +162,7 @@
           <h1>Numéro de la partie</h1>
           <h2>{{ state.room.roomId }}</h2>
         </div>
-        <div class="f-flex flex-align-center justify-space-between">
+        <div class="d-flex flex-wrap flex-align-center justify-space-around">
           <v-badge
             v-for="(player, i) in players"
             :key="i"
@@ -182,10 +182,10 @@
         </div>
         <v-btn
           :disabled="launchGameIsDisabled"
-          @click="readyToPlay"
+          @click="state.player.isReady ? notReadyToPlay() : readyToPlay()"
           elevation="4"
           class="w-100 bg-gradient-success text-white rounded-xl"
-          >{{ launchGameIsDisabled ? "En attente d'autres soifeurs..." : 'PRÊT' }}</v-btn
+          >{{ readyBtnLabel }}</v-btn
         >
         <v-btn class="w-100 bg-gradient-warning text-white rounded-xl my-5" @click="quitRoom"
           >QUITTER</v-btn
@@ -220,6 +220,8 @@
         {{ state.errMsg }}
       </v-alert>
     </div>
+
+    <JokerWheel></JokerWheel>
   </v-container>
 </template>
 
@@ -243,6 +245,7 @@ import NavalBattle from './games/NavalBattle.vue'
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
 import PlayerAvatar from './PlayerAvatar.vue'
+// import JokerWheel from './JokerWheel.vue'
 import { state, socket } from '@/socket'
 
 export default {
@@ -267,6 +270,7 @@ export default {
 
     PodiumSoif,
     PlayerAvatar
+    // JokerWheel
   },
   data() {
     return {
@@ -306,6 +310,13 @@ export default {
     },
     launchGameIsDisabled() {
       return state.room.players.length < 2 && state.player.pseudo.toLowerCase() !== 'dodi'
+    },
+    readyBtnLabel() {
+      return this.launchGameIsDisabled
+        ? "En attente d'autres soifeurs..."
+        : state.player.isReady
+          ? 'PAS PRÊT'
+          : 'PRÊT'
     }
   },
   methods: {
@@ -320,7 +331,10 @@ export default {
       state.room = {}
     },
     readyToPlay() {
-      socket.emit('ready to play')
+      socket.emit('Room:ReadyToPlay')
+    },
+    notReadyToPlay() {
+      socket.emit('Room:NotReadyToPlay')
     },
     async setProfile() {
       const { valid } = await this.$refs.profile.validate()

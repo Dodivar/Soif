@@ -3,7 +3,7 @@
     <countdown @countdown-end="startGame"></countdown>
     <Timer v-if="hasStart" :time="10" @end-timer="endGame()"></Timer>
 
-    <span id="click-count" v-show="hasStart" :style="clickCount.style">
+    <span id="click-count" v-show="hasStart || hasEnd" :style="clickCount.style">
       {{ clickCount.value }}
     </span>
   </div>
@@ -23,6 +23,7 @@ export default {
     return {
       state,
       hasStart: false,
+      hasEnd: false,
       timeLeft: 10,
       backgroundColor: '#f0f0f0',
       clickCount: {
@@ -38,10 +39,11 @@ export default {
 
     endGame() {
       this.hasStart = false
+      this.hasEnd = true
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', this.clickCount.value)
+        socket.emit('Game:PlayGame', this.clickCount.value)
       }, 2000)
     },
 

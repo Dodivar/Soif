@@ -1,6 +1,6 @@
 <template>
   <div id="game-container">
-    <Timer :time="11" @end-timer="play('Trop bourré pour répondre')"></Timer>
+    <Timer v-if="hasStarted" :time="11" @end-timer="stopGame"></Timer>
     <countdown @countdown-end="startGame"></countdown>
     <div id="emoji-display"></div>
     <h3 v-if="reactionTime !== null">Votre temps de réaction : {{ this.reactionTime }}ms</h3>
@@ -52,6 +52,7 @@ export default {
     },
 
     startGame() {
+      this.hasStarted = true
       setTimeout(() => {
         this.emojiDisplay.textContent = this.getRandomEmoji()
         const { x, y } = this.getRandomPosition()
@@ -71,7 +72,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('playGame', this.reactionTime)
+        socket.emit('Game:PlayGame', this.reactionTime)
       }, 2000)
     }
   }

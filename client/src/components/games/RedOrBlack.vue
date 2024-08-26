@@ -7,14 +7,14 @@
       class="bg-red text-h1 d-flex align-center justify-center"
       @click="setChoice('ROUGE')"
     >
-      ROUGE
+      <!-- ROUGE -->
     </v-sheet>
     <v-sheet
       id="black"
       class="bg-black text-h1 d-flex align-center justify-center"
       @click="setChoice('NOIR')"
     >
-      NOIR
+      <!-- NOIR -->
     </v-sheet>
   </div>
 </template>
@@ -41,7 +41,7 @@ export default {
   methods: {
     setChoice(val) {
       this.choice = val
-      socket.emit('playGame', val)
+      socket.emit('Game:PlayGame', val)
     }
   },
   created() {}
@@ -54,10 +54,6 @@ export default {
   height: 50%;
   position: fixed;
   user-select: none;
-}
-
-.v-sheet:hover {
-  text-decoration: underline;
 }
 
 #red {

@@ -1,10 +1,10 @@
 <template>
   <v-container>
-    <Timer :time="10" @end-timer="setChoice('Trop bourré pour répondre')"></Timer>
+    <!-- <Timer :time="10" @end-timer="setChoice('Trop bourré pour répondre')"></Timer> -->
 
     <div class="d-flex align-center justify-space-around mb-10">
       <v-sheet
-        class="text-black d-flex align-center justify-center cursor-pointer text-center"
+        class="text-black d-flex align-center justify-center cursor-pointer rounded-xl"
         :height="150"
         :width="150"
         elevation="10"
@@ -14,7 +14,7 @@
       >
 
       <v-sheet
-        class="text-red d-flex align-center justify-center cursor-pointer"
+        class="text-red d-flex align-center justify-center cursor-pointer rounded-xl"
         :height="150"
         :width="150"
         elevation="10"
@@ -25,7 +25,7 @@
     </div>
     <div class="d-flex align-center justify-space-around">
       <v-sheet
-        class="text-red d-flex align-center justify-center cursor-pointer"
+        class="text-red d-flex align-center justify-center cursor-pointer rounded-xl"
         :height="150"
         :width="150"
         elevation="10"
@@ -34,7 +34,7 @@
         >♦</v-sheet
       >
       <v-sheet
-        class="text-black d-flex align-center justify-center cursor-pointer"
+        class="text-black d-flex align-center justify-center cursor-pointer rounded-xl"
         :height="150"
         :width="150"
         elevation="10"
@@ -68,7 +68,7 @@ export default {
   methods: {
     setChoice(val) {
       this.choice = val
-      socket.emit('playGame', val)
+      socket.emit('Game:PlayGame', val)
     }
   },
   created() {}
