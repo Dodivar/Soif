@@ -1,6 +1,6 @@
 const Player = require("./player.js");
 const Room = require("./room.js");
-const JokerTools = require("./jokers/JokerTools.js");
+const JokerTools = require("./jokers/jokerTools.js");
 const utils = require("./utils.js");
 
 const TtmcThemes = require("./games/TTMC_themes.json")
