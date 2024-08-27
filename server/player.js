@@ -1,3 +1,5 @@
+const jokerTools = require('./jokers/jokerTools')
+
 module.exports = class Player {
   constructor(socketId, pseudo, isRoomMaster = false) {
     this.socketId = socketId
@@ -16,6 +18,7 @@ module.exports = class Player {
 	  this.readyForNextRound = true // Indique si le joueur a validé avoir bu ses soifs
     this.isOffline = false // Indique si l'utilisateur est connecté
     this.jokers = [] // Les jokers du joueur
+    this.hasBlurRoundDescription = false // Indique si la description du round est flouté
   }
 
   /**
@@ -32,8 +35,16 @@ module.exports = class Player {
    * @returns 
    */
   addSoifToDrink(number, player = null) {
-    this.soifTotal += number
-    this.soifAddedThisRound += number
+    // If number is negative, prevent to reduce more total than expected
+    if (number < 0) {
+      const minus = this.soifAddedThisRound + number < 0 ? -this.soifAddedThisRound : number
+      this.soifAddedThisRound += minus
+      this.soifTotal += minus
+    }
+    else {
+      this.soifAddedThisRound += number
+      this.soifTotal += number
+    }
     this.readyForNextRound = false
 
     if (player === null || player.socketId === this.socketId) return
@@ -67,6 +78,7 @@ module.exports = class Player {
 	  this.readyForNextRound = false
     this.soidGivedBy = []
     this.soifGivedBy = []
+    this.hasBlurRoundDescription = false
   }
 
   reset() {
@@ -81,5 +93,6 @@ module.exports = class Player {
 	  this.readyForNextRound = true
     this.jokers = []
     this.soifGivedBy = []
+    this.hasBlurRoundDescription = false
   }
 }

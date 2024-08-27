@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <div class="ui-wheel-of-fortune">
+    <div class="ui-wheel-of-fortune w-100">
       <ul>
         <li class="common">COMMUN</li>
         <li class="nothing">RIEN</li>
@@ -39,7 +39,7 @@
         <li class="nothing">RIEN</li>
         <li class="legendary">LEGENDAIRE</li>
       </ul>
-      <v-btn @click="launch" type="button">SPIN</v-btn>
+      <v-btn @click="launch" :disabled="animation" type="button">SPIN</v-btn>
     </div>
   </v-container>
 </template>
@@ -75,7 +75,8 @@ export default {
     },
     launch() {
       if (this.animation) {
-        this.animation.cancel() // Reset the animation if it already exists
+        return
+        // this.animation.cancel() // Reset the animation if it already exists
       }
 
       const randomAdditionalDegrees = Math.random() * 360 + 1800
@@ -150,6 +151,8 @@ export default {
     font-weight: bold;
     place-self: center;
     width: 20cqi;
+    border-radius: 100px !important;
+    height: 60px;
   }
 
   ul {

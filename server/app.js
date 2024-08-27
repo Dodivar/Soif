@@ -38,21 +38,21 @@ var roomState = []; // State of rooms
 var roomAvatars = []; // Avatar of players
 
 const allGames = [
-	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 1, templateAnswer: 'La réponse était :'}, 
-	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 2, templateAnswer: 'La réponse était :'}, 
-	{name: 'TTMC', description: 'Répond correctement à la question !', soif: null, templateAnswer: 'La réponse était :'}, 
-	{name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
-	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -5 !', templateAnswer: 'Le meilleur score :'}, 
-	{name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
-	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
-	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
-	{name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
-	{name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
-    {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
-    {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
+	// {name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 1, templateAnswer: 'La réponse était :'}, 
+	// {name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 2, templateAnswer: 'La réponse était :'}, 
+	// {name: 'TTMC', description: 'Répond correctement à la question !', soif: null, templateAnswer: 'La réponse était :'}, 
+	// {name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
+	// {name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -5 !', templateAnswer: 'Le meilleur score :'}, 
+	// {name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
+	// {name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
+	// {name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
+	// {name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
+	// {name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
+    // {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
+    // {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
 	{name: 'JokerWheel', description: '🃏 MANCHE BONUS 🃏', soif: null, templateAnswer: '🃏 MANCHE BONUS 🃏' },
 	// {name: 'FaceExpressionDetector', soif: 4}
 ]
@@ -232,12 +232,26 @@ io.on("connection", socket => {
       }, 3000)
     })
     
-    socket.on("Game:UseJoker", (jokerId, data) => {
+    socket.on("Game:UseJoker", (jokerId, targetSocketId) => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
+        const joker = player.jokers.find(e => e.id === jokerId)
+        if (!joker) return
+
         const players = getPlayerRoomState(socket.data.actualRoomId)
-        const msg = joker.effect(player, players)
+        let msg
+        if (targetSocketId) {
+            const target = players.find(e => e.socketId === targetSocketId)
+            msg = joker.effect(player, target)
+        }
+        else {
+            msg = joker.effect(player, players)
+        }
+
+        // Delete the joker of the player
         player.jokers = player.jokers.filter(e => e.id !== joker.id)
-        io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg)
+
+        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        socket.broadcast.emit("Game:UseJoker", msg, joker)
     })
 
     // SIMON
@@ -649,6 +663,8 @@ function getPlayerState(roomId, socketId) {
 function getGamesTour(number = 2, nbPlayers) {
     const tour = []
 	
+    const jokerWheel = allGames.find(e => e.name === "JokerWheel")
+
 	// Filter the games that cannot be played
 	const gamesPlayable = allGames.filter(e => {
 		let gameCanBePlayed = true
@@ -661,6 +677,23 @@ function getGamesTour(number = 2, nbPlayers) {
 
     while (tour.length != number) {
 		tour.push(utils.GetRandomElement(gamesPlayable))
+    }
+
+    // Add joker wheel round
+    if (number >= 20 ) {
+        tour[0] = jokerWheel
+    }
+    if (number >= 40 ) {
+        tour[20] = jokerWheel
+    }
+    if (number >= 60 ) {
+        tour[40] = jokerWheel
+    }
+    if (number >= 80 ) {
+        tour[60] = jokerWheel
+    }
+    if (number >= 100 ) {
+        tour[80] = jokerWheel
     }
 
     tour.push({name: "PodiumSoif", description: "Tableau des scores"})

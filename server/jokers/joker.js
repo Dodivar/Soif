@@ -1,9 +1,12 @@
+
 module.exports = class Joker {
-    constructor(id, name, description, rarity) {
+    constructor(id, name, description, rarity, icon, isTargeted) {
         this.id = id
         this.name = name
         this.description = description
         this.rarity = rarity
+        this.icon = icon
+        this.isTargeted = isTargeted
     }
 
     effect() {
@@ -11,7 +14,6 @@ module.exports = class Joker {
     }
 
 }
-
 module.exports.rarity = {
     legendary: {    
         name: "Légendaire",
@@ -35,3 +37,15 @@ module.exports.rarity = {
         rate: 0.4
     },
 }
+
+// quitte ou double ok
+// épée ok
+// boulcier ok
+// miroir ok
+// voleur ok
+// FriendCallJoker ok
+
+// tornado
+//division ok
+// multiply ok
+// blur

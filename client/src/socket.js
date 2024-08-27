@@ -11,6 +11,7 @@ export const state = reactive({
   connected: false,
   errMsg: null,
   snackbarElements: [],
+  jokerTarget: null,
   player: {
     socketId: null,
     pseudo: null,
@@ -83,15 +84,14 @@ socket.on('Game:GetJokerOfRarity', (message, joker) => {
     joker: joker
   }
   state.snackbarElements.push(newSnackbar)
-  console.log(newSnackbar)
 })
 
-socket.on('Game:UseJoker', (message) => {
-  // const newSnackbar = {
-  //   message,
-  //   joker
-  // }
-  // state.snackbarElements.push(newSnackbar)
+socket.on('Game:UseJoker', (message, joker) => {
+  const newSnackbar = {
+    message,
+    joker: joker
+  }
+  state.snackbarElements.push(newSnackbar)
 })
 
 // SIMON

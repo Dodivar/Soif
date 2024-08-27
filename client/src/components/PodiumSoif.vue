@@ -35,7 +35,7 @@
     <div class="pa-5 w-100">
       <v-btn
         v-if="state.player.isRoomMaster"
-        class="w-100 bg-gradient-success text-white"
+        class="w-100 bg-gradient-success text-white rounded-xl"
         @click="replay"
       >
         Rejouer
@@ -59,7 +59,7 @@ export default {
   },
   computed: {
     playerItems() {
-      return state.room.players.sort((a, b) => a.soifTotal - b.soifTotal)
+      return state.room.players.sort((a, b) => a.totalSoifGived - b.totalSoifGived)
     },
     roundAnswer() {
       return state.room.roundAnswer

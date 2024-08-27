@@ -196,7 +196,10 @@
         <!-- GAME DESC -->
         <div v-if="state.room.showNextGamDesc" class="w-100 d-flex justify-center">
           <v-sheet class="w-100 pa-5 text-center rounded-lg mx-5" elevation="8">
-            <h2 class="mb-2">
+            <h2
+              class="mb-2"
+              :style="state.player.hasBlurRoundDescription ? 'filter: blur(20px);' : ''"
+            >
               {{ state.room.actualGame.description }}
             </h2>
             <p v-if="state.room.gameIdx + 1 <= state.room.gamesTour.length - 1">
@@ -237,6 +240,9 @@
             :rarity="snackbar.joker.rarity"
             :icon="snackbar.joker.icon"
           ></JokerCard>
+          <p v-if="state.snackbarElements.length > 1">
+            {{ `${idx}/${state.snackbarElements.length}` }}
+          </p>
         </v-alert>
       </template>
     </div>

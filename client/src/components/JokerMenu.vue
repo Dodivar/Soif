@@ -12,6 +12,12 @@
     </h2>
     <v-expand-transition>
       <div v-show="isJokerMenuExpanded">
+        <v-btn
+          v-if="state.jokerTarget"
+          @click="state.jokerTarget = null"
+          class="bg-gradient-warning text-white"
+          >ANNULER</v-btn
+        >
         <JokerCard
           v-for="joker in jokers"
           :key="joker.id"
@@ -20,6 +26,8 @@
           :description="joker.description"
           :rarity="joker.rarity"
           :icon="joker.icon"
+          :is-targeted="joker.isTargeted"
+          :can-be-activated="true"
         ></JokerCard>
       </div>
     </v-expand-transition>
@@ -27,6 +35,7 @@
 </template>
 
 <script>
+import { state } from '@/socket'
 import JokerCard from './JokerCard.vue'
 
 export default {
@@ -41,6 +50,7 @@ export default {
   },
   data() {
     return {
+      state,
       isJokerMenuExpanded: false
     }
   },

@@ -7,8 +7,9 @@ const CrazyJoker = require('./crazyJoker')
 const MultiplyJoker = require('./multiplyJoker')
 const SubtractionJoker = require('./subtractionJoker')
 const StealerJoker = require('./stealerJoker')
+const TornadoJoker = require('./TornadoJoker')
 
-const jockers = [
+const jokers = [
     new AdditionJoker(),
     new BlurDescriptionJoker(),
     new MirrorJoker(),
@@ -17,15 +18,16 @@ const jockers = [
     new CrazyJoker(),
     new MultiplyJoker(),
     new SubtractionJoker(),
-    new StealerJoker()
+    new StealerJoker(),
+    new TornadoJoker()
 ] 
 
 function GetAll() {
-    return jockers 
+    return jokers 
 }
 
 function GetRarity(rarity) { 
     return GetAll().filter(e => e.rarity.value === rarity) 
 }
 
-module.exports = { GetRarity }
+module.exports = { GetRarity, GetAll }
