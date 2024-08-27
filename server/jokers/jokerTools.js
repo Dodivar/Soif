@@ -7,7 +7,7 @@ const CrazyJoker = require('./crazyJoker')
 const MultiplyJoker = require('./multiplyJoker')
 const SubtractionJoker = require('./subtractionJoker')
 const StealerJoker = require('./stealerJoker')
-const TornadoJoker = require('./TornadoJoker')
+// const TornadoJoker = require('./TornadoJoker')
 
 const jokers = [
     new AdditionJoker(),
@@ -19,7 +19,7 @@ const jokers = [
     new MultiplyJoker(),
     new SubtractionJoker(),
     new StealerJoker(),
-    new TornadoJoker()
+    // new TornadoJoker()
 ] 
 
 function GetAll() {

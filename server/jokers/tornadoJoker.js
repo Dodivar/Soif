@@ -1,5 +1,5 @@
 const Joker = require('./joker.js')
-const utils = require("./../utils.js");
+const utils = require("./../utils.js")
 
 module.exports = class TornadoJoker extends Joker {
     constructor() {
