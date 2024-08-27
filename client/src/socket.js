@@ -10,15 +10,13 @@ const URL =
 export const state = reactive({
   connected: false,
   errMsg: null,
-  snackbarElement: {
-    visible: false,
-    message: null
-  },
+  snackbarElements: [],
   player: {
     socketId: null,
     pseudo: null,
     avatar: null,
-    isRoomMaster: false
+    isRoomMaster: false,
+    joker: []
   },
   room: {}
 })
@@ -67,6 +65,7 @@ socket.on('join room', (roomState, roomAvatars) => {
 socket.on('refresh players', (players) => {
   state.room.players = players
   state.player = players.find((e) => e.socketId === socket.id) ?? state.player
+  console.log(state.player.jokers)
 })
 
 socket.on('refresh room', (room) => {
@@ -78,11 +77,21 @@ socket.on('UpdateActualGame', (actualGame) => {
   state.room.actualGame = actualGame
 })
 
-socket.on("Game:UseJoker", (message) => {
-  state.snackbarElement = {
-    visible: true,
-    message
+socket.on('Game:GetJokerOfRarity', (message, joker) => {
+  const newSnackbar = {
+    message,
+    joker: joker
   }
+  state.snackbarElements.push(newSnackbar)
+  console.log(newSnackbar)
+})
+
+socket.on('Game:UseJoker', (message) => {
+  // const newSnackbar = {
+  //   message,
+  //   joker
+  // }
+  // state.snackbarElements.push(newSnackbar)
 })
 
 // SIMON
@@ -103,5 +112,3 @@ socket.on('connect_error', (err) => {
   console.info(`connect_error due to ${err.message}`)
   state.errMsg = err.message
 })
-
-// https://jsfiddle.net/ywm3zbc4/7/

@@ -53,6 +53,7 @@ const allGames = [
 	{name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
     {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
     {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
+	{name: 'JokerWheel', description: '🃏 MANCHE BONUS 🃏', soif: null, templateAnswer: '🃏 MANCHE BONUS 🃏' },
 	// {name: 'FaceExpressionDetector', soif: 4}
 ]
 
@@ -180,7 +181,7 @@ io.on("connection", socket => {
     })
     
     socket.on("Game:PlayGame", (data) => {
-        playGame(io, socket, data)
+        playGame(socket, data)
     });
 
     socket.on("Game:GiveSoif", (socketId, soifNumber = 1) => {
@@ -200,30 +201,38 @@ io.on("connection", socket => {
     socket.on("Game:ReadyForNextRound", () => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
 		player.readyForNextRound = true
-		
-		// If all soif has been gived, launch next game
-		const players = getPlayerRoomState(socket.data.actualRoomId)
-        const winnersHasGived = players.filter(e => e.winner).every(e => e.givedSoif)
-        const everyIsReady = players.every(e => e.readyForNextRound)
-        if (winnersHasGived && everyIsReady) {
-			// Send next game after 4s
-			sendNextGame(io, socket, isProd ? 4000 : 500)
-        }
+		launchNextRound(socket)
+
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     });
 
     socket.on("Game:GetJokerOfRarity", (rarity) => {
-        const jokerOfPlayer = getPlayerState(socket.data.actualRoomId, socket.id).jokers
-        const availableJoker = JokerTools.GetRarity(rarity).filter(e => !jokerOfPlayer.includes(e.id) )
-        const joker = utils.GetRandomElement(availableJoker)
-        if (joker) {
-            jokerOfPlayer.push(joker)
+        const player = getPlayerState(socket.data.actualRoomId, socket.id)
+        player.readyForNextRound = true
+
+        if (rarity === 'nothing') {
+            socket.emit("Game:GetJokerOfRarity", `Tu n'as reçu aucun joker 😈`, null)
         }
-        // TODO : Manage msg if no joker available
-        socket.emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        else {
+            const playerJokerId = player.jokers.map(e => e.id)
+            const availableJoker = JokerTools.GetRarity(rarity).filter(e => !playerJokerId.includes(e.id))
+            if (availableJoker.length === 0) {
+                socket.emit("Game:GetJokerOfRarity", `Tu as déjà tous les joker ${rarity}, pense à les utiliser 🥴`, null)
+            }
+            else {
+                const joker = utils.GetRandomElement(availableJoker)
+                player.jokers.push(joker)    
+                socket.emit("Game:GetJokerOfRarity", `Tu as reçu :`, joker)
+                socket.emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+            }
+        }
+        
+      setTimeout(() => {
+        playGame(socket, '')
+      }, 3000)
     })
     
-    socket.on("Game:UseJoker", (joker, data) => {
+    socket.on("Game:UseJoker", (jokerId, data) => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         const players = getPlayerRoomState(socket.data.actualRoomId)
         const msg = joker.effect(player, players)
@@ -256,7 +265,7 @@ io.on("connection", socket => {
     // Personnal question
     socket.on("PersonnalAnswer", personnalAnswer => {
         getRoom(socket.data.actualRoomId).actualGame.playerAskingTheQuestionAnswer = personnalAnswer
-        playGame(io, socket, '')
+        playGame(socket, '')
     })
 
     // Naval battle
@@ -309,6 +318,17 @@ io.on("connection", socket => {
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
 })
+
+function launchNextRound(socket) {
+    // If all soif has been gived, launch next game
+    const players = getPlayerRoomState(socket.data.actualRoomId)
+    const winnersHasGived = players.filter(e => e.winner).every(e => e.givedSoif)
+    const everyIsReady = players.every(e => e.readyForNextRound)
+    if (winnersHasGived && everyIsReady) {
+        // Send next game after 4s
+        sendNextGame(io, socket, isProd ? 4000 : 500)
+    }
+}
 
 function setActualGameData(room, nextGame) {
     room.actualGame = nextGame
@@ -376,8 +396,6 @@ function setActualGameData(room, nextGame) {
     }
 }
 
-
-
 function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.data.actualRoomId)
     if (!room) return
@@ -392,6 +410,7 @@ function sendNextGame(io, socket, wait = 2000) {
 	// Send next game
     setTimeout(() => {
 		room.showNextGamDesc = false
+		room.roundAnswer = null
 		
 		// Re-init players state for next game
 		room.players.forEach(e => {
@@ -403,7 +422,7 @@ function sendNextGame(io, socket, wait = 2000) {
     }, wait)
 }
 
-function playGame(io, socket, data) {
+function playGame(socket, data) {
     let choices
     let player = getPlayerState(socket.data.actualRoomId, socket.id)
 	if (player.hasPlayed) return
@@ -495,7 +514,7 @@ function playGame(io, socket, data) {
         // Assign soif to winner
         setGameValueLabel(room, data)
         setSoif(room, data)
-      
+
         io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
     }
     catch(e) {

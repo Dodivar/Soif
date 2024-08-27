@@ -2,7 +2,7 @@ const Joker = require('./joker.js')
 
 module.exports = class TornadoJoker extends Joker {
     constructor() {
-        super(10, "La tornade", "Vole un joker d'un soifeur", Joker.rarity.Rare)
+        super(10, "La tornade", "Vole un joker d'un soifeur", Joker.rarity.rare)
     }
 
     effect(player, target) {

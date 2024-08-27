@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Timer :time="10" @end-timer="setChoice('Trop bourré pour répondre')"></Timer>
+    <Timer :time="10" @end-timer="setChoice('🥴')"></Timer>
 
     <v-sheet
       id="red"

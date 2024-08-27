@@ -19,21 +19,12 @@
           Profil
         </v-btn>
       </v-bottom-navigation> -->
-      <v-snackbar
-        :timeout="3000"
-        color="deep-purple-accent-4"
-        elevation="24"
-        @click="state.snackbarElement.visible = false"
-      >
-        {{ state.snackbarElement.message }}
-      </v-snackbar>
     </v-main>
   </v-app>
 </template>
 
 <script>
 import StartMenu from './components/StartMenu.vue'
-import { state } from '@/socket'
 
 export default {
   components: {

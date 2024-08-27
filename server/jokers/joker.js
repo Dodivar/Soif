@@ -1,9 +1,9 @@
 module.exports = class Joker {
-    constructor(id, name, description, rarirty) {
+    constructor(id, name, description, rarity) {
         this.id = id
         this.name = name
         this.description = description
-        this.rarirty = rarirty
+        this.rarity = rarity
     }
 
     effect() {
@@ -13,21 +13,25 @@ module.exports = class Joker {
 }
 
 module.exports.rarity = {
-    Legendary: {    
+    legendary: {    
         name: "Légendaire",
+        value: "legendary",
         rate: 0.04
     },
-    Epic:{    
+    epic:{    
         name: "épique",
+        value: "epic",
         rate: 0.1
     },
-    Rare:
+    rare:
     {    
         name: "Rare",
+        value: "rare",
         rate: 0.2
     },
-    Commone: {    
+    common: {    
         name: "Commun",
-        rate: 0.5
+        value: "common",
+        rate: 0.4
     },
 }

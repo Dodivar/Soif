@@ -66,19 +66,19 @@
     >
       {{ state.player.soifToGive > 0 ? 'Donnes tes soifs...' : 'PRÊT' }}
     </v-btn>
-    <JockerMenu />
+    <JokerMenu :jokers="state.player.jokers" />
   </v-container>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
 import PlayerAvatar from './PlayerAvatar.vue'
-import JockerMenu from './JockerMenu.vue'
+import JokerMenu from './JokerMenu.vue'
 
 export default {
   components: {
     PlayerAvatar,
-    JockerMenu
+    JokerMenu
   },
   data() {
     return {

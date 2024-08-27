@@ -24,8 +24,8 @@ function GetAll() {
     return jockers 
 }
 
-function GetRarity(rarity) {
-    return GetAll().filter(e => Object.is(e.rarirty, rarity)) 
+function GetRarity(rarity) { 
+    return GetAll().filter(e => e.rarity.value === rarity) 
 }
 
 module.exports = { GetRarity }

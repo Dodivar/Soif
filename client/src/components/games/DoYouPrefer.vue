@@ -1,6 +1,6 @@
 <template>
   <v-container class="text-center">
-    <Timer :time="10" @end-timer="userAnswer('Trop bourré pour répondre')"></Timer>
+    <Timer :time="10" @end-timer="userAnswer('🥴')"></Timer>
     <h1>Tu préfères ?</h1>
     <div class="d-flex flex-column align-center justify-space-around ma-5">
       <v-sheet

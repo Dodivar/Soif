@@ -1,6 +1,6 @@
 <template>
   <v-container class="text-center">
-    <Timer :time="60" @end-timer="play('Trop bourré pour répondre')"></Timer>
+    <Timer :time="60" @end-timer="play('🥴')"></Timer>
     <template v-if="state.player.socketId === playerAskingTheQuestion.socketId">
       <h2>{{ question }}</h2>
       <v-form @submit.prevent>

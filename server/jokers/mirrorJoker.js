@@ -2,7 +2,7 @@ const Joker = require('./joker.js')
 
 module.exports = class MirorJoker extends Joker {
     constructor() {
-        super(1, "Miroir", "Renvoie tous tes soifs sur les adversaires qui te les ont données", Joker.rarity.Legendary)
+        super(1, "Miroir", "Renvoie tous tes soifs sur les adversaires qui te les ont données", Joker.rarity.legendary)
     }
 
     effect(player, targets) {

@@ -1,10 +1,6 @@
 <template>
   <v-container>
-    <Timer
-      v-if="currentQuestionIdx !== null"
-      :time="20"
-      @end-timer="setChoice('Trop bourré pour répondre')"
-    ></Timer>
+    <Timer v-if="currentQuestionIdx !== null" :time="20" @end-timer="setChoice('🥴')"></Timer>
     <div class="d-flex">
       <div class="mr-4 w-100">
         <h1>Tu te mets combien ?</h1>
