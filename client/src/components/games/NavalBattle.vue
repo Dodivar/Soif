@@ -193,29 +193,83 @@ export default {
 </script>
 
 <style scoped>
+.game-container {
+  text-align: center;
+}
 .v-alert {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.v-sheet {
-  width: 100%;
-  height: 50%;
-  position: fixed;
-  user-select: none;
+.grid-container {
+  display: inline-grid;
+  grid-template-columns: auto repeat(5, 1fr);
+  gap: 5px;
+  margin-top: 20px;
 }
-
-.v-sheet:hover {
-  text-decoration: underline;
+.grid {
+  display: contents;
 }
-
-#red {
-  top: 0;
-  left: 0;
+.cell {
+  width: 60px;
+  height: 60px;
+  background-image: url('https://images.unsplash.com/photo-1523633589114-88eaf4b4f1a8?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE3fHx8ZW58MHx8fHx8');
+  background-size: cover;
+  background-position: center;
+  border: 1px solid #2980b9;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
 }
-#black {
-  bottom: 0;
-  left: 0;
+.cell:hover {
+  filter: brightness(1.2);
+}
+.cell.hit {
+  background-image: none;
+  background-color: #e74c3c;
+}
+.cell.miss {
+  background-image: none;
+  background-color: #95a5a6;
+}
+.cell.ship {
+  background-image: url('https://st3.depositphotos.com/1041725/37656/v/450/depositphotos_376562852-stock-illustration-small-boat-water-illustration-vector.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #2c3e50;
+}
+#message {
+  margin-top: 20px;
+  font-weight: bold;
+}
+#restartButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: none;
+}
+#restartButton:hover {
+  background-color: #27ae60;
+}
+.attack-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px black;
 }
 </style>
