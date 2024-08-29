@@ -7,6 +7,7 @@ module.exports = class BlurDescriptionJoker extends Joker {
 
     effect(player, targets) {
         targets.forEach(e => {
+            if (e.socketId === player.socketId) return
             e.hasBlurRoundDescription = true
         });
         return `${player.pseudo} a flouté votre prochaine description de jeu de réactivité !`

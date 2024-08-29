@@ -674,7 +674,7 @@ function getGamesTour(number = 2, room) {
     const playerLength = room.players.length
 	
     // Take the configuration if she exists
-    const realGames = room.configuration ?? games.allGames
+    const realGames = room.configuration?.games ?? games.allGames
 
 
 	// Filter the games that cannot be played

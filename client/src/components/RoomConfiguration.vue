@@ -1,14 +1,14 @@
 <template>
   <v-container>
     <v-switch
-      v-model="jokerActivated"
+      v-model="configuration.jokerActivated"
       color="info"
       label="Jouer avec les jokers"
       value="info"
       hide-details
     ></v-switch>
 
-    <v-data-iterator :items="games" :items-per-page="games.length">
+    <v-data-iterator :items="configuration.games" :items-per-page="configuration.games.length">
       <!-- <template v-slot:header="{ page, pageCount, prevPage, nextPage }">
         <h1 class="text-h4 font-weight-bold d-flex justify-space-between mb-4 align-center">
           <div class="text-truncate">Jeux</div>
@@ -66,7 +66,7 @@
 
               <v-table class="text-caption" density="compact">
                 <tbody>
-                  <tr align="right">
+                  <tr v-if="item.raw.minPlayers" align="right">
                     <th>Joueur minimum requis :</th>
                     <td>
                       {{ item.raw.minPlayers }}
@@ -102,7 +102,7 @@
                       <v-switch
                         v-model="item.raw.isEnabled"
                         color="success"
-                        label="success"
+                        :label="item.raw.isEnabled ? 'activé' : 'désactivé'"
                         hide-details
                       ></v-switch>
                     </td>
@@ -142,8 +142,10 @@ export default {
   data() {
     return {
       state,
-      configuration: [],
-      games: [],
+      configuration: {
+        games: [],
+        jokerActivated: true
+      },
       allGames: [
         {
           name: 'RedOrBlack',
@@ -280,29 +282,33 @@ export default {
         }
         //{name: 'FaceExpressionDetector', soif: 4}
       ],
-      jokerActivated: true,
+
       jokers: []
     }
   },
   computed: {
     activatedGames() {
-      return this.allGames.filter((e) => e.isEnabled)
+      return this.configuration.games.filter((e) => e.isEnabled)
     }
   },
   created() {
-    const actualRoomConfiguration = JSON.parse(localStorage.getItem('RoomConfiguration'))
+    const savedRoomConfiguration = JSON.parse(localStorage.getItem('RoomConfiguration'))
 
     // Add to the configuration the new games
-    if (actualRoomConfiguration && actualRoomConfiguration.length < this.allGames.length) {
-      const newGames = this.allGames.filter(
-        (e) => !actualRoomConfiguration.map((e) => e.name).includes(e.name)
-      )
+    if (savedRoomConfiguration) {
+      if (savedRoomConfiguration.games?.length < this.allGames.length) {
+        const newGames = this.allGames.filter(
+          (e) => !savedRoomConfiguration.map((e) => e.name).includes(e.name)
+        )
+        savedRoomConfiguration.games.push(...newGames)
 
-      actualRoomConfiguration.push(...newGames)
-      localStorage.setItem('RoomConfiguration', JSON.stringify(actualRoomConfiguration))
+        this.configuration.jokerActivated = savedRoomConfiguration.jokerActivated ?? false
+
+        localStorage.setItem('RoomConfiguration', JSON.stringify(savedRoomConfiguration))
+      }
     }
 
-    this.games = actualRoomConfiguration ?? this.allGames
+    this.configuration.games = savedRoomConfiguration?.games ?? this.allGames
     // this.jokers = GetAll()
   },
   mounted() {},
@@ -316,13 +322,14 @@ export default {
       item.raw.soif--
     },
     saveConfiguration() {
-      localStorage.setItem('RoomConfiguration', JSON.stringify(this.games))
-      console.log('configuration sauvegardée', this.games)
+      localStorage.setItem('RoomConfiguration', JSON.stringify(this.configuration))
+      console.log('configuration sauvegardée', this.configuration)
     },
     deleteConfiguration() {
       if (confirm('Tu es sûr de vouloir supprimer ta configuration personnalisée ?')) {
         delete localStorage['RoomConfiguration']
-        this.games = this.allGames
+        this.configuration.games = this.allGames
+        this.configuration.jokerActivated = true
       }
     },
     goToSaloon() {
