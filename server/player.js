@@ -68,7 +68,7 @@ module.exports = class Player {
     this.totalSoifGived += number
   }
 
-  resetRoundData() {
+  resetRoundData(hasBlurRoundDescription) {
     this.hasPlayed = false
     this.gameValue = null
     this.gameValueLabel = null
@@ -78,7 +78,7 @@ module.exports = class Player {
 	  this.readyForNextRound = false
     this.soidGivedBy = []
     this.soifGivedBy = []
-    this.hasBlurRoundDescription = false
+    this.hasBlurRoundDescription = hasBlurRoundDescription ?? false
   }
 
   reset() {

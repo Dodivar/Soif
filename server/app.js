@@ -2,6 +2,7 @@ const Player = require("./player.js");
 const Room = require("./room.js");
 const JokerTools = require("./jokers/jokerTools.js");
 const utils = require("./utils.js");
+const games = require("./games.js");
 
 const TtmcThemes = require("./games/TTMC_themes.json")
 const DoYouPreferQuestions = require("./games/DoYouPrefer.json")
@@ -37,25 +38,25 @@ const initRoomState = (socket, isRoomMaster) => {
 var roomState = []; // State of rooms
 var roomAvatars = []; // Avatar of players
 
-const allGames = [
-	{name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 1, templateAnswer: 'La réponse était :'}, 
-	{name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 2, templateAnswer: 'La réponse était :'}, 
-	{name: 'TTMC', description: 'Répond correctement à la question !', soif: null, templateAnswer: 'La réponse était :'}, 
-	{name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
-	{name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-	{name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -5 !', templateAnswer: 'Le meilleur score :'}, 
-	{name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
-	{name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
-	{name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
-	{name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
-	{name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
-    {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
-    {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
-	{name: 'JokerWheel', description: '🃏 MANCHE BONUS 🃏', soif: null, templateAnswer: '🃏 MANCHE BONUS 🃏' },
-	// {name: 'FaceExpressionDetector', soif: 4}
-]
+// const allGames = [
+// 	// {name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 1, templateAnswer: 'La réponse était :'}, 
+// 	// {name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 2, templateAnswer: 'La réponse était :'}, 
+// 	// {name: 'TTMC', description: 'Répond correctement à la question !', soif: null, templateAnswer: 'La réponse était :'}, 
+// 	// {name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
+// 	// {name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+// 	// {name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+// 	// {name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
+// 	// {name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -5 !', templateAnswer: 'Le meilleur score :'}, 
+// 	// {name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
+// 	// {name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
+// 	// {name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
+// 	// {name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
+// 	// {name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
+//     // {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
+//     // {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
+// 	{name: 'JokerWheel', description: '🃏 MANCHE BONUS 🃏', soif: null, templateAnswer: '🃏 MANCHE BONUS 🃏' },
+// 	// {name: 'FaceExpressionDetector', soif: 4}
+// ]
 
 io.on("connection", socket => {
     console.log("Connexion " + socket.id)
@@ -96,14 +97,14 @@ io.on("connection", socket => {
         
         // Check room exist already
         while (roomState.find(e => e.roomId === roomId) !== undefined) {
-            roomId = makeid(6);
+            roomId = makeid(6)
         }
 
         // Set socket data
         socket.data.actualRoomId = roomId
         socket.data.pseudo = player.pseudo
         socket.data.isRoomMaster = true
-        socket.join(roomId);
+        socket.join(roomId)
 
         // Set new room
         const roomObj = initRoomState(socket, true);
@@ -124,12 +125,12 @@ io.on("connection", socket => {
     socket.on("Room:Join", (roomId, player, avatar) => {
         try {
             if (!roomId) {           
-                socket.emit('msg', "Aucun channel pour " + roomId);
-                return;
+                socket.emit('msg', "Aucun channel pour " + roomId)
+                return
             }
 
             // Set socket data
-            socket.join(roomId);
+            socket.join(roomId)
             socket.data.actualRoomId = roomId
             socket.data.pseudo = player.pseudo
 
@@ -158,13 +159,20 @@ io.on("connection", socket => {
         io.to(roomId).emit("refresh players", getPlayerRoomState(roomId))
     })
 
-    socket.on("Room:ReadyToPlay", () => {
-        getPlayerState(socket.data.actualRoomId, socket.id).isReady = true
+    socket.on("Room:ReadyToPlay", (roomConfiguration) => {
+        console.log(roomConfiguration)
+        const player = getPlayerState(socket.data.actualRoomId, socket.id)
+        player.isReady = true
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
 
+        // Set the room configuration from the room master
 		const room = getRoom(socket.data.actualRoomId)
+        if (roomConfiguration && player.isRoomMaster) {
+            room.configuration = player.roomConfiguration
+        }
+
         if (room?.players.every(e => e.isReady)) {
-			room.gamesTour = getGamesTour(room.gamesNumber, room.players.length)
+			room.gamesTour = getGamesTour(room.gamesNumber, room)
             sendNextGame(io, socket, 3000)
         }
     });
@@ -414,6 +422,7 @@ function sendNextGame(io, socket, wait = 2000) {
     const room = getRoom(socket.data.actualRoomId)
     if (!room) return
 
+	const previousGame = room.actualGame
     const nextGame = room.gamesTour[room.gameIdx]
     setActualGameData(room, nextGame)
 	
@@ -428,7 +437,7 @@ function sendNextGame(io, socket, wait = 2000) {
 		
 		// Re-init players state for next game
 		room.players.forEach(e => {
-			e.resetRoundData()
+			e.resetRoundData(!previousGame?.canBeBlured)
 		})
 		
 		io.to(socket.data.actualRoomId).emit("refresh room", room)
@@ -611,7 +620,7 @@ function resetRoom(roomId) {
         player.reset()
     })
 
-    room.gamesTour = getGamesTour(actualRoundNumber, room.players.length)
+    room.gamesTour = getGamesTour(actualRoundNumber, room)
     room.gameIdx = 0
 }
 
@@ -660,17 +669,20 @@ function getPlayerState(roomId, socketId) {
     return getPlayerRoomState(roomId)?.find(e => e.socketId === socketId) ?? {};
 }
 
-function getGamesTour(number = 2, nbPlayers) {
+function getGamesTour(number = 2, room) {
     const tour = []
+    const playerLength = room.players.length
 	
-    const jokerWheel = allGames.find(e => e.name === "JokerWheel")
+    // Take the configuration if she exists
+    const realGames = room.configuration ?? games.allGames
+
 
 	// Filter the games that cannot be played
-	const gamesPlayable = allGames.filter(e => {
+	const gamesPlayable = realGames.filter(e => {
 		let gameCanBePlayed = true
-		if (e.minPlayers && e.minPlayers > nbPlayers)
+		if (e.minPlayers && e.minPlayers > playerLength)
 			gameCanBePlayed = false
-		if (e.maxPlayers && e.maxPlayers < nbPlayers)
+		if (e.maxPlayers && e.maxPlayers < playerLength)
 			gameCanBePlayed = false
         return gameCanBePlayed
 	})
@@ -680,20 +692,21 @@ function getGamesTour(number = 2, nbPlayers) {
     }
 
     // Add joker wheel round
-    if (number >= 20 ) {
-        tour[0] = jokerWheel
-    }
-    if (number >= 40 ) {
-        tour[20] = jokerWheel
-    }
-    if (number >= 60 ) {
-        tour[40] = jokerWheel
-    }
-    if (number >= 80 ) {
-        tour[60] = jokerWheel
-    }
-    if (number >= 100 ) {
-        tour[80] = jokerWheel
+    const jokerWheel = realGames.find(e => e.name === "JokerWheel")
+    if (jokerWheel) {
+        tour[4] = jokerWheel
+        if (number >= 25 ) {
+            tour[10] = jokerWheel
+        }
+        if (number >= 50 ) {
+            tour[24] = jokerWheel
+        }
+        if (number >= 75 ) {
+            tour[49] = jokerWheel
+        }
+        if (number >= 100 ) {
+            tour[74] = jokerWheel
+        }
     }
 
     tour.push({name: "PodiumSoif", description: "Tableau des scores"})

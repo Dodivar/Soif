@@ -157,7 +157,7 @@
       </div>
 
       <!-- Saloon -->
-      <div v-else-if="!allIsReady" class="text-center mx-5">
+      <div v-else-if="!allIsReady && !wantToConfigureRoom" class="text-center mx-5">
         <div class="text-center ma-5">
           <h1>Numéro de la partie</h1>
           <h2>{{ state.room.roomId }}</h2>
@@ -187,10 +187,21 @@
           class="w-100 bg-gradient-success text-white rounded-xl"
           >{{ readyBtnLabel }}</v-btn
         >
-        <v-btn class="w-100 bg-gradient-warning text-white rounded-xl my-5" @click="quitRoom"
+        <v-btn
+          v-if="state.player.isRoomMaster"
+          @click="goToRoomConfiguration"
+          elevation="4"
+          class="w-100 bg-gradient-info text-white rounded-xl ma-5"
+          >Configurer la partie</v-btn
+        >
+        <v-btn class="w-100 bg-gradient-warning text-white rounded-xl" @click="quitRoom"
           >QUITTER</v-btn
         >
       </div>
+      <RoomConfiguration
+        @quit-configuration="wantToConfigureRoom = false"
+        v-else-if="wantToConfigureRoom"
+      />
       <!-- GAMES -->
       <div v-else>
         <!-- GAME DESC -->
@@ -198,10 +209,17 @@
           <v-sheet class="w-100 pa-5 text-center rounded-lg mx-5" elevation="8">
             <h2
               class="mb-2"
-              :style="state.player.hasBlurRoundDescription ? 'filter: blur(20px);' : ''"
+              :style="
+                state.player.hasBlurRoundDescription && state.room.actualGame.canBeBlured
+                  ? 'filter: blur(20px);'
+                  : ''
+              "
             >
               {{ state.room.actualGame.description }}
             </h2>
+            <p>
+              <i>Astuce : {{ state.room.actualGame.tips }}</i>
+            </p>
             <p v-if="state.room.gameIdx + 1 <= state.room.gamesTour.length - 1">
               Round {{ state.room.gameIdx + 1 }}/{{ state.room.gamesTour.length - 1 }}
             </p>
@@ -266,6 +284,7 @@ import Blackjack from './games/Blackjack.vue'
 import Labyrinth from './games/Labyrinth.vue'
 import NavalBattle from './games/NavalBattle.vue'
 
+import RoomConfiguration from './RoomConfiguration.vue'
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
 import PlayerAvatar from './PlayerAvatar.vue'
@@ -293,6 +312,7 @@ export default {
     Labyrinth,
     NavalBattle,
 
+    RoomConfiguration,
     PodiumSoif,
     PlayerAvatar,
     JokerWheel,
@@ -311,7 +331,8 @@ export default {
       avatar: null,
       wantToCreateRoom: false,
       wantToJoinRoom: false,
-      wantToSetProfil: false
+      wantToSetProfil: false,
+      wantToConfigureRoom: false
     }
   },
   created() {
@@ -330,9 +351,6 @@ export default {
     },
     allIsReady() {
       return this.players?.every((e) => e.isReady)
-    },
-    isRoomMaster() {
-      return this.players.find((e) => e.socketId === state.player.socketId)?.isRoomMaster
     },
     launchGameIsDisabled() {
       return state.room.players.length < 2 && state.player.pseudo.toLowerCase() !== 'dodi'
@@ -357,7 +375,16 @@ export default {
       state.room = {}
     },
     readyToPlay() {
-      socket.emit('Room:ReadyToPlay')
+      const roomConfiguration = JSON.parse(localStorage.getItem('RoomConfiguration'))
+      if (
+        state.player.isRoomMaster &&
+        roomConfiguration !== null &&
+        confirm('Veux-tu utiliser la configuration de partie personnalisée que tu as ?')
+      ) {
+        socket.emit('Room:ReadyToPlay', roomConfiguration)
+      } else {
+        socket.emit('Room:ReadyToPlay')
+      }
     },
     notReadyToPlay() {
       socket.emit('Room:NotReadyToPlay')
@@ -380,6 +407,10 @@ export default {
       this.avatar = this.getLocalPlayerAvatar()
       state.player.pseudo = this.pseudo
       state.player.avatar = this.avatar
+    },
+    goToRoomConfiguration() {
+      this.notReadyToPlay()
+      this.wantToConfigureRoom = true
     }
   }
 }

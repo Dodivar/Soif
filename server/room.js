@@ -11,6 +11,7 @@ module.exports = class Room {
         }
         this.roundAnswer = null
 		this.showNextGamDesc = false
+        this.configuration = null
     }
   
     reset() {
