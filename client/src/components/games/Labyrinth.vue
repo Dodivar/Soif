@@ -38,7 +38,7 @@ export default {
       mazeWidth: 30,
       mazeSpacing: 50,
       maze: [],
-      startZone: { width: 100, height: 50 },
+      startZone: { width: 300, height: 70 },
       endZone: { width: 100, height: 50 },
       stars: [],
       collectedStars: 0,

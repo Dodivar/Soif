@@ -6,6 +6,7 @@
       :player="actualPlayer"
       :avatar-size="100"
       :show-pseudo="true"
+      :key="actualPlayer.socketId"
     />
     <div class="grid-container">
       <div class="label"></div>

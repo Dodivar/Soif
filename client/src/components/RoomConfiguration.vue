@@ -9,7 +9,7 @@
     ></v-switch>
 
     <v-data-iterator :items="games" :items-per-page="games.length">
-      <template v-slot:header="{ page, pageCount, prevPage, nextPage }">
+      <!-- <template v-slot:header="{ page, pageCount, prevPage, nextPage }">
         <h1 class="text-h4 font-weight-bold d-flex justify-space-between mb-4 align-center">
           <div class="text-truncate">Jeux</div>
 
@@ -38,7 +38,7 @@
             </div>
           </div>
         </h1>
-      </template>
+      </template> -->
 
       <template v-slot:default="{ items }">
         <v-row>
@@ -142,6 +142,7 @@ export default {
   data() {
     return {
       state,
+      configuration: [],
       games: [],
       allGames: [
         {
