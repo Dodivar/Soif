@@ -467,7 +467,7 @@ function playGame(socket, data) {
 
     // Assign value played at player
     player.gameValue = data
-    // player.gameValueLabel = data
+    player.gameValueLabel = data
     player.hasPlayed = true
     player.readyForNextRound = false
 
