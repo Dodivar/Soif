@@ -72,6 +72,8 @@ socket.on('refresh players', (players) => {
 socket.on('refresh room', (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
+
+  console.log(state.player)
 })
 
 socket.on('UpdateActualGame', (actualGame) => {

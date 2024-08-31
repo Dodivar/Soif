@@ -282,7 +282,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', { value: 696969, win: false })
+        socket.emit('Game:PlayGame', { ms: 696969, win: false })
       }, 2000)
     },
 
@@ -295,7 +295,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', { value: reactionTime, win: true })
+        socket.emit('Game:PlayGame', { ms: reactionTime, win: true })
       }, 2000)
     },
 

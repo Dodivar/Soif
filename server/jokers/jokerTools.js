@@ -24,8 +24,8 @@ const jokers = [
     // new SubtractionJoker(),
     // new StealerJoker(),
     new TrapJoker(),
-    new WinnerJoker(),
-    new InvincibleJoker(),
+    // new WinnerJoker(),
+    // new InvincibleJoker(),
     // new TornadoJoker()
 ] 
 
@@ -37,4 +37,8 @@ function GetRarity(rarity) {
     return GetAll().filter(e => e.rarity.value === rarity) 
 }
 
-module.exports = { GetRarity, GetAll }
+function GetJokerByName(name) { 
+    return GetAll().find(e => e.name === name) 
+}
+
+module.exports = { GetRarity, GetAll, GetJokerByName }

@@ -106,7 +106,7 @@ export default {
       // const elementsY = Math.min(...li.map((item) => item.getBoundingClientRect().y))
       // const heighestElement = li.find((e) => e.getBoundingClientRect().y === elementsY)
       const heighestElement = document.elementFromPoint(
-        window.innerWidth / 2,
+        window.innerWidth / 2 + 5,
         window.innerHeight / 3
       )
       const jokerRarity = heighestElement.className

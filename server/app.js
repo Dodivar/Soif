@@ -182,8 +182,9 @@ io.on("connection", socket => {
 		if (playerToGive.hasTrapJoker) {
 			playerToGive.hasTrapJoker = false
 			player.addSoifToDrink(3, null)
+            const trapJoker = JokerTools.GetJokerByName("Le piège")
 			const msg = `${player.pseudo} est tombé dans le piège de ${playerToGive.pseudo} et doit prendre 3 soifs !`
-			io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg)
+			io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg, trapJoker)
 		}
 
         // Set soif has been gived by the player
@@ -327,6 +328,24 @@ io.on("connection", socket => {
 
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
+    
+    // Loto
+    socket.on("Loto:PlaceBall", id => {
+        const ship = {
+            player: getPlayerState(socket.data.actualRoomId, socket.id),
+            isAlive: true,
+            position,
+            playerHitted: 0
+        }
+        const room = getRoom(socket.data.actualRoomId)
+        room.actualGame.playerShips.push(ship)
+        
+        if (room.actualGame.playerShips.length === room.players.length) {
+            room.actualGame.shipsArePlaced = true
+        }
+        
+        io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
+    })
 })
 
 function launchNextRound(socket) {
@@ -400,6 +419,10 @@ function setActualGameData(room, nextGame) {
             room.actualGame.playerTurnIdx = 0
             room.actualGame.playerTurn = room.players[room.actualGame.playerTurnIdx]
             break
+        case "Loto":
+            room.actualGame.playerBall = []
+            room.actualGame.ballHits = []
+            break
 
         default:
             break
@@ -425,7 +448,8 @@ function sendNextGame(io, socket, wait = 2000) {
 		
 		// Re-init players state for next game
 		room.players.forEach(e => {
-			e.resetRoundData(!previousGame?.canBeBlured)
+            const needToKeepBlurDesc = previousGame.canBeBlured === false && e.hasBlurRoundDescription
+			e.resetRoundData(needToKeepBlurDesc)
 		})
 		
 		io.to(socket.data.actualRoomId).emit("refresh room", room)
@@ -443,7 +467,7 @@ function playGame(socket, data) {
 
     // Assign value played at player
     player.gameValue = data
-    player.gameValueLabel = data
+    // player.gameValueLabel = data
     player.hasPlayed = true
     player.readyForNextRound = false
 
@@ -479,7 +503,7 @@ function playGame(socket, data) {
                 room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue));
                 break
             case "Labyrinth":
-                room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue.value));
+                room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue.ms));
                 break
                 
             case "Simon":
@@ -525,8 +549,8 @@ function playGame(socket, data) {
         }
 
         // Assign soif to winner
-        setGameValueLabel(room, data)
-        setSoif(room, data)
+        setGameValueLabel(room)
+        setSoif(room)
 
         io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
     }
@@ -535,7 +559,7 @@ function playGame(socket, data) {
     }
 }
 
-function setGameValueLabel(room, data) {
+function setGameValueLabel(room) {
     room.players.forEach(e => {
         switch(room.actualGame.name) {
             case "Blackjack":
@@ -545,7 +569,8 @@ function setGameValueLabel(room, data) {
                 e.gameValueLabel = `${e.gameValue.soif} touché` + (e.gameValue.isStillAlive ? ' + dernier en vie' : '')
                 break
             case "Labyrinth":
-                e.gameValueLabel = `${e.gameValue.value}ms`
+                e.gameValueLabel = `${e.gameValue.ms}ms`
+                break
             case "ReactionClick":
             case "FastClick":
             case "SurvivalEmoji":
@@ -555,23 +580,26 @@ function setGameValueLabel(room, data) {
     })
 }
 
-function setSoif(room, data) {
+function setSoif(room) {
     let winners = []
     let soifToGive = null
 
     // Find winners
     switch(room.actualGame.name) {
         case "Simon":
-            if (room.actualGame.isLooserDrinking) {
-                room.players.find(e => e.gameValue === 0)?.addSoifToDrink(room.actualGame.soif)
-            } else {
-                room.players.find(e => e.gameValue === room.roundAnswer)?.addSoifToDrink(room.roundAnswer)
-            }
-            // winners = room.players.filter(e => e.gameValue.win)
-            // soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
+            // if (room.actualGame.isLooserDrinking) {
+            //     room.players.find(e => e.gameValue === 0)?.addSoifToDrink(room.actualGame.soif)
+            // } else {
+            //     room.players.find(e => e.gameValue === room.roundAnswer)?.addSoifToDrink(room.roundAnswer)
+            // }
+            winners = room.players.filter(e => e.gameValue.win)
+            soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             break;
-        case "Blackjack":
         case "Labyrinth":
+            winners = room.players.filter(e => e.gameValue.win && e.gameValue.ms === room.roundAnswer)
+            soifToGive = room.actualGame.soif
+            break
+        case "Blackjack":
             winners = room.players.filter(e => e.gameValue.win)
             break;
         case "NavalBattle":
@@ -593,7 +621,6 @@ function setSoif(room, data) {
             }
             winners = room.players.filter(e => e.gameValue === bestScore)
             soifToGive = room.actualGame.soif
-            console.log(bestScore, soifToGive, winners)
             break
 
         default:
@@ -605,8 +632,6 @@ function setSoif(room, data) {
     // Assign soif
     winners.forEach(e => { 
         e.winner = true
-
-            console.log(e, soifToGive)
         // If soif to give is different between players
         if (soifToGive === null) {
             switch(room.actualGame.name) {
