@@ -15,7 +15,7 @@
           >Vous pouvez donner {{ state.player.soifToGive }} soif !</v-list-subheader
         >
         <template v-for="(player, idx) in playerItems" :key="player.socketId">
-          <v-list-item @click="playerHandleClick(player.socketId)">
+          <v-list-item @click="playerHandleClick(player)">
             <template v-slot:prepend>
               <v-badge
                 dot
@@ -97,14 +97,19 @@ export default {
     }
   },
   methods: {
-    playerHandleClick(socketId) {
+    playerHandleClick(target) {
+      console.log(target)
       // If a joker with target needed
       if (state.jokerTarget === true) {
-        state.jokerTarget = socketId
+        state.jokerTarget = target.socketId
         return
       }
       if (state.player.soifToGive) {
-        this.giveSoif(socketId)
+        if (target.hasInvincibleJoker > 0) {
+          alert(`${target.pseudo} est invincible pendant ${target.hasInvincibleJoker} tour`)
+          return
+        }
+        this.giveSoif(target.socketId)
       }
     },
     giveSoif(socketId) {

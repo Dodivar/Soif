@@ -1,12 +1,13 @@
 <template>
   <div id="game-container">
-    <Countdown :countdown-number="5" @countdown-end="countdownOver = true" />
+    <Countdown :countdown-number="3" @countdown-end="countdownOver = true" />
     <Timer v-if="countdownOver" :time="10" @end-timer="gameOver()"></Timer>
 
     <canvas id="gameCanvas"></canvas>
 
+    <!-- || !gameActive -->
     <v-alert
-      v-if="!gameActive || hasWin !== null"
+      v-if="hasWin !== null"
       class="position-fixed mx-5"
       elevation="24"
       :color="alertColor"
@@ -38,7 +39,7 @@ export default {
       mazeWidth: 30,
       mazeSpacing: 50,
       maze: [],
-      startZone: { width: 300, height: 70 },
+      startZone: { width: 500, height: 120 },
       endZone: { width: 100, height: 50 },
       stars: [],
       collectedStars: 0,
@@ -281,7 +282,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', 696969)
+        socket.emit('Game:PlayGame', { value: 696969, win: false })
       }, 2000)
     },
 
@@ -294,7 +295,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', reactionTime)
+        socket.emit('Game:PlayGame', { value: reactionTime, win: true })
       }, 2000)
     },
 

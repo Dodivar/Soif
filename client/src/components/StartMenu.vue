@@ -1,5 +1,6 @@
 <template>
   <v-container class="fill-height pa-0" fluid>
+    <canvas id="confetti"></canvas>
     <v-icon
       v-if="!wantToCreateRoom && !wantToJoinRoom"
       @click="wantToSetProfil = true"
@@ -191,10 +192,10 @@
           v-if="state.player.isRoomMaster"
           @click="goToRoomConfiguration"
           elevation="4"
-          class="w-100 bg-gradient-info text-white rounded-xl ma-5"
+          class="w-100 bg-gradient-info text-white rounded-xl mt-5"
           >Configurer la partie</v-btn
         >
-        <v-btn class="w-100 bg-gradient-warning text-white rounded-xl" @click="quitRoom"
+        <v-btn class="w-100 bg-gradient-warning text-white rounded-xl mt-5" @click="quitRoom"
           >QUITTER</v-btn
         >
       </div>
@@ -220,13 +221,13 @@
             <p>
               <i>Astuce : {{ state.room.actualGame.tips }}</i>
             </p>
-            <p v-if="state.room.gameIdx + 1 <= state.room.gamesTour.length - 1">
+            <p v-if="state.room.gameIdx + 1 <= state.room.gamesTour.length - 1" class="mt-3">
               Round {{ state.room.gameIdx + 1 }}/{{ state.room.gamesTour.length - 1 }}
             </p>
           </v-sheet>
         </div>
         <ScoreSoif v-else-if="state.player?.hasPlayed" />
-        <component v-else :is="actualGameName" />
+        <component v-else :is="actualGameName" @confetti="createConfetti" />
       </div>
 
       <!-- ALERT -->
@@ -268,6 +269,8 @@
 </template>
 
 <script>
+import confetti from 'canvas-confetti'
+
 import StopSlider from './games/StopSlider.vue'
 import RedOrBlack from './games/RedOrBlack.vue'
 import CardColors from './games/CardColors.vue'
@@ -411,6 +414,13 @@ export default {
     goToRoomConfiguration() {
       this.notReadyToPlay()
       this.wantToConfigureRoom = true
+    },
+    createConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      })
     }
   }
 }
@@ -422,5 +432,14 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+#confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
 </style>

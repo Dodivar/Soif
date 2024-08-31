@@ -7,6 +7,7 @@ module.exports = class Joker {
         this.rarity = rarity
         this.icon = icon
         this.isTargeted = isTargeted
+		this.noEventMsg = false
     }
 
     effect() {
@@ -37,15 +38,3 @@ module.exports.rarity = {
         rate: 0.4
     },
 }
-
-// quitte ou double ok
-// épée ok
-// boulcier ok
-// miroir ok
-// voleur ok
-// FriendCallJoker ok
-
-// tornado
-//division ok
-// multiply ok
-// blur

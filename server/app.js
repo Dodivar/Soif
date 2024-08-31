@@ -38,33 +38,12 @@ const initRoomState = (socket, isRoomMaster) => {
 var roomState = []; // State of rooms
 var roomAvatars = []; // Avatar of players
 
-// const allGames = [
-// 	// {name: 'RedOrBlack', description: 'Rouge ou noir ?', soif: 1, templateAnswer: 'La réponse était :'}, 
-// 	// {name: 'CardColors', description: 'Pique, coeur, carreaux ou trèfles ?', soif: 2, templateAnswer: 'La réponse était :'}, 
-// 	// {name: 'TTMC', description: 'Répond correctement à la question !', soif: null, templateAnswer: 'La réponse était :'}, 
-// 	// {name: 'PersonnalQuestion', description: 'Question personnelle...', soif: 2, templateAnswer: 'Le réponse était :'},
-// 	// {name: 'StopSlider', description: 'Arrête le curseur le plus proche du milieu !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-// 	// {name: 'ReactionClick', description: 'Clic sur l\'emoji dès qu\'il apparaît !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-// 	// {name: 'FastClick', description: 'Clic le plus rapidement possible !', soif: 4, templateAnswer: 'Le meilleur score :'}, 
-// 	// {name: 'DotClick', soif: 4, description: 'Les points bleu valent 2 points, les verts 5, mais les oranges -5 !', templateAnswer: 'Le meilleur score :'}, 
-// 	// {name: 'SurvivalEmoji', description: 'Reste en vie le plus longtemps possible en gardant ton doigt sur l\'écran !',  soif: 4, templateAnswer: 'Le meilleur score :'},
-// 	// {name: 'Simon', description: 'Mémorise la suite des couleurs', soif: 4, templateAnswer: 'Niveau :'}, 
-// 	// {name: 'GuessNumber', soif: 4, description: 'Devine le nombre mystère !', templateAnswer: 'Le nombre était :'},
-// 	// {name: 'DoYouPrefer', description: 'Tu préfères ?', soif: 2, templateAnswer: 'Le meilleur choix était :', minPlayers: 3},
-// 	// {name: 'Blackjack', description: 'Blackjack !', soif: null, templateAnswer: 'Résultat' },
-//     // {name: 'Labyrinth', description: 'Labyrinth !', soif: 4, templateAnswer: 'Le meilleur temps : ' },
-//     // {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat' },
-// 	{name: 'JokerWheel', description: '🃏 MANCHE BONUS 🃏', soif: null, templateAnswer: '🃏 MANCHE BONUS 🃏' },
-// 	// {name: 'FaceExpressionDetector', soif: 4}
-// ]
-
 io.on("connection", socket => {
     console.log("Connexion " + socket.id)
 
     if (socket.recovered) {
         if (!socket.data.actualRoomId) return 
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
-        console.log(player)
         player.isOffline = false
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     }
@@ -160,7 +139,6 @@ io.on("connection", socket => {
     })
 
     socket.on("Room:ReadyToPlay", (roomConfiguration) => {
-        console.log(roomConfiguration)
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.isReady = true
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
@@ -168,7 +146,7 @@ io.on("connection", socket => {
         // Set the room configuration from the room master
 		const room = getRoom(socket.data.actualRoomId)
         if (roomConfiguration && player.isRoomMaster) {
-            room.configuration = player.roomConfiguration
+            room.configuration = roomConfiguration
         }
 
         if (room?.players.every(e => e.isReady)) {
@@ -199,6 +177,14 @@ io.on("connection", socket => {
         // Give the soif
         const playerToGive = getPlayerState(socket.data.actualRoomId, socketId)
         playerToGive.addSoifToDrink(soifNumber, player)
+		
+		// Check trap joker of the targeted player
+		if (playerToGive.hasTrapJoker) {
+			playerToGive.hasTrapJoker = false
+			player.addSoifToDrink(3, null)
+			const msg = `${player.pseudo} est tombé dans le piège de ${playerToGive.pseudo} et doit prendre 3 soifs !`
+			io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg)
+		}
 
         // Set soif has been gived by the player
         player.soifToGive -= soifNumber
@@ -259,6 +245,8 @@ io.on("connection", socket => {
         player.jokers = player.jokers.filter(e => e.id !== joker.id)
 
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+		
+		if (joker.noEventMsg) return
         socket.broadcast.emit("Game:UseJoker", msg, joker)
     })
 
@@ -488,8 +476,10 @@ function playGame(socket, data) {
 				
             // Lower score of players
             case "ReactionClick":
-            case "Labyrinth":
                 room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue));
+                break
+            case "Labyrinth":
+                room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue.value));
                 break
                 
             case "Simon":
@@ -554,6 +544,13 @@ function setGameValueLabel(room, data) {
             case "NavalBattle":
                 e.gameValueLabel = `${e.gameValue.soif} touché` + (e.gameValue.isStillAlive ? ' + dernier en vie' : '')
                 break
+            case "Labyrinth":
+                e.gameValueLabel = `${e.gameValue.value}ms`
+            case "ReactionClick":
+            case "FastClick":
+            case "SurvivalEmoji":
+                e.gameValueLabel = `${e.gameValue}ms`
+                break
         }
     })
 }
@@ -574,6 +571,7 @@ function setSoif(room, data) {
             // soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             break;
         case "Blackjack":
+        case "Labyrinth":
             winners = room.players.filter(e => e.gameValue.win)
             break;
         case "NavalBattle":
@@ -582,6 +580,22 @@ function setSoif(room, data) {
         case "TTMC":
             winners = room.players.filter(e => e.gameValue === room.roundAnswer || room.roundAnswer.split(" ").filter(e => e).includes(e.gameValue))
             break;
+        case "GuessNumber":
+            let bestScore = room.actualGame.targetNumber
+
+            // Find the nearest value if no one find
+            const winnerExist = room.players.some(e => e.gameValue === bestScore)
+            if (!winnerExist) {
+                const allScore = room.players.map(e => e.gameValue)
+                bestScore = allScore.reduce(function(prev, curr) {
+                    return (Math.abs(curr - bestScore) < Math.abs(prev - bestScore) ? curr : prev);
+                });
+            }
+            winners = room.players.filter(e => e.gameValue === bestScore)
+            soifToGive = room.actualGame.soif
+            console.log(bestScore, soifToGive, winners)
+            break
+
         default:
             winners = room.players.filter(e => e.gameValue === room.roundAnswer)
             soifToGive = room.actualGame.soif
@@ -592,6 +606,7 @@ function setSoif(room, data) {
     winners.forEach(e => { 
         e.winner = true
 
+            console.log(e, soifToGive)
         // If soif to give is different between players
         if (soifToGive === null) {
             switch(room.actualGame.name) {
@@ -606,6 +621,10 @@ function setSoif(room, data) {
                     break
             }
         } else {
+			if (e.hasWinnerJoker) {
+                soifToGive *= 2
+                e.hasWinnerJoker = false
+            } 
             e.addSoifToGive(soifToGive)
         }
     })
@@ -672,10 +691,9 @@ function getPlayerState(roomId, socketId) {
 function getGamesTour(number = 2, room) {
     const tour = []
     const playerLength = room.players.length
-	
+
     // Take the configuration if she exists
     const realGames = room.configuration?.games ?? games.allGames
-
 
 	// Filter the games that cannot be played
 	const gamesPlayable = realGames.filter(e => {
@@ -684,7 +702,7 @@ function getGamesTour(number = 2, room) {
 			gameCanBePlayed = false
 		if (e.maxPlayers && e.maxPlayers < playerLength)
 			gameCanBePlayed = false
-        return gameCanBePlayed
+        return gameCanBePlayed && e.isEnabled
 	})
 
     while (tour.length != number) {
@@ -696,7 +714,7 @@ function getGamesTour(number = 2, room) {
     if (jokerWheel) {
         tour[4] = jokerWheel
         if (number >= 25 ) {
-            tour[10] = jokerWheel
+            tour[9] = jokerWheel
         }
         if (number >= 50 ) {
             tour[24] = jokerWheel

@@ -3,7 +3,7 @@ const utils = require("./../utils.js")
 
 module.exports = class TornadoJoker extends Joker {
     constructor() {
-        super(10, "La tornade", "Vole un joker d'un soifeur", Joker.rarity.rare, "weather-tornado", true)
+        super(99, "La tornade", "Vole un joker d'un soifeur", Joker.rarity.rare, "weather-tornado", true)
     }
 
     effect(player, target) {

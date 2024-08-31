@@ -2,7 +2,7 @@
   <v-card class="pa-2 my-3 rounded-lg" elevation="2" @click="jockerAction">
     <div class="d-flex justify-space-between align-center">
       <div>
-        <div :class="`${rarity.value} d-flex align-center`">
+        <div :class="`${rarity?.value} d-flex align-center`">
           <v-icon v-if="icon" class="mr-1">mdi mdi-{{ icon }}</v-icon>
           <h3>{{ title }}</h3>
         </div>

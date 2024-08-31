@@ -47,6 +47,6 @@ export default {
   font-size: 10rem;
   font-weight: bold;
   color: #2a2a2a;
-  z-index: 10;
+  z-index: 30;
 }
 </style>

@@ -4,7 +4,13 @@
       v-model="configuration.jokerActivated"
       color="info"
       label="Jouer avec les jokers"
-      value="info"
+      hide-details
+    ></v-switch>
+
+    <v-switch
+      v-model="switchAllEnabled"
+      color="info"
+      :label="switchAllEnabled ? 'Tout désactiver' : 'Tout activer'"
       hide-details
     ></v-switch>
 
@@ -72,7 +78,7 @@
                       {{ item.raw.minPlayers }}
                     </td>
                   </tr>
-                  <tr align="right">
+                  <tr v-if="item.raw.soif" align="right">
                     <th>Soifs pour le vainqueur :</th>
 
                     <td>
@@ -115,21 +121,21 @@
       </template>
 
       <template v-slot:footer="{ page, pageCount }">
-        <v-footer class="justify-space-between text-body-2 mt-4" color="surface-variant">
+        <v-footer class="justify-space-between text-body-2 ma-5" color="surface-variant">
           Total de jeux activés : {{ activatedGames.length }}
 
-          <div>{{ page }}/{{ pageCount }}</div>
+          <!-- <div>{{ page }}/{{ pageCount }}</div> -->
         </v-footer>
       </template>
     </v-data-iterator>
 
-    <v-btn class="w-100 text-white bg-gradient-success" @click="saveConfiguration()"
+    <v-btn class="w-100 text-white bg-gradient-success mx-5" @click="saveConfiguration()"
       >SAUVEGARDER</v-btn
     >
-    <v-btn class="w-100 text-white bg-gradient-warning" @click="deleteConfiguration()"
+    <v-btn class="w-100 text-white bg-gradient-warning ma-5" @click="deleteConfiguration()"
       >SUPPRIMER LA CONFIGURATION</v-btn
     >
-    <v-btn class="w-100 text-white bg-gradient-info" @click="goToSaloon()">RETOUR</v-btn>
+    <v-btn class="w-100 text-white bg-gradient-info mx-5" @click="goToSaloon()">RETOUR</v-btn>
   </v-container>
 </template>
 
@@ -142,6 +148,7 @@ export default {
   data() {
     return {
       state,
+      switchAllEnabled: true,
       configuration: {
         games: [],
         jokerActivated: true
@@ -282,8 +289,14 @@ export default {
         }
         //{name: 'FaceExpressionDetector', soif: 4}
       ],
-
       jokers: []
+    }
+  },
+  watch: {
+    switchAllEnabled(value) {
+      this.configuration.games.forEach((e) => {
+        e.isEnabled = value
+      })
     }
   },
   computed: {

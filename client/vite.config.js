@@ -5,6 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+// import vitePluginRequire from 'vite-plugin-require'
 
 // https://vitejs.dev/config/
 export default defineConfig({

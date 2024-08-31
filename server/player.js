@@ -15,10 +15,15 @@ module.exports = class Player {
     this.totalSoifGived = 0 // Soif donné au total
     this.soifGivedBy = [] // Indique par qui les soifs ont été donnés
     this.winner = false // Gagnant du round
-	  this.readyForNextRound = true // Indique si le joueur a validé avoir bu ses soifs
+	this.readyForNextRound = true // Indique si le joueur a validé avoir bu ses soifs
     this.isOffline = false // Indique si l'utilisateur est connecté
     this.jokers = [] // Les jokers du joueur
     this.hasBlurRoundDescription = false // Indique si la description du round est flouté
+	
+	// Joker
+	this.hasInvincibleJoker = 0 // Nombre de tours ne pouvant pas être visé
+	this.hasTrapJoker = false // Donne 3 soifs au joueur qui cible celui-ci
+	this.hasWinnerJoker = false // Double les soifs si prochain jeu gagnant
   }
 
   /**
@@ -75,10 +80,12 @@ module.exports = class Player {
     this.soifAddedThisRound = 0
     this.soifToGive = 0
     this.winner = false
-	  this.readyForNextRound = false
+    this.readyForNextRound = false
     this.soidGivedBy = []
     this.soifGivedBy = []
     this.hasBlurRoundDescription = hasBlurRoundDescription ?? false
+	
+    this.hasInvincibleJoker = this.hasInvincibleJoker > 0 ? this.hasInvincibleJoker - 1 : this.hasInvincibleJoker
   }
 
   reset() {

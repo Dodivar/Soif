@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div class="ma-5">
     <div class="ui-wheel-of-fortune w-100">
       <ul>
         <li class="common">COMMUN</li>
@@ -39,9 +39,9 @@
         <li class="nothing">RIEN</li>
         <li class="legendary">LEGENDAIRE</li>
       </ul>
-      <v-btn @click="launch" :disabled="animation" type="button">SPIN</v-btn>
+      <v-btn @click="launch" :disabled="animation !== null" type="button">SPIN</v-btn>
     </div>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -101,10 +101,14 @@ export default {
       setTimeout(this.getPrize, 4000)
     },
     getPrize() {
-      const node = document.querySelector(this.selector)
-      const li = Array.from(node.querySelectorAll('li'))
-      const highest = Math.min(...li.map((item) => item.getBoundingClientRect().y))
-      const heighestElement = li.find((e) => e.getBoundingClientRect().y === highest)
+      // const node = document.querySelector(this.selector)
+      // const li = Array.from(node.querySelectorAll('li'))
+      // const elementsY = Math.min(...li.map((item) => item.getBoundingClientRect().y))
+      // const heighestElement = li.find((e) => e.getBoundingClientRect().y === elementsY)
+      const heighestElement = document.elementFromPoint(
+        window.innerWidth / 2,
+        window.innerHeight / 3
+      )
       const jokerRarity = heighestElement.className
       socket.emit('Game:GetJokerOfRarity', jokerRarity)
     }

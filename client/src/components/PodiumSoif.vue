@@ -59,7 +59,7 @@ export default {
   },
   computed: {
     playerItems() {
-      return state.room.players.sort((a, b) => a.totalSoifGived - b.totalSoifGived)
+      return state.room.players.sort((a, b) => b.totalSoifGived - a.totalSoifGived)
     },
     roundAnswer() {
       return state.room.roundAnswer

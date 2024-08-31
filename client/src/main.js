@@ -9,3 +9,7 @@ const app = createApp(App)
 app.use(vuetify)
 
 app.mount('#app')
+
+// https://stackoverflow.com/questions/75714004/is-there-a-browserify-for-vite-how-can-i-use-webrtc-swarm-with-a-vite-based-pro
+
+// https://www.sliderrevolution.com/resources/css-animated-background/

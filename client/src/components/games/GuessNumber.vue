@@ -123,7 +123,7 @@ export default {
         this.endGame(true)
       } else if (this.attempts === 0) {
         this.message = `Dommage ! Le nombre était ${this.targetNumber}. Vous avez épuisé vos essais.`
-        socket.emit('Game:PlayGame', 0)
+        socket.emit('Game:PlayGame', this.inputNumber)
         this.endGame(false)
       } else {
         this.message = `Ce n'est pas le bon nombre. Il te reste ${this.attempts} essai${this.attempts > 1 ? 's' : ''}.`
