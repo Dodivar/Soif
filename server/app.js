@@ -592,7 +592,7 @@ function setSoif(room) {
             // } else {
             //     room.players.find(e => e.gameValue === room.roundAnswer)?.addSoifToDrink(room.roundAnswer)
             // }
-            winners = room.players.filter(e => e.gameValue.win)
+            winners = room.players.filter(e => e.gameValue === room.roundAnswer)
             soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             break;
         case "Labyrinth":
