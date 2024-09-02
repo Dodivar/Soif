@@ -286,7 +286,16 @@ export default {
           templateAnswer: '🃏 MANCHE BONUS 🃏',
           tips: 'appuie plus fort pour faire un lancer plus long',
           isEnabled: true
+        },
+        {
+          name: 'Loto',
+          description: 'Loto',
+          soif: 4,
+          templateAnswer: 'Le dernier en vie :',
+          tips: 'Choisie bien ta belle boule',
+          isEnabled: true
         }
+
         //{name: 'FaceExpressionDetector', soif: 4}
       ],
       jokers: []
@@ -311,7 +320,7 @@ export default {
     if (savedRoomConfiguration) {
       if (savedRoomConfiguration.games?.length < this.allGames.length) {
         const newGames = this.allGames.filter(
-          (e) => !savedRoomConfiguration.map((e) => e.name).includes(e.name)
+          (e) => !savedRoomConfiguration.games.map((e) => e.name).includes(e.name)
         )
         savedRoomConfiguration.games.push(...newGames)
 

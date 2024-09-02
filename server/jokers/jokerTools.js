@@ -11,22 +11,22 @@ const StealerJoker = require('./stealerJoker')
 const TrapJoker = require('./trapJoker')
 const WinnerJoker = require('./winnerJoker')
 const InvincibleJoker = require('./invincibleJoker')
-// const TornadoJoker = require('./TornadoJoker')
+const TornadoJoker = require('./tornadoJoker')
 
 const jokers = [
-    // new AdditionJoker(),
-    // new BlurDescriptionJoker(),
-    // new MirrorJoker(),
-    // new FriendCallJoker(),
-    // new DivisionJoker(),
-    // new CrazyJoker(),
-    // new MultiplyJoker(),
-    // new SubtractionJoker(),
-    // new StealerJoker(),
+    new AdditionJoker(),
+    new BlurDescriptionJoker(),
+    new MirrorJoker(),
+    new FriendCallJoker(),
+    new DivisionJoker(),
+    new CrazyJoker(),
+    new MultiplyJoker(),
+    new SubtractionJoker(),
+    new StealerJoker(),
     new TrapJoker(),
-    // new WinnerJoker(),
-    // new InvincibleJoker(),
-    // new TornadoJoker()
+    new WinnerJoker(),
+    new InvincibleJoker(),
+    new TornadoJoker()
 ] 
 
 function GetAll() {

@@ -286,6 +286,7 @@ import PersonnalQuestion from './games/PersonnalQuestion.vue'
 import Blackjack from './games/Blackjack.vue'
 import Labyrinth from './games/Labyrinth.vue'
 import NavalBattle from './games/NavalBattle.vue'
+import Loto from './games/Loto.vue'
 
 import RoomConfiguration from './RoomConfiguration.vue'
 import ScoreSoif from './ScoreSoif.vue'
@@ -314,6 +315,7 @@ export default {
     Blackjack,
     Labyrinth,
     NavalBattle,
+    Loto,
 
     RoomConfiguration,
     PodiumSoif,

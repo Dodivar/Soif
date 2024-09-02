@@ -10,10 +10,13 @@ module.exports = class Room {
             name: null
         }
         this.roundAnswer = null
+        this.roundAnswerLabel = null
 		this.showNextGamDesc = false
         this.configuration = null
     }
   
     reset() {
+        this.roundAnswer = null
+        this.roundAnswerLabel = null
     }
   }

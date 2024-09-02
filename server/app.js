@@ -331,17 +331,21 @@ io.on("connection", socket => {
     
     // Loto
     socket.on("Loto:PlaceBall", id => {
-        const ship = {
-            player: getPlayerState(socket.data.actualRoomId, socket.id),
-            isAlive: true,
-            position,
-            playerHitted: 0
-        }
         const room = getRoom(socket.data.actualRoomId)
-        room.actualGame.playerShips.push(ship)
+        room.actualGame.playerBalls.push(id)
         
-        if (room.actualGame.playerShips.length === room.players.length) {
-            room.actualGame.shipsArePlaced = true
+        // When all choose a ball, create random drawn numbers
+        if (room.actualGame.playerBalls.length >= room.players.length) {
+
+            const numbers = Array.from({ length: 100 }, (_, i) => i + 1)
+            const drawnNumbers = []
+            while (drawnNumbers.length < 99) {
+              const index = Math.floor(Math.random() * numbers.length)
+              const drawnNumber = numbers.splice(index, 1)[0]
+              drawnNumbers.push(drawnNumber)
+            }
+
+            room.actualGame.drawnBalls = drawnNumbers
         }
         
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
@@ -420,8 +424,8 @@ function setActualGameData(room, nextGame) {
             room.actualGame.playerTurn = room.players[room.actualGame.playerTurnIdx]
             break
         case "Loto":
-            room.actualGame.playerBall = []
-            room.actualGame.ballHits = []
+            room.actualGame.playerBalls = []
+            room.actualGame.drawnBalls = []
             break
 
         default:
@@ -451,6 +455,8 @@ function sendNextGame(io, socket, wait = 2000) {
             const needToKeepBlurDesc = previousGame.canBeBlured === false && e.hasBlurRoundDescription
 			e.resetRoundData(needToKeepBlurDesc)
 		})
+
+        room.reset()
 		
 		io.to(socket.data.actualRoomId).emit("refresh room", room)
 		room.gameIdx++
@@ -544,6 +550,12 @@ function playGame(socket, data) {
             case "NavalBattle":
                 room.roundAnswer = null
                 break
+                
+            case "Loto":
+                room.roundAnswer = true
+                const playersWin = room.players.filter(e => e.gameValue.win).map(e => e.gameValue.ball).join(', ')
+                room.roundAnswerLabel = playersWin
+                break
             default:
                 break
         }
@@ -576,6 +588,11 @@ function setGameValueLabel(room) {
             case "SurvivalEmoji":
                 e.gameValueLabel = `${e.gameValue}ms`
                 break
+            case "Loto":
+                e.gameValueLabel = `${e.gameValue.ball}`
+                break
+            default:
+                break
         }
     })
 }
@@ -587,11 +604,6 @@ function setSoif(room) {
     // Find winners
     switch(room.actualGame.name) {
         case "Simon":
-            // if (room.actualGame.isLooserDrinking) {
-            //     room.players.find(e => e.gameValue === 0)?.addSoifToDrink(room.actualGame.soif)
-            // } else {
-            //     room.players.find(e => e.gameValue === room.roundAnswer)?.addSoifToDrink(room.roundAnswer)
-            // }
             winners = room.players.filter(e => e.gameValue === room.roundAnswer)
             soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             break;
@@ -623,6 +635,10 @@ function setSoif(room) {
             soifToGive = room.actualGame.soif
             break
 
+        case "Loto":
+            winners = room.players.filter(e => e.gameValue.win === room.roundAnswer)
+            soifToGive = room.actualGame.soif
+            break;
         default:
             winners = room.players.filter(e => e.gameValue === room.roundAnswer)
             soifToGive = room.actualGame.soif

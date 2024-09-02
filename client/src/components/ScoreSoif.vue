@@ -4,7 +4,8 @@
     <div class="w-100 text-center my-5">
       <h2>
         <span v-if="allPlayerHasPlayed"
-          >{{ state.room.actualGame.templateAnswer }} {{ roundAnswer }}</span
+          >{{ state.room.actualGame.templateAnswer }}
+          {{ roundAnswerLabel ? roundAnswerLabel : roundAnswer }}</span
         >
         <span v-else>En attente des autres soifeurs...</span>
       </h2>
@@ -94,6 +95,9 @@ export default {
     },
     roundAnswer() {
       return state.room.roundAnswer
+    },
+    roundAnswerLabel() {
+      return state.room.roundAnswerLabel
     }
   },
   methods: {
