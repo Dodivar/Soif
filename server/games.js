@@ -16,10 +16,24 @@ const allGames = [
     {name: 'NavalBattle', description: 'Touché coulé !', soif: null, templateAnswer: 'Résultat', tips: "regarde l'écran de ton voisin pour connaître son emplacement" , isEnabled: true },
 	{name: 'JokerWheel', description: '🃏 MANCHE BONUS 🃏', soif: null, templateAnswer: '🃏 MANCHE BONUS 🃏', tips: "appuie plus fort pour faire un lancer plus long" , isEnabled: true },
 	{name: 'Loto', description: 'Loto', soif: 4, templateAnswer: 'Le dernier en vie :', tips: "Choisie bien ta belle boule" , isEnabled: true },
+        {
+          name: 'RebondBall',
+          description: 'Balle rebondissante',
+          soif: 4,
+          templateAnswer: 'Le dernier en vie :',
+          tips: 'Anticipe les mouvements de la balle',
+          isEnabled: true
+        },
+        {
+          name: 'BrickBreaker',
+          description: 'Casse-brique',
+          soif: 4,
+          templateAnswer: 'Le dernier en vie :',
+          tips: 'Reste bien en dessous de la boule',
+          isEnabled: true
+        }
 	//{name: 'FaceExpressionDetector', soif: 4}
 ]
 
 
-
-// module.exports = { allGames }
 module.exports = { allGames }

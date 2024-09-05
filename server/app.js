@@ -501,6 +501,8 @@ function playGame(socket, data) {
             case "FastClick":
             case "SurvivalEmoji":
             case "DotClick":
+            case "BrickBreaker":
+            case "RebondBall":
                 room.roundAnswer = Math.max.apply(Math, room.players.map(e => e.gameValue));
                 break
 				

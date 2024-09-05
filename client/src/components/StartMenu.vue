@@ -66,13 +66,13 @@
 
         <!-- Join room -->
         <v-form class="mt-5 text-center" @submit.prevent>
-          <v-text-field
+          <v-number-input
             v-if="wantToJoinRoom"
             v-model="roomToJoin"
             :counter="6"
             placeholder="Numéro de partie"
             label="Numéro de partie"
-          ></v-text-field>
+          ></v-number-input>
           <v-btn
             v-if="!wantToCreateRoom"
             @click="wantToJoinRoom ? joinRoom() : (wantToJoinRoom = true)"
@@ -218,7 +218,7 @@
             >
               {{ state.room.actualGame.description }}
             </h2>
-            <p>
+            <p v-if="state.room.actualGame.tips">
               <i>Astuce : {{ state.room.actualGame.tips }}</i>
             </p>
             <p v-if="state.room.gameIdx + 1 <= state.room.gamesTour.length - 1" class="mt-3">
@@ -287,6 +287,8 @@ import Blackjack from './games/Blackjack.vue'
 import Labyrinth from './games/Labyrinth.vue'
 import NavalBattle from './games/NavalBattle.vue'
 import Loto from './games/Loto.vue'
+import RebondBall from './games/RebondBall.vue'
+import BrickBreaker from './games/BrickBreaker.vue'
 
 import RoomConfiguration from './RoomConfiguration.vue'
 import ScoreSoif from './ScoreSoif.vue'
@@ -316,6 +318,8 @@ export default {
     Labyrinth,
     NavalBattle,
     Loto,
+    RebondBall,
+    BrickBreaker,
 
     RoomConfiguration,
     PodiumSoif,
@@ -371,6 +375,7 @@ export default {
   methods: {
     createRoom(roundNumber) {
       socket.emit('Room:Create', state.player, this.avatar, roundNumber)
+      navigator.clipboard.writeText(state.room.roomId)
     },
     joinRoom() {
       socket.emit('Room:Join', this.roomToJoin, state.player, this.avatar)

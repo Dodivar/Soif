@@ -121,8 +121,11 @@ export default {
       rowDiv.classList.add('drawn-row')
 
       // Delete all draw balls childs
-      console.log(this.drawnNumbersDiv.firstElementChild)
-      this.drawnNumbersDiv.removeChild(this.drawnNumbersDiv.firstElementChild)
+      let child = this.drawnNumbersDiv.firstElementChild
+      while (child) {
+        this.drawnNumbersDiv.removeChild(child)
+        child = this.drawnNumbersDiv.firstElementChild
+      }
 
       balls.forEach((num) => {
         // Append drawn balls

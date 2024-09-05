@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-2 my-3 rounded-lg" elevation="2" @click="jockerAction">
+  <v-card class="pa-2 my-3 rounded-lg" elevation="2" :disabled="idDisabled" @click="jockerAction">
     <div class="d-flex justify-space-between align-center">
       <div>
         <div :class="`${rarity?.value} d-flex align-center`">
@@ -59,8 +59,27 @@ export default {
       }
     }
   },
-  created() {},
-  mounted() {},
+  computed: {
+    idDisabled() {
+      switch (this.title) {
+        case 'Le boss':
+          return state.player.hasWinnerJoker ?? false
+        case 'Le piège':
+          return state.player.hasTrapJoker ?? false
+        case 'Le bouclier':
+        case 'Le boucher':
+          return state.player.soifAddedThisRound > 0
+        case "L'abuseur":
+        case 'Quitte ou double':
+        case 'Miroir':
+        case "L'appel à un ami":
+          return state.player.soifToGive > 0
+        default:
+          break
+      }
+      return false
+    }
+  },
   methods: {
     jockerAction() {
       if (!this.canBeActivated || state.jokerTarget === true) return

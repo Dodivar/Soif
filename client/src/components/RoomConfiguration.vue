@@ -294,9 +294,23 @@ export default {
           templateAnswer: 'Le dernier en vie :',
           tips: 'Choisie bien ta belle boule',
           isEnabled: true
+        },
+        {
+          name: 'RebondBall',
+          description: 'Balle rebondissante',
+          soif: 4,
+          templateAnswer: 'Le dernier en vie :',
+          tips: 'Anticipe les mouvements de la balle',
+          isEnabled: true
+        },
+        {
+          name: 'BrickBreaker',
+          description: 'Casse-brique',
+          soif: 4,
+          templateAnswer: 'Le dernier en vie :',
+          tips: 'Reste bien en dessous de la boule',
+          isEnabled: true
         }
-
-        //{name: 'FaceExpressionDetector', soif: 4}
       ],
       jokers: []
     }

@@ -227,6 +227,7 @@ export default {
   font-size: 100px;
   color: rgba(0, 0, 0, 0.2);
   pointer-events: none;
+  user-select: none;
 }
 #score.finish {
   font-size: 150px;

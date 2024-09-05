@@ -6,8 +6,8 @@ module.exports = class InvincibleJoker extends Joker {
     }
 
     effect(player) {
-        player.hasInvincibleJoker = 3
+        player.hasInvincibleJoker += 3
 
-        return `${player.pseudo} est invincible pendant 3 rounds, tu ne pourras pas lui donner de soif`
+        return `${player.pseudo} est invincible pendant ${player.hasInvincibleJoker} rounds, tu ne pourras pas lui donner de soif`
     }
 }
