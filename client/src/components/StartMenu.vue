@@ -66,13 +66,13 @@
 
         <!-- Join room -->
         <v-form class="mt-5 text-center" @submit.prevent>
-          <v-number-input
+          <v-text-field
             v-if="wantToJoinRoom"
             v-model="roomToJoin"
             :counter="6"
             placeholder="Numéro de partie"
             label="Numéro de partie"
-          ></v-number-input>
+          ></v-text-field>
           <v-btn
             v-if="!wantToCreateRoom"
             @click="wantToJoinRoom ? joinRoom() : (wantToJoinRoom = true)"
@@ -86,6 +86,7 @@
           >
         </v-form>
 
+        <!-- ROUND NUMBER -->
         <div v-if="wantToCreateRoom">
           <h3>Quelle formule allez vous choisir ?</h3>
           <v-sheet
@@ -226,7 +227,7 @@
             </p>
           </v-sheet>
         </div>
-        <ScoreSoif v-else-if="state.player?.hasPlayed" />
+        <ScoreSoif v-else-if="state.player?.hasPlayed" @confetti="createConfetti" />
         <component v-else :is="actualGameName" @confetti="createConfetti" />
       </div>
 
@@ -422,12 +423,49 @@ export default {
       this.notReadyToPlay()
       this.wantToConfigureRoom = true
     },
-    createConfetti() {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      })
+    createConfetti(type) {
+      switch (type) {
+        case 'TOP1':
+          this.confettiStars()
+          break
+        default:
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          })
+      }
+    },
+
+    confettiStars() {
+      var defaults = {
+        spread: 360,
+        ticks: 50,
+        gravity: 0,
+        decay: 0.94,
+        startVelocity: 30,
+        colors: ['FFE400', 'FFBD00', 'E89400', 'FFCA6C', 'FDFFB8']
+      }
+
+      const shoot = function () {
+        confetti({
+          ...defaults,
+          particleCount: 40,
+          scalar: 1.2,
+          shapes: ['star']
+        })
+
+        confetti({
+          ...defaults,
+          particleCount: 10,
+          scalar: 0.75,
+          shapes: ['circle']
+        })
+      }
+
+      setTimeout(shoot, 0)
+      setTimeout(shoot, 100)
+      setTimeout(shoot, 200)
     }
   }
 }

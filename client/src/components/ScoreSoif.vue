@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <p class="position-fixed top-0 right-0 ma-5">{{ state.room.roomId }}</p>
+    <p class="position-fixed top-0 left-0 ma-5">{{ state.room.roomId }}</p>
+    <v-icon @click="leaveRoom" class="position-fixed top-0 right-0 text-h4 ma-3"
+      >mdi mdi-door</v-icon
+    >
     <div class="w-100 text-center my-5">
       <h2>
         <span v-if="allPlayerHasPlayed"
@@ -86,6 +89,19 @@ export default {
       state
     }
   },
+  watch: {
+    allPlayerHasPlayed(newVal) {
+      console.log(newVal, state.player.soifToGive)
+      if (newVal === true && state.player.soifToGive > 0) {
+        this.$emit('confetti')
+      }
+    }
+  },
+  created() {
+    if (this.allPlayerHasPlayed && state.player.soifToGive > 0) {
+      this.$emit('confetti')
+    }
+  },
   computed: {
     playerItems() {
       return state.room.players
@@ -102,7 +118,6 @@ export default {
   },
   methods: {
     playerHandleClick(target) {
-      console.log(target)
       // If a joker with target needed
       if (state.jokerTarget === true) {
         state.jokerTarget = target.socketId
@@ -122,8 +137,14 @@ export default {
     },
 
     readyForNextRound() {
-      socket.emit('Game:ReadyForNextRound')
-      state.player.readyForNextRound = true
+      socket.emit('Game:ReadyForNextRound'), (state.player.readyForNextRound = true)
+    },
+
+    leaveRoom() {
+      if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
+        socket.emit('Room:Quit')
+        state.room = {}
+      }
     }
   }
 }

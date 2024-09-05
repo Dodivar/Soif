@@ -299,7 +299,7 @@ export default {
           name: 'RebondBall',
           description: 'Balle rebondissante',
           soif: 4,
-          templateAnswer: 'Le dernier en vie :',
+          templateAnswer: 'Le meilleur score :',
           tips: 'Anticipe les mouvements de la balle',
           isEnabled: true
         },
@@ -307,7 +307,7 @@ export default {
           name: 'BrickBreaker',
           description: 'Casse-brique',
           soif: 4,
-          templateAnswer: 'Le dernier en vie :',
+          templateAnswer: 'Le meilleur score :',
           tips: 'Reste bien en dessous de la boule',
           isEnabled: true
         }

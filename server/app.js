@@ -56,13 +56,13 @@ io.on("connection", socket => {
         getPlayerState(socket.data.actualRoomId, socket.id).isOffline = true
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
 
-        // Wait 1min before to delete player
+        // Wait 2min before to delete player
         setTimeout(() => {
             if (getPlayerState(socket.data.actualRoomId, socket.id).isOffline) {
                 deletePlayer(socket.data.actualRoomId, socket.id)
                 io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
             }
-        }, 60 * 1000)
+        }, 120 * 1000)
     });
 
     // Disconnect socket room
@@ -503,7 +503,7 @@ function playGame(socket, data) {
             case "DotClick":
             case "BrickBreaker":
             case "RebondBall":
-                room.roundAnswer = Math.max.apply(Math, room.players.map(e => e.gameValue));
+                room.roundAnswer = Math.max.apply(Math, room.players.filter(e => e.gameValue > 0).map(e => e.gameValue));
                 break
 				
             // Lower score of players
