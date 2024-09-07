@@ -215,8 +215,8 @@ io.on("connection", socket => {
             socket.emit("Game:GetJokerOfRarity", `Tu n'as reçu aucun joker 😈`, null)
         }
         else {
-            const playerJokerId = player.jokers.map(e => e.id)
-            const availableJoker = JokerTools.GetRarity(rarity).filter(e => !playerJokerId.includes(e.id))
+            const playerJokerId = player.jokers?.map(e => e.id)
+            const availableJoker = JokerTools.GetRarity(rarity).filter(e => !playerJokerId?.includes(e.id))
             if (availableJoker.length === 0) {
                 socket.emit("Game:GetJokerOfRarity", `Tu as déjà tous les joker ${rarity}, pense à les utiliser 🥴`, null)
             }
@@ -470,6 +470,11 @@ function setActualGameData(room, nextGame) {
         case "RockPaperScissor":
             room.actualGame.opponents = {}
             const playersShuffled = shuffleArray(room.players)
+
+            // If the players length is even we pop one to give hima joker wheel
+            if (playersShuffled.length % 2 === 1) {
+                playersShuffled.pop()
+            }
 
             // Set opponents
             for (let i = 0; i < playersShuffled.length - 1; i += 2) {
@@ -812,7 +817,6 @@ function getPlayerState(roomId, socketId) {
     return getPlayerRoomState(roomId)?.find(e => e.socketId === socketId) ?? {};
 }
 
-// TODO si pas de jeu dispo retourne juste le final
 function getGamesTour(number = 2, room) {
     const tour = []
     const playerLength = room.players.length
@@ -835,26 +839,28 @@ function getGamesTour(number = 2, room) {
         return gameCanBePlayed
 	})
 
-    while (tour.length != number) {
-		tour.push(utils.GetRandomElement(gamesPlayable))
-    }
+    if (gamesPlayable.length > 0) {
+        while (tour.length != number) {
+            tour.push(utils.GetRandomElement(gamesPlayable))
+        }
 
-    // Add joker wheel round
-    if (jokerActivation) {
-        const jokerWheel = gamesArray.find(e => e.name === "JokerWheel")
-        if (jokerWheel) {
-            tour[4] = jokerWheel
-            if (number >= 25 ) {
-                tour[9] = jokerWheel
-            }
-            if (number >= 50 ) {
-                tour[24] = jokerWheel
-            }
-            if (number >= 75 ) {
-                tour[49] = jokerWheel
-            }
-            if (number >= 100 ) {
-                tour[74] = jokerWheel
+        // Add joker wheel round
+        if (jokerActivation) {
+            const jokerWheel = gamesArray.find(e => e.name === "JokerWheel")
+            if (jokerWheel) {
+                tour[4] = jokerWheel
+                if (number >= 25 ) {
+                    tour[9] = jokerWheel
+                }
+                if (number >= 50 ) {
+                    tour[24] = jokerWheel
+                }
+                if (number >= 75 ) {
+                    tour[49] = jokerWheel
+                }
+                if (number >= 100 ) {
+                    tour[74] = jokerWheel
+                }
             }
         }
     }

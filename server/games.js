@@ -38,7 +38,6 @@ const allGames = [
     soif: 2,
     templateAnswer: 'Bravo aux gagnants',
     tips: 'Les mecs font souvent pierre',
-    oddPlayerNecessary: true,
     isEnabled: true
   },
   {

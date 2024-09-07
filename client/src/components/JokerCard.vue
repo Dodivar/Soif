@@ -61,6 +61,8 @@ export default {
   },
   computed: {
     isDisabled() {
+      if (!this.canBeActivated) return false
+      
       switch (this.title) {
         case 'Le boss':
           return state.player.hasWinnerJoker ?? false

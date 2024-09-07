@@ -1,69 +1,60 @@
 <template>
-  <div id="game-container">
-    <Timer :time="60" @end-timer="setChoice('🥴')"></Timer>
-    <div
-      id="choice-container"
-      class="d-flex-flex-container flex-columns text-center justify-space-between"
-    >
-      <h2>Round {{ round }}</h2>
+  <div :id="jokerWheel ? '' : 'game-container'">
+    <template v-if="!jokerWheel">
+      <div class="d-flex-flex-container flex-columns text-center justify-space-between">
+        <h2>Round {{ round }}</h2>
 
-      <!-- OPPONENTS -->
-      <div class="d-flex justify-space-between align-center mt-5">
-        <PlayerAvatar
-          class="mx-5"
-          :player="state.player"
-          :avatar-size="100"
-          :show-pseudo="true"
-        ></PlayerAvatar>
-        <h3>VS</h3>
-        <PlayerAvatar
-          class="mx-5"
-          :player="oponnent"
-          :avatar-size="100"
-          :show-pseudo="true"
-        ></PlayerAvatar>
+        <!-- OPPONENTS -->
+        <div class="d-flex justify-space-between align-center mt-5">
+          <PlayerAvatar class="mx-5" :player="state.player" :avatar-size="100"></PlayerAvatar>
+          <h1>VS</h1>
+          <PlayerAvatar class="mx-5" :player="oponnent" :avatar-size="100"></PlayerAvatar>
+        </div>
+
+        <!-- MESSAGES -->
+        <div id="messages">
+          <h2>{{ winNumber }} - {{ looseNumber }}</h2>
+          <p>
+            {{ choice ? choice : lastChoice }} contre
+            {{ !choice ? opponentChoiceToDisplay : '?' }}
+          </p>
+          <p>{{ message }}</p>
+        </div>
       </div>
-
-      <!-- MESSAGES -->
-      <div>
-        <p v-if="!this.opponentChoice">En attente du choix de {{ opponentData.pseudo }}</p>
-        <p>{{ message }}</p>
-        <h3>{{ winNumber }} - {{ looseNumber }}</h3>
-      </div>
-
-      <!-- CHOICES -->
-      <div class="w-100">
+      <div class="w-100 h-100 d-flex-flex-container flex-columns text-center justify-space-between">
+        <!-- CHOICES -->
         <v-sheet class="bg-red" @click="setChoice('👊')">👊</v-sheet>
         <v-sheet class="bg-blue" @click="setChoice('✋')">✋</v-sheet>
         <v-sheet class="bg-green" @click="setChoice('✌️')">✌️</v-sheet>
       </div>
-    </div>
+    </template>
+    <JokerWheel v-else />
   </div>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
-import Timer from '@/components/Timer.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
+import JokerWheel from './../JokerWheel.vue'
 
 export default {
   components: {
-    Timer,
-    PlayerAvatar
+    PlayerAvatar,
+    JokerWheel
   },
   data() {
     return {
       state,
       round: 1,
       choice: null,
-      win: null,
       winNumber: 0,
       looseNumber: 0,
       oponnent: null,
       canPlay: true,
       message: null,
       hasChoose: false,
-      lastChoice: null
+      lastChoice: null,
+      jokerWheel: false
     }
   },
   watch: {
@@ -78,14 +69,20 @@ export default {
     },
     opponentChoice() {
       return this.opponentData.choice[this.round - 1]
+    },
+    opponentChoiceToDisplay() {
+      return this.opponentData.choice[this.round - 2]
     }
   },
   created() {
     this.oponnent = this.opponentData
+    if (!this.oponnent) {
+      this.jokerWheel = true
+    }
   },
   methods: {
     setChoice(choice) {
-      if (this.hasChoose && this.canPlay) return
+      if (this.hasChoose || !this.canPlay) return
       this.hasChoose = true
       this.choice = choice
       this.lastChoice = choice
@@ -147,10 +144,8 @@ export default {
     },
 
     updateMessage(result) {
-      console.log(this.choice, this.lastOpponentChoice)
-      const fightResult =
-        result === 'win' ? 'tu gagnes' : result === 'loose' ? 'tu perds' : 'égalité'
-      this.message = `${this.lastChoice} contre ${this.getLastOpponentChoice()}, ${fightResult} !`
+      this.message = result === 'win' ? 'Gagné !' : result === 'loose' ? 'Perdu...' : 'Egalité'
+      // this.message = `${this.lastChoice} contre ${this.getLastOpponentChoice()}, ${fightResult} !`
     },
 
     getLastOpponentChoice() {
@@ -161,13 +156,24 @@ export default {
 </script>
 
 <style scoped>
-#choice-container {
-  flex: 1 1 auto;
+#game-container {
+  display: flex;
+  flex-direction: column;
 }
 .v-sheet {
   width: 100%;
+  height: 33%;
   user-select: none;
   font-size: 5rem;
   cursor: pointer;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+.v-sheet:last-child {
+  height: 34%;
+}
+#messages {
+  font-size: 2rem;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div id="game-container">
+  <div id="game-container-loto">
     <h1>Loto</h1>
     <p v-if="selectedNumber === null">Choisissez un numéro entre 1 et 100 :</p>
     <div id="number-grid" w-tid="11"></div>
@@ -160,7 +160,13 @@ export default {
 </script>
 
 <style lang="scss">
-#game-container {
+#game-container-loto {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
   background-color: white;
   border-radius: 10px;
   padding: 15px;

@@ -128,13 +128,15 @@
       </template>
     </v-data-iterator>
 
-    <v-btn class="w-100 text-white bg-gradient-success mx-5" @click="saveConfiguration()"
+    <v-btn class="w-100 text-white bg-gradient-success rounded-xl" @click="saveConfiguration()"
       >SAUVEGARDER</v-btn
     >
-    <v-btn class="w-100 text-white bg-gradient-warning ma-5" @click="deleteConfiguration()"
+    <v-btn
+      class="w-100 text-white bg-gradient-warning my-5 rounded-xl"
+      @click="deleteConfiguration()"
       >SUPPRIMER LA CONFIGURATION</v-btn
     >
-    <v-btn class="w-100 text-white bg-gradient-info mx-5" @click="goToSaloon()">RETOUR</v-btn>
+    <v-btn class="w-100 text-white bg-gradient-info rounded-xl" @click="goToSaloon()">RETOUR</v-btn>
   </v-container>
 </template>
 
@@ -316,7 +318,6 @@ export default {
           soif: 2,
           templateAnswer: 'Bravo aux gagnants',
           tips: 'Les mecs font souvent pierre',
-          oddPlayerNecessary: true,
           isEnabled: true
         },
         {
