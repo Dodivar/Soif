@@ -135,9 +135,7 @@ export default {
       if (this.gameOver) return
       const cellId = parseInt(event.target.dataset.id)
 
-      console.log(this.playerShip)
-
-      if (!this.playerShip) {
+      if (this.playerShip === null) {
         this.placePlayerShip(cellId)
       } else if (this.actualPlayer.socketId === state.player.socketId && this.shipsArePlaced) {
         this.attackCell(cellId)

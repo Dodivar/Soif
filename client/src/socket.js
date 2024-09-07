@@ -46,12 +46,16 @@ socket.on('disconnect', () => {
   state.player.isOffline = !socket.connected
 })
 
+socket.on('connect_error', (err) => {
+  console.info(`connect_error due to ${err.message}`)
+  state.errMsg = err.message
+})
+
 // User joined the game
 socket.on('join room', (roomState, roomAvatars) => {
   state.room = roomState
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
 
-  console.log(state.room)
   // Set each player avatars
   roomAvatars.avatars.forEach((player) => {
     if (
@@ -61,19 +65,19 @@ socket.on('join room', (roomState, roomAvatars) => {
       sessionStorage.setItem(`playerAvatar-${player.socketId}`, player.avatar)
     }
   })
+
+  // Copy in the clipboard the room id
+  navigator.clipboard.writeText(state.room.roomId)
 })
 
 socket.on('refresh players', (players) => {
   state.room.players = players
   state.player = players.find((e) => e.socketId === socket.id) ?? state.player
-  console.log(state.player)
 })
 
 socket.on('refresh room', (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
-
-  console.log(state.player)
 })
 
 socket.on('UpdateActualGame', (actualGame) => {
@@ -107,10 +111,4 @@ socket.on('SimonUpdateMsg', (msg) => {
 // TTMC
 socket.on('TTMCChosenQuestionNumber', (index) => {
   state.room.actualGame.chosenQuestionNumber = index
-  console.log(state.room.actualGame)
-})
-
-socket.on('connect_error', (err) => {
-  console.info(`connect_error due to ${err.message}`)
-  state.errMsg = err.message
 })

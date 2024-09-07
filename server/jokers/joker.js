@@ -7,7 +7,8 @@ module.exports = class Joker {
         this.rarity = rarity
         this.icon = icon
         this.isTargeted = isTargeted
-		this.noEventMsg = false
+		this.noEventMsg = false // Indique si il faut notifier les joueurs de l'utilisation du joker
+		this.allEventMsg = false // Indique si il faut envoyer la notif à tous les joueurs, si faux le joueur ayant utilisé le joker ne sera pas notifié
     }
 
     effect() {

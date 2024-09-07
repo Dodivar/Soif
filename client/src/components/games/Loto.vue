@@ -137,7 +137,6 @@ export default {
         // Set draw color
         document.getElementById(`ball-${num}`).classList.add('drawn')
       })
-      console.log(rowDiv)
       this.drawnNumbersDiv.appendChild(rowDiv)
     },
 

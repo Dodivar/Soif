@@ -27,7 +27,7 @@ export default {
       ballY: window.innerHeight / 2,
       velocityX: 2,
       velocityY: 0,
-      gravity: 0.15,
+      gravity: 0.2,
       damping: 0.98,
       isGameOver: false,
       lastTimestamp: 0,
@@ -119,7 +119,7 @@ export default {
     },
 
     onBallClick(e) {
-      this.widthBall--
+      this.widthBall -= 2
       this.setBallWidth()
       e.preventDefault()
       if (!this.isGameOver) {

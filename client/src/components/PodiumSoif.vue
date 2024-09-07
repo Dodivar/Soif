@@ -1,5 +1,8 @@
 <template>
   <v-container>
+    <v-icon @click="quitRoom" class="position-fixed top-0 right-0 text-h4 ma-3"
+      >mdi mdi-door</v-icon
+    >
     <div class="w-100 text-center ma-5">
       <h2>
         <v-icon>mdi-podium</v-icon>
@@ -65,9 +68,24 @@ export default {
       return state.room.roundAnswer
     }
   },
+  created() {
+    const position = this.playerItems.indexOf(
+      this.playerItems.find((e) => e.socketId === state.player.socketId)
+    )
+    console.log(position)
+    if (position < 3) {
+      this.$emit('confetti', 'TOP1')
+    }
+  },
   methods: {
     replay() {
       socket.emit('replay')
+    },
+
+    quitRoom() {
+      if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
+        this.$emit('quiRoom')
+      }
     }
   }
 }

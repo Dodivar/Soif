@@ -50,12 +50,11 @@
         <v-row>
           <v-col v-for="(item, i) in items" :key="i" cols="12" sm="4" xl="3">
             <v-sheet border class="rounded">
-              <!--:src="item.raw.src"-->
-              <v-img
+              <!-- <v-img
                 :gradient="`to top right, rgba(255, 255, 255, .1), rgba(${item.raw.color}, .15)`"
                 height="150"
                 cover
-              ></v-img>
+              ></v-img> -->
 
               <v-list-item
                 :title="item.raw.name"
@@ -309,6 +308,23 @@ export default {
           soif: 4,
           templateAnswer: 'Le meilleur score :',
           tips: 'Reste bien en dessous de la boule',
+          isEnabled: true
+        },
+        {
+          name: 'RockPaperScissor',
+          description: 'Pierre feuille ciseaux',
+          soif: 2,
+          templateAnswer: 'Bravo aux gagnants',
+          tips: 'Les mecs font souvent pierre',
+          oddPlayerNecessary: true,
+          isEnabled: true
+        },
+        {
+          name: 'GuessHead',
+          description: 'Devine tête',
+          soif: 4,
+          templateAnswer: 'Bravo aux gagnants',
+          tips: 'Les questions doivent être répondues par oui ou non',
           isEnabled: true
         }
       ],

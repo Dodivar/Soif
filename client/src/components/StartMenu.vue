@@ -290,6 +290,8 @@ import NavalBattle from './games/NavalBattle.vue'
 import Loto from './games/Loto.vue'
 import RebondBall from './games/RebondBall.vue'
 import BrickBreaker from './games/BrickBreaker.vue'
+import RockPaperScissor from './games/RockPaperScissor.vue'
+import GuessHead from './games/GuessHead.vue'
 
 import RoomConfiguration from './RoomConfiguration.vue'
 import ScoreSoif from './ScoreSoif.vue'
@@ -321,6 +323,8 @@ export default {
     Loto,
     RebondBall,
     BrickBreaker,
+    RockPaperScissor,
+    GuessHead,
 
     RoomConfiguration,
     PodiumSoif,
@@ -376,7 +380,6 @@ export default {
   methods: {
     createRoom(roundNumber) {
       socket.emit('Room:Create', state.player, this.avatar, roundNumber)
-      navigator.clipboard.writeText(state.room.roomId)
     },
     joinRoom() {
       socket.emit('Room:Join', this.roomToJoin, state.player, this.avatar)

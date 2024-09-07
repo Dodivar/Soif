@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <p class="position-fixed top-0 left-0 ma-5">{{ state.room.roomId }}</p>
-    <v-icon @click="leaveRoom" class="position-fixed top-0 right-0 text-h4 ma-3"
+    <v-icon @click="quitRoom" class="position-fixed top-0 right-0 text-h4 ma-3"
       >mdi mdi-door</v-icon
     >
     <div class="w-100 text-center my-5">
@@ -140,10 +140,9 @@ export default {
       socket.emit('Game:ReadyForNextRound'), (state.player.readyForNextRound = true)
     },
 
-    leaveRoom() {
+    quitRoom() {
       if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
-        socket.emit('Room:Quit')
-        state.room = {}
+        this.$emit('quiRoom')
       }
     }
   }

@@ -102,11 +102,11 @@ export default {
       if (!this.userCanPlay || !this.isPlayerTurn || this.finished) {
         return
       }
-      socket.emit('SimonLightUpButton', color)
-      this.lightUpButton(color)
-
       this.playerSequence.push(color)
       this.checkPlayerInput()
+
+      socket.emit('SimonLightUpButton', color)
+      this.lightUpButton(color)
     },
 
     checkPlayerInput() {

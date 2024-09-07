@@ -4,6 +4,7 @@ const utils = require("./../utils.js")
 module.exports = class TornadoJoker extends Joker {
     constructor() {
         super(13, "La tornade", "Vole un joker d'un soifeur", Joker.rarity.rare, "weather-tornado", true)
+		this.allEventMsg = true
     }
 
     effect(player, target) {

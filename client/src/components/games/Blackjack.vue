@@ -129,7 +129,7 @@ export default {
 
       const deck = document.getElementById('deck')
       const deckRect = deck.getBoundingClientRect()
-      console.log(deckRect)
+      
       const table = document.getElementById('game-blackjack')
       const tableRect = table.getBoundingClientRect()
 
@@ -150,9 +150,9 @@ export default {
     },
 
     checkBlackjack() {
-      if (this.playerScore === 21) {
+      if (this.playerScore === 21 && this.playerHand.length === 2) {
         this.endGame('Blackjack ! Vous gagnez !', true)
-      } else if (this.dealerScore === 21) {
+      } else if (this.dealerScore === 21 && this.dealerHand.length === 2) {
         this.endGame('La banque a un Blackjack, vous perdez.', false)
       }
     },
@@ -192,9 +192,7 @@ export default {
           this.dealCard(this.dealerHand, true)
           this.updateScores()
 
-          if (this.dealerHand.length === 2) {
-            this.checkBlackjack()
-          }
+          this.checkBlackjack()
         } else {
           clearInterval(dealerDraw)
           if (this.dealerScore > 21) {
@@ -342,26 +340,4 @@ export default {
   top: 200px;
   left: 10px;
 }
-/* @media (max-width: 600px) {
-  #table {
-    height: 40vh;
-    min-height: 250px;
-  }
-  .card {
-    width: 40px;
-    height: 60px;
-    font-size: 14px;
-  }
-  #deck {
-    width: 40px;
-    height: 60px;
-  }
-  .score {
-    font-size: 14px;
-  }
-  button {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-} */
 </style>
