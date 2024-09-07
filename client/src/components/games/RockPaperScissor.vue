@@ -28,7 +28,8 @@
         <v-sheet class="bg-green" @click="setChoice('✌️')">✌️</v-sheet>
       </div>
     </template>
-    <JokerWheel v-else />
+    <!-- <JokerWheel v-else /> -->
+    <h2 v-else>Pas de d'adversaires pour toi désolé...</h2>
   </div>
 </template>
 
@@ -78,6 +79,10 @@ export default {
     this.oponnent = this.opponentData
     if (!this.oponnent) {
       this.jokerWheel = true
+
+      setTimeout(() => {
+        socket.emit('Game:PlayGame', true)
+      }, 3000)
     }
   },
   methods: {

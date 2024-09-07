@@ -211,12 +211,14 @@ io.on("connection", socket => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.readyForNextRound = true
 
+        console.log(player)
+
         if (rarity === 'nothing') {
             socket.emit("Game:GetJokerOfRarity", `Tu n'as reçu aucun joker 😈`, null)
         }
         else {
-            const playerJokerId = player.jokers?.map(e => e.id)
-            const availableJoker = JokerTools.GetRarity(rarity).filter(e => !playerJokerId?.includes(e.id))
+            const playerJokerId = player.jokers.map(e => e.id)
+            const availableJoker = JokerTools.GetRarity(rarity).filter(e => !playerJokerId.includes(e.id))
             if (availableJoker.length === 0) {
                 socket.emit("Game:GetJokerOfRarity", `Tu as déjà tous les joker ${rarity}, pense à les utiliser 🥴`, null)
             }
