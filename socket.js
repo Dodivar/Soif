@@ -65,14 +65,17 @@ socket.on('join room', (roomState, roomAvatars) => {
       sessionStorage.setItem(`playerAvatar-${player.socketId}`, player.avatar)
     }
   })
+
+  // Copy in the clipboard the room id
+  navigator.clipboard.writeText(state.room.roomId)
 })
 
-socket.on('refresh players', (players) => {
+socket.on("Room:RefreshPlayers", (players) => {
   state.room.players = players
   state.player = players.find((e) => e.socketId === socket.id) ?? state.player
 })
 
-socket.on('refresh room', (room) => {
+socket.on("Room:RefreshRoom", (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
 })

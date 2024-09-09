@@ -65,10 +65,10 @@
     <v-btn
       v-if="!state.player.readyForNextRound"
       :disabled="state.player.soifToGive > 0"
-      class="w-100 bg-gradient-success text-white text-h6 mt-5 rounded-xl"
+      class="w-100 bg-gradient-success text-white text-h6 my-5 rounded-xl"
       @click="readyForNextRound"
     >
-      {{ state.player.soifToGive > 0 ? 'Donnes tes soifs...' : 'PRÊT' }}
+      {{ state.player.soifToGive > 0 ? 'Donne tes soifs...' : 'PRÊT' }}
     </v-btn>
     <JokerMenu :jokers="state.player.jokers" />
   </v-container>
@@ -91,7 +91,6 @@ export default {
   },
   watch: {
     allPlayerHasPlayed(newVal) {
-      console.log(newVal, state.player.soifToGive)
       if (newVal === true && state.player.soifToGive > 0) {
         this.$emit('confetti')
       }
@@ -142,7 +141,7 @@ export default {
 
     quitRoom() {
       if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
-        this.$emit('quiRoom')
+        this.$emit('Room:Quit')
       }
     }
   }

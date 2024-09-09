@@ -25,10 +25,9 @@
 
             <template v-slot:append>
               <v-chip class="ma-2 bg-gradient-warning">
-                Donnée :
                 {{ player.totalSoifGived }}
               </v-chip>
-              <v-chip class="ma-2 bg-gradient-info"> Total : {{ player.soifTotal }} </v-chip>
+              <v-chip class="ma-2 bg-gradient-info">{{ player.soifTotal }}</v-chip>
             </template>
           </v-list-item>
           <v-divider inset v-if="idx < playerItems.length - 1" :key="`${idx}-divider`"></v-divider>
@@ -68,16 +67,24 @@ export default {
       return state.room.roundAnswer
     }
   },
+  created() {
+    const position = this.playerItems.indexOf(
+      this.playerItems.find((e) => e.socketId === state.player.socketId)
+    )
+    if (this.playerItems.length > 3 && position < 3 || this.playerItems.length < 3 && position === 1) {
+      this.$emit('confetti', 'TOP1')
+    }
+  },
   methods: {
     replay() {
-      socket.emit('replay')
+      socket.emit('Game:Replay')
     },
 
     quitRoom() {
       if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
-        this.$emit('quiRoom')
+        this.$emit('Room:Quit')
       }
-    } 
+    }
   }
 }
 </script>
