@@ -3,7 +3,7 @@
     <Countdown @countdown-end="startGame"></Countdown>
 
     <canvas id="gameCanvas"></canvas>
-    <div id="score" v-show="interval" :class="isGameOver ? 'finish' : ''">
+    <div id="score" v-show="hasStart" :class="isGameOver ? 'finish' : ''">
       {{ score }}
     </div>
   </div>
@@ -39,9 +39,10 @@ export default {
       paddleX: null,
       speed: 1,
       bricks: [],
-      interval: null,
       score: 0,
-      isGameOver: false
+      isGameOver: false,
+      lastTimestamp: 0,
+      hasStart: false
     }
   },
   mounted() {
@@ -74,9 +75,18 @@ export default {
   },
   methods: {
     startGame() {
-      this.interval = setInterval(() => {
-        this.draw()
-      }, 10)
+      this.hasStart = true
+      requestAnimationFrame(this.gameLoop)
+    },
+    gameLoop(timestamp) {
+      if (this.isGameOver) {
+        setTimeout(() => {
+          socket.emit('Game:PlayGame', this.score)
+        }, 2000)
+        return
+      }
+      this.draw(timestamp)
+      requestAnimationFrame(this.gameLoop)
     },
 
     increaseSpeed() {
@@ -144,7 +154,11 @@ export default {
       }
     },
 
-    draw() {
+    draw(timestamp) {
+      if (!this.lastTimestamp) this.lastTimestamp = timestamp
+      const deltaTime = (timestamp - this.lastTimestamp) / 16 // Normalize to 60 FPS
+      this.lastTimestamp = timestamp
+
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       this.drawBricks()
       this.drawBall()
@@ -167,16 +181,12 @@ export default {
           this.dy = -speedBounce * Math.cos(bounceAngle)
           this.increaseSpeed()
         } else {
-          clearInterval(this.interval)
           this.isGameOver = true
-          setTimeout(() => {
-            socket.emit('Game:PlayGame', this.score)
-          }, 2000)
         }
       }
 
-      this.x += this.dx * this.speed
-      this.y += this.dy * this.speed
+      this.x += this.dx * this.speed * deltaTime
+      this.y += this.dy * this.speed * deltaTime
     },
 
     calculateBounceAngle(hitX) {

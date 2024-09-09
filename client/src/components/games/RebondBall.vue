@@ -44,7 +44,7 @@ export default {
     // Ensure the ball is initially visible
     this.ball.style.left = `${this.ballX}px`
     this.ball.style.top = `${this.ballY}px`
-    // this.ball.addEventListener('click', this.onBallClick)
+
     this.ball.addEventListener('mousedown', this.onBallClick)
     this.ball.addEventListener('touchstart', this.onBallClick)
 
@@ -106,7 +106,6 @@ export default {
     gameLoop(timestamp) {
       if (!this.isGameOver) {
         this.updateBallPosition(timestamp)
-        // this.score++
         requestAnimationFrame(this.gameLoop)
       }
     },

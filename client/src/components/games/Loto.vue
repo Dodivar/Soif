@@ -77,7 +77,7 @@ export default {
           clearInterval(draw)
           this.endGame(true)
         }
-      }, 3000)
+      }, 2000)
     },
     // Set other balls
     'state.room.actualGame.playerBalls'(newValue) {

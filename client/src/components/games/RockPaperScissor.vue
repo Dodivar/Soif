@@ -21,15 +21,15 @@
           <p>{{ message }}</p>
         </div>
       </div>
+
+      <!-- CHOICES -->
       <div class="w-100 h-100 d-flex-flex-container flex-columns text-center justify-space-between">
-        <!-- CHOICES -->
         <v-sheet class="bg-red" @click="setChoice('👊')">👊</v-sheet>
         <v-sheet class="bg-blue" @click="setChoice('✋')">✋</v-sheet>
         <v-sheet class="bg-green" @click="setChoice('✌️')">✌️</v-sheet>
       </div>
     </template>
-    <!-- <JokerWheel v-else /> -->
-    <h2 v-else>Pas de d'adversaires pour toi désolé...</h2>
+    <JokerWheel v-else />
   </div>
 </template>
 
@@ -79,10 +79,6 @@ export default {
     this.oponnent = this.opponentData
     if (!this.oponnent) {
       this.jokerWheel = true
-
-      setTimeout(() => {
-        socket.emit('Game:PlayGame', true)
-      }, 3000)
     }
   },
   methods: {

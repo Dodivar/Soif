@@ -62,7 +62,7 @@ export default {
   computed: {
     isDisabled() {
       if (!this.canBeActivated) return false
-      
+
       switch (this.title) {
         case 'Le boss':
           return state.player.hasWinnerJoker ?? false
@@ -70,11 +70,11 @@ export default {
           return state.player.hasTrapJoker ?? false
         case 'Le bouclier':
         case 'Le boucher':
+        case 'Miroir':
+        case "L'appel à un ami":
           return state.player.soifAddedThisRound <= 0
         case "L'abuseur":
         case 'Quitte ou double':
-        case 'Miroir':
-        case "L'appel à un ami":
           return state.player.soifToGive <= 0
         default:
           break
