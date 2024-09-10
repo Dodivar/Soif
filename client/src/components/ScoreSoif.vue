@@ -13,7 +13,7 @@
         <span v-else>En attente des autres soifeurs...</span>
       </h2>
     </div>
-    <v-card title="Liste des soifeurs" class="rounded-lg" elevation="5">
+    <v-card class="rounded-lg" elevation="5">
       <v-list lines="two">
         <v-list-subheader v-if="state.player.winner"
           >Vous pouvez donner {{ state.player.soifToGive }} soif !</v-list-subheader
@@ -142,7 +142,7 @@ export default {
 
     quitRoom() {
       if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
-        this.$emit('quiRoom')
+        this.$emit('Room:Quit')
       }
     }
   }

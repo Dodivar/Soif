@@ -82,19 +82,19 @@
 
                     <td>
                       <v-btn
+                        density="compact"
                         elevation="3"
-                        color="red"
+                        color="green"
                         icon="mdi-minus"
-                        size="small"
                         variant="outlined"
                         @click="decrementSoif(item)"
                       ></v-btn>
                       {{ item.raw.soif }}
                       <v-btn
+                        density="compact"
                         elevation="3"
                         color="red"
                         icon="mdi-plus"
-                        size="small"
                         variant="outlined"
                         @click="incrementSoif(item)"
                       ></v-btn>
@@ -107,7 +107,6 @@
                       <v-switch
                         v-model="item.raw.isEnabled"
                         color="success"
-                        :label="item.raw.isEnabled ? 'activé' : 'désactivé'"
                         hide-details
                       ></v-switch>
                     </td>

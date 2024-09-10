@@ -8,10 +8,25 @@
       class="text-white text-h6 cursor-pointer text-center"
       @click="isJokerMenuExpanded = !isJokerMenuExpanded"
     >
+      <v-icon
+        v-show="jokers.length"
+        size="x-small"
+        :class="'joker-menu left ' + (isJokerMenuExpanded ? 'close' : '')"
+        >mdi mdi-play</v-icon
+      >
+
       JOKER {{ jokers.length }}
+
+      <v-icon
+        v-show="jokers.length"
+        size="x-small"
+        :class="'joker-menu right ' + (isJokerMenuExpanded ? 'close' : '')"
+        >mdi mdi-play</v-icon
+      >
     </h2>
     <v-expand-transition>
       <div v-show="isJokerMenuExpanded">
+        <!-- TODO ANUULER LE jokerSelected SI ON ANNULE -->
         <v-btn
           v-if="state.jokerTarget"
           @click="state.jokerTarget = null"
@@ -19,8 +34,8 @@
           >ANNULER</v-btn
         >
         <JokerCard
-          v-for="joker in jokers"
-          :key="joker.id"
+          v-for="(joker, idx) in jokers"
+          :key="idx"
           :joker-id="joker.id"
           :title="joker.name"
           :description="joker.description"
@@ -60,4 +75,19 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.joker-menu {
+  transition: all 0.3s linear;
+
+  &.left {
+    rotate: 270deg;
+  }
+  &.right {
+    rotate: -90deg;
+  }
+
+  &.close {
+    rotate: 90deg;
+  }
+}
+</style>

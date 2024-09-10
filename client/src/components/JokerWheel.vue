@@ -2,7 +2,7 @@
   <div class="ma-5">
     <div class="ui-wheel-of-fortune w-100">
       <ul>
-        <li class="common">COMMUN</li>
+        <!-- <li class="common">COMMUN</li>
         <li class="nothing">RIEN</li>
         <li class="epic">EPIQUE</li>
         <li class="common">COMMUN</li>
@@ -37,7 +37,45 @@
         <li class="nothing">RIEN</li>
         <li class="rare">RARE</li>
         <li class="nothing">RIEN</li>
-        <li class="legendary">LEGENDAIRE</li>
+        <li class="legendary">LEGENDAIRE</li> -->
+
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
+        <li class="rare">RARE</li>
       </ul>
       <v-btn @click="launch" :disabled="animation !== null" type="button">SPIN</v-btn>
     </div>

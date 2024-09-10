@@ -246,12 +246,13 @@
       <!-- snackbar -->
       <template v-for="(snackbar, idx) in state.snackbarElements" :key="`snackbar-element-${idx}`">
         <v-alert
-          class="alert-msg rounded-lg"
+          class="alert-msg rounded-lg w-75 cursor-pointer"
           color="deep-purple-accent-4"
           elevation="24"
           @click="state.snackbarElements.pop()"
         >
-          {{ snackbar.message }}
+          <span class="text-h6">{{ snackbar.message }}</span>
+          <v-icon class="float-right">mdi mdi-close</v-icon>
           <JokerCard
             v-if="snackbar.joker"
             :joker-id="snackbar.joker.id"

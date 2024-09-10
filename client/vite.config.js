@@ -29,10 +29,10 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Soif',
-        short_name: 'Soif',
-        description: 'On est assoiffés',
-        theme_color: '#ffffff',
+        name: 'Before',
+        short_name: 'Before',
+        description: 'Un petit before ?',
+        theme_color: '#afeeff',
         icons: [
           {
             src: 'img/icons/android-chrome-192x192.png',
