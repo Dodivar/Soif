@@ -166,7 +166,7 @@ io.on("connection", socket => {
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
     });
 
-    socket.on("replay", () => {
+    socket.on("Game:Replay", () => {
         if (!socket.data.isRoomMaster) return
         resetRoom(socket.data.actualRoomId)
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
@@ -211,8 +211,6 @@ io.on("connection", socket => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.readyForNextRound = true
 
-        console.log(player)
-
         if (rarity === 'nothing') {
             socket.emit("Game:GetJokerOfRarity", `Tu n'as reçu aucun joker 😈`, null)
         }
@@ -251,7 +249,9 @@ io.on("connection", socket => {
         }
 
         // Delete the joker of the player
-        player.jokers = player.jokers.filter(e => e.id !== joker.id)
+        console.log(player.jokers)
+        console.log(jokerId)
+        player.jokers = player.jokers.filter(e => e.id !== jokerId)
 
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
 		

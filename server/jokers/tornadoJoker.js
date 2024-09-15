@@ -15,9 +15,12 @@ module.exports = class TornadoJoker extends Joker {
         if (availableJoker.length === 0)
             return `${player.pseudo} a essayé de voler un joker à ${target.pseudo}, mais il possède déjà tous les jokers qu'il a`
 
-        const joker = utils.GetRandomElement(availableJoker)
-        target.jokers = target.jokers.filter(e => e !== joker.id)
-        player.jokers.push(joker)
+        // JSON stringify to get a copy if this is a tornado also
+        const stole = utils.GetRandomElement(availableJoker)
+        const joker = JSON.stringify(stole)
+
+        target.jokers = target.jokers.filter(e => e !== stole.id)
+        player.jokers.push(JSON.parse(joker))
         
         return `${player.pseudo} a volé un joker à ${target.pseudo} !`
     }
