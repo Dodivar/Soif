@@ -53,9 +53,10 @@ export default {
     }
   },
   watch: {
-    'state.jokerTarget'(newValue) {
+    // Activate the joker who's target someone only if it was this one selected before
+    'state.jokerUsed.target'(newValue) {
       if (
-        this.jokerSelected &&
+        state.jokerUsed.id === this.jokerId &&
         newValue !== null &&
         newValue !== true &&
         typeof newValue === 'string'
@@ -89,18 +90,18 @@ export default {
   },
   methods: {
     jockerAction() {
-      if (!this.canBeActivated || state.jokerTarget === true) return
+      if (!this.canBeActivated || state.jokerUsed.target === true) return
 
       // Ask to target someone
-      if (this.isTargeted && state.jokerTarget === null) {
+      if (this.isTargeted && state.jokerUsed.target === null) {
         alert('click sur le joueur que tu souhaites viser')
-        state.jokerTarget = true
-        this.jokerSelected = true
+        state.jokerUsed.target = true
+        state.jokerUsed.id = this.jokerId
         return
       }
       // Use it
-      socket.emit('Game:UseJoker', this.jokerId, state.jokerTarget)
-      state.jokerTarget = null
+      socket.emit('Game:UseJoker', this.jokerId, state.jokerUsed.target)
+      state.jokerUsed.target = null
     }
   }
 }

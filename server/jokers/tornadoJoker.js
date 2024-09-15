@@ -11,7 +11,9 @@ module.exports = class TornadoJoker extends Joker {
         if (target.jokers.length === 0)
             return `${player.pseudo} a essayé de voler un joker à ${target.pseudo}, mais il n'en possède aucun...`
 
-        const availableJoker = target.jokers.filter(e => !player.jokers.includes(e.id))
+        const hasJokerId = player.jokers.map(e => e.id)
+        const availableJoker = target.jokers.filter(e => !hasJokerId.includes(e.id))
+        console.log(availableJoker)
         if (availableJoker.length === 0)
             return `${player.pseudo} a essayé de voler un joker à ${target.pseudo}, mais il possède déjà tous les jokers qu'il a`
 

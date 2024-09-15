@@ -28,8 +28,8 @@
       <div v-show="isJokerMenuExpanded">
         <!-- TODO ANUULER LE jokerSelected SI ON ANNULE -->
         <v-btn
-          v-if="state.jokerTarget"
-          @click="state.jokerTarget = null"
+          v-if="state.jokerUsed.target"
+          @click="state.jokerUsed.target = null"
           class="bg-gradient-warning text-white"
           >ANNULER</v-btn
         >

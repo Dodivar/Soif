@@ -249,18 +249,16 @@ io.on("connection", socket => {
         }
 
         // Delete the joker of the player
-        console.log(player.jokers)
-        console.log(jokerId)
-        player.jokers = player.jokers.filter(e => e.id !== jokerId)
+        player.jokers = player.jokers.filter(e => e.id !== joker.id)
 
         io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
 		
 		if (joker.noEventMsg) return
 		if (joker.allEventMsg) {
-            io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg, joker)
+            io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg, joker, player)
         }
         else {
-            socket.to(socket.data.actualRoomId).emit("Game:UseJoker", msg, joker)
+            socket.to(socket.data.actualRoomId).emit("Game:UseJoker", msg, joker, player)
         }
     })
 

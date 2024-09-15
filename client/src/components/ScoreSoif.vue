@@ -4,6 +4,12 @@
     <v-icon @click="quitRoom" class="position-fixed top-0 right-0 text-h4 ma-3"
       >mdi mdi-door</v-icon
     >
+
+    <div v-for="player in state.player.soifGivedBy">
+      <PlayerAvatar :player="player" :avatar-size="60" :show-pseudo="true" />
+      {{ player.gived }}
+    </div>
+
     <div class="w-100 text-center my-5">
       <h2>
         <span v-if="allPlayerHasPlayed"
@@ -38,7 +44,7 @@
             </template>
 
             <template v-slot:subtitle>
-              <v-chip v-if="player.soifToGive > 0" class="bg-gradient-warning mr-1"
+              <v-chip v-if="player.soifToGive > 0" class="bg-gradient-warning mr-1" small
                 >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
               </v-chip>
               {{ player.pseudo }}
@@ -47,12 +53,14 @@
             <template v-slot:append>
               <v-chip
                 v-if="player.soifAddedThisRound > 0"
-                class="bg-gradient-success"
+                class="bg-gradient-success mr-2"
                 variant="flat"
+                small
               >
                 + {{ player.soifAddedThisRound }}
               </v-chip>
-              <v-chip class="ma-2 bg-gradient-info">
+              <!-- ma-2  -->
+              <v-chip class="bg-gradient-info" small>
                 {{ player.soifTotal }}
                 <v-icon>mdi-glass-mug-variant</v-icon>
               </v-chip>
@@ -119,8 +127,8 @@ export default {
   methods: {
     playerHandleClick(target) {
       // If a joker with target needed
-      if (state.jokerTarget === true) {
-        state.jokerTarget = target.socketId
+      if (state.jokerUsed.target === true) {
+        state.jokerUsed.target = target.socketId
         return
       }
       if (state.player.soifToGive) {

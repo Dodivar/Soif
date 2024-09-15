@@ -1,5 +1,3 @@
-const jokerTools = require('./jokers/jokerTools')
-
 module.exports = class Player {
   constructor(socketId, pseudo, isRoomMaster = false) {
     this.socketId = socketId

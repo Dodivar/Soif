@@ -232,38 +232,42 @@
       </div>
 
       <!-- ALERT -->
-      <v-alert
-        v-if="state.errMsg"
-        border="top"
-        type="warning"
-        variant="outlined"
-        closable
-        density="compact"
-      >
+      <v-alert v-if="state.errMsg" type="warning" variant="outlined" closable density="compact">
         {{ state.errMsg }}
       </v-alert>
 
-      <!-- snackbar -->
+      <!-- SNACKBAR -->
       <template v-for="(snackbar, idx) in state.snackbarElements" :key="`snackbar-element-${idx}`">
         <v-alert
           class="alert-msg rounded-lg w-75 cursor-pointer"
-          color="deep-purple-accent-4"
+          color="indigo-darken-4"
           elevation="24"
           @click="state.snackbarElements.pop()"
         >
-          <span class="text-h6">{{ snackbar.message }}</span>
-          <v-icon class="float-right">mdi mdi-close</v-icon>
-          <JokerCard
-            v-if="snackbar.joker"
-            :joker-id="snackbar.joker.id"
-            :title="snackbar.joker.name"
-            :description="snackbar.joker.description"
-            :rarity="snackbar.joker.rarity"
-            :icon="snackbar.joker.icon"
-          ></JokerCard>
-          <p v-if="state.snackbarElements.length > 1">
-            {{ `${idx}/${state.snackbarElements.length}` }}
-          </p>
+          <div class="d-flex">
+            <PlayerAvatar
+              v-if="snackbar.player"
+              :player="snackbar.player"
+              :avatar-size="60"
+              :show-pseudo="false"
+              class="mr-5 justify-center"
+            />
+            <div class="w-100">
+              <span class="text-h6">{{ snackbar.message }}</span>
+              <v-icon class="position-fixed top-0 right-0 ma-2">mdi mdi-close</v-icon>
+              <JokerCard
+                v-if="snackbar.joker"
+                :joker-id="snackbar.joker.id"
+                :title="snackbar.joker.name"
+                :description="snackbar.joker.description"
+                :rarity="snackbar.joker.rarity"
+                :icon="snackbar.joker.icon"
+              ></JokerCard>
+              <p v-if="state.snackbarElements.length > 1">
+                {{ `${idx}/${state.snackbarElements.length}` }}
+              </p>
+            </div>
+          </div>
         </v-alert>
       </template>
     </div>
