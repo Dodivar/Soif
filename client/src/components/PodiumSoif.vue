@@ -86,6 +86,7 @@ export default {
     quitRoom() {
       if (confirm('Es-tu sûr de vouloir quitter la partie en cours ?')) {
         this.$emit('Room:Quit')
+        state.room = {}
       }
     }
   }

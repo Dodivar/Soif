@@ -7,7 +7,6 @@ const CrazyJoker = require('./crazyJoker')
 const MultiplyJoker = require('./multiplyJoker')
 const SubtractionJoker = require('./subtractionJoker')
 const StealerJoker = require('./stealerJoker')
-
 const TrapJoker = require('./trapJoker')
 const WinnerJoker = require('./winnerJoker')
 const InvincibleJoker = require('./invincibleJoker')

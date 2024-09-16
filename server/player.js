@@ -18,10 +18,10 @@ module.exports = class Player {
     this.jokers = [] // Les jokers du joueur
     this.hasBlurRoundDescription = false // Indique si la description du round est flouté
 	
-	// Joker
-	this.hasInvincibleJoker = 0 // Nombre de tours ne pouvant pas être visé
-	this.hasTrapJoker = false // Donne 3 soifs au joueur qui cible celui-ci
-	this.hasWinnerJoker = false // Double les soifs si prochain jeu gagnant
+    // Joker
+    this.hasInvincibleJoker = 0 // Nombre de tours ne pouvant pas être visé
+    this.hasTrapJoker = false // Donne 3 soifs au joueur qui cible celui-ci
+    this.hasWinnerJoker = false // Double les soifs si prochain jeu gagnant
   }
 
   /**
@@ -57,7 +57,7 @@ module.exports = class Player {
     if (playerGiving) {
       playerGiving.gived += number
     } else {
-      const playerGive = { socketId: player.socketId, gived: number }
+      const playerGive = { socketId: player.socketId, gived: number, pseudo: player.pseudo }
       this.soifGivedBy.push(playerGive)
     }
   }

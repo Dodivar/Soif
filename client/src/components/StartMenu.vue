@@ -200,6 +200,7 @@
           >QUITTER</v-btn
         >
       </div>
+
       <RoomConfiguration
         @quit-configuration="wantToConfigureRoom = false"
         v-else-if="wantToConfigureRoom"
@@ -244,29 +245,27 @@
           elevation="24"
           @click="state.snackbarElements.pop()"
         >
-          <div class="d-flex">
+          <div class="w-100">
             <PlayerAvatar
               v-if="snackbar.player"
               :player="snackbar.player"
-              :avatar-size="60"
+              :avatar-size="80"
               :show-pseudo="false"
-              class="mr-5 justify-center"
+              class="mb-3 justify-center"
             />
-            <div class="w-100">
-              <span class="text-h6">{{ snackbar.message }}</span>
-              <v-icon class="position-fixed top-0 right-0 ma-2">mdi mdi-close</v-icon>
-              <JokerCard
-                v-if="snackbar.joker"
-                :joker-id="snackbar.joker.id"
-                :title="snackbar.joker.name"
-                :description="snackbar.joker.description"
-                :rarity="snackbar.joker.rarity"
-                :icon="snackbar.joker.icon"
-              ></JokerCard>
-              <p v-if="state.snackbarElements.length > 1">
-                {{ `${idx}/${state.snackbarElements.length}` }}
-              </p>
-            </div>
+            <span class="text-h6">{{ snackbar.message }}</span>
+            <v-icon class="position-fixed top-0 right-0 ma-2">mdi mdi-close</v-icon>
+            <JokerCard
+              v-if="snackbar.joker"
+              :joker-id="snackbar.joker.id"
+              :title="snackbar.joker.name"
+              :description="snackbar.joker.description"
+              :rarity="snackbar.joker.rarity"
+              :icon="snackbar.joker.icon"
+            ></JokerCard>
+            <p v-if="state.snackbarElements.length > 1">
+              {{ `${idx}/${state.snackbarElements.length}` }}
+            </p>
           </div>
         </v-alert>
       </template>

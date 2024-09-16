@@ -13,16 +13,17 @@ module.exports = class TornadoJoker extends Joker {
 
         const hasJokerId = player.jokers.map(e => e.id)
         const availableJoker = target.jokers.filter(e => !hasJokerId.includes(e.id))
-        console.log(availableJoker)
         if (availableJoker.length === 0)
             return `${player.pseudo} a essayé de voler un joker à ${target.pseudo}, mais il possède déjà tous les jokers qu'il a`
 
         // JSON stringify to get a copy if this is a tornado also
         const stole = utils.GetRandomElement(availableJoker)
-        const joker = JSON.stringify(stole)
+        // const jokerStolen = JSON.stringify(stole)
+        const jokerStolen = Object.assign(Object.create(Object.getPrototypeOf(stole)), stole)
 
-        target.jokers = target.jokers.filter(e => e !== stole.id)
-        player.jokers.push(JSON.parse(joker))
+        // Delete and add the stolen joker
+        target.jokers = target.jokers.filter(e => e.id !== stole.id)
+        player.jokers.push(jokerStolen)
         
         return `${player.pseudo} a volé un joker à ${target.pseudo} !`
     }

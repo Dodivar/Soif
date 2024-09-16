@@ -51,7 +51,7 @@ io.on("connection", socket => {
         if (!socket.data.actualRoomId) return 
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.isOffline = false
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     }
 
     // Disconnect socket
@@ -60,13 +60,13 @@ io.on("connection", socket => {
         if (!socket.data.actualRoomId) return 
 		
         getPlayerState(socket.data.actualRoomId, socket.id).isOffline = true
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
 
         // Wait 2min before to delete player
         setTimeout(() => {
             if (getPlayerState(socket.data.actualRoomId, socket.id).isOffline) {
                 deletePlayer(socket.data.actualRoomId, socket.id)
-                io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+                io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
             }
         }, 120 * 1000)
     });
@@ -141,13 +141,13 @@ io.on("connection", socket => {
         socket.leave(roomId)
         deletePlayer(roomId, socket.id)
         socket.data = {}
-        io.to(roomId).emit("refresh players", getPlayerRoomState(roomId))
+        socket.to(roomId).emit("Room:RefreshPlayers", getPlayerRoomState(roomId))
     })
 
     socket.on("Room:ReadyToPlay", (roomConfiguration) => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.isReady = true
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
 
         // Set the room configuration from the room master
 		const room = getRoom(socket.data.actualRoomId)
@@ -163,13 +163,13 @@ io.on("connection", socket => {
     
     socket.on("Room:NotReadyToPlay", () => {
         getPlayerState(socket.data.actualRoomId, socket.id).isReady = false
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
 
     socket.on("Game:Replay", () => {
         if (!socket.data.isRoomMaster) return
         resetRoom(socket.data.actualRoomId)
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     })
     
     socket.on("Game:PlayGame", (data) => {
@@ -196,7 +196,7 @@ io.on("connection", socket => {
         // Set soif has been gived by the player
         player.soifToGive -= soifNumber
 
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
 	
     socket.on("Game:ReadyForNextRound", () => {
@@ -204,7 +204,7 @@ io.on("connection", socket => {
 		player.readyForNextRound = true
 		launchNextRound(socket)
 
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
 
     socket.on("Game:GetJokerOfRarity", (rarity) => {
@@ -224,7 +224,7 @@ io.on("connection", socket => {
                 const joker = utils.GetRandomElement(availableJoker)
                 player.jokers.push(joker)    
                 socket.emit("Game:GetJokerOfRarity", `Tu as reçu :`, joker)
-                socket.emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+                socket.emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
             }
         }
         
@@ -251,7 +251,7 @@ io.on("connection", socket => {
         // Delete the joker of the player
         player.jokers = player.jokers.filter(e => e.id !== joker.id)
 
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
 		
 		if (joker.noEventMsg) return
 		if (joker.allEventMsg) {
@@ -469,9 +469,9 @@ function setActualGameData(room, nextGame) {
             break
         case "RockPaperScissor":
             room.actualGame.opponents = {}
-            const playersShuffled = shuffleArray(room.players)
+            const playersShuffled = [...shuffleArray(room.players)]
 
-            // If the players length is even we pop one to give hima joker wheel
+            // If the players length is even we pop one to give him a joker wheel
             if (playersShuffled.length % 2 === 1) {
                 playersShuffled.pop()
             }
@@ -508,7 +508,7 @@ function sendNextGame(io, socket, wait = 2000) {
 	
 	// Display next game desc
 	room.showNextGamDesc = true
-	io.to(socket.data.actualRoomId).emit("refresh room", room)
+	io.to(socket.data.actualRoomId).emit("Room:RefreshRoom", room)
 	
 	// Send next game
     setTimeout(() => {
@@ -523,7 +523,7 @@ function sendNextGame(io, socket, wait = 2000) {
 
         room.reset()
 		
-		io.to(socket.data.actualRoomId).emit("refresh room", room)
+		io.to(socket.data.actualRoomId).emit("Room:RefreshRoom", room)
 		room.gameIdx++
     }, wait)
 }
@@ -538,13 +538,13 @@ function playGame(socket, data) {
 
     // Assign value played at player
     player.gameValue = data
-    player.gameValueLabel = data
+    player.gameValueLabel = setGameValueLabel(player, room.actualGame.name)
     player.hasPlayed = true
     player.readyForNextRound = false
 
     // Send answer if all played has played
     if (!room.players.every(e => e.hasPlayed && e.gameValue !== null) && room.actualGame.name !== "Simon") {
-        io.to(socket.data.actualRoomId).emit("refresh players", getPlayerRoomState(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
         return;
     }
 
@@ -633,46 +633,36 @@ function playGame(socket, data) {
         }
 
         // Assign soif to winner
-        setGameValueLabel(room)
         setSoif(room)
 
-        io.to(socket.data.actualRoomId).emit("refresh room", getRoom(socket.data.actualRoomId))
+        io.to(socket.data.actualRoomId).emit("Room:RefreshRoom", getRoom(socket.data.actualRoomId))
     }
     catch(e) {
         console.error(e)
     }
 }
 
-function setGameValueLabel(room) {
-    room.players.forEach(e => {
-        switch(room.actualGame.name) {
-            case "Blackjack":
-                e.gameValueLabel = `${e.gameValue.playerScore} contre ${e.gameValue.dealerScore}` + (e.gameValue.hasDoubled ? ' + a doublé' : '')
-                break
-            case "NavalBattle":
-                e.gameValueLabel = `${e.gameValue.soif} touché` + (e.gameValue.isStillAlive ? ' + dernier en vie' : '')
-                break
-            case "Labyrinth":
-                e.gameValueLabel = `${e.gameValue.ms}ms`
-                break
-            case "ReactionClick":
-            case "SurvivalEmoji":
-                e.gameValueLabel = `${e.gameValue}ms`
-                break
-            case "FastClick":
-                e.gameValueLabel = `${e.gameValue}`
-                break
-            case "Loto":
-                e.gameValueLabel = `${e.gameValue.ball}`
-                break
-            case "GuessHead":
-            case "RockPaperScissor":
-                e.gameValueLabel = e.gameValue ? "Gagné" : "Perdu"
-                break
-            default:
-                break
-        }
-    })
+function setGameValueLabel(player, gameName) {
+    switch(gameName) {
+        case "Blackjack":
+            return `${player.gameValue.playerScore} contre ${player.gameValue.dealerScore}` + (player.gameValue.hasDoubled ? ' + a doublé' : '')
+        case "NavalBattle":
+            return `${player.gameValue.soif} touché` + (player.gameValue.isStillAlive ? ' + dernier en vie' : '')
+        case "Labyrinth":
+            return `${player.gameValue.ms}ms`
+        case "ReactionClick":
+        case "SurvivalEmoji":
+            return `${player.gameValue}ms`
+        case "FastClick":
+            return `${player.gameValue}`
+        case "Loto":
+            return `${player.gameValue.ball}`
+        case "GuessHead":
+        case "RockPaperScissor":
+            return player.gameValue ? "Gagné" : "Perdu"
+        default:
+            return player.gameValue
+    }
 }
 
 function setSoif(room) {
