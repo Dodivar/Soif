@@ -10,9 +10,9 @@
     <div class="w-100">
       <!-- Set profil -->
       <div v-if="!pseudo || !avatar || wantToSetProfil" class="mx-5">
-        <div class="text-center ma-5">
-          <h1>Bienvue à Soifs !</h1>
-          <h2>Créé ton profil</h2>
+        <div class="text-center text-white ma-5">
+          <h1 class="dancing-script-text text-h1 mb-5">Soif !</h1>
+          <h2 class="nunito-text">Créé ton profil</h2>
         </div>
         <v-form class="text-center" ref="profile" @submit.prevent>
           <PlayerAvatar
@@ -42,8 +42,10 @@
       <!-- Create or join -->
       <div v-else-if="!state.room.roomId" class="mx-5">
         <div class="text-center ma-5">
-          <h1>Soifs !</h1>
-          <h2>Prépare ton gosier mon salop</h2>
+          <v-slide-y-transition>
+            <h1 class="dancing-script-text text-white mb-5">Soif !</h1>
+          </v-slide-y-transition>
+          <!-- <h2 class="nunito-text text-white">Une petite soif ?</h2> -->
         </div>
         <!-- Create room -->
         <PlayerAvatar

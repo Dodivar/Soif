@@ -1,6 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
 import { VitePWA } from 'vite-plugin-pwa'
-// import basicSsl from '@vitejs/plugin-basic-ssl'
 
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
@@ -11,7 +10,6 @@ import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineConfig({
   base: '/Soif/',
   plugins: [
-    // basicSsl(),
     Vue({
       template: { transformAssetUrls }
     }),
@@ -23,16 +21,16 @@ export default defineConfig({
       }
     }),
     VitePWA({
-      registerType: 'autoUpdate',
       devOptions: {
         enabled: true
       },
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Before',
-        short_name: 'Before',
-        description: 'Un petit before ?',
-        theme_color: '#afeeff',
+        name: 'Soif !',
+        short_name: 'Soif',
+        description: 'Une petite soif ?',
+        theme_color: '#3399ff',
         icons: [
           {
             src: 'img/icons/android-chrome-192x192.png',

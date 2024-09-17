@@ -77,7 +77,7 @@
       <v-menu open-on-hover>
         <template v-slot:activator="{ props }">
           <v-btn
-            :disabled="soifGivedByPlayer.length <= 0"
+            :disabled="soifGivedByPlayer.length > 0"
             class="w-100 bg-gradient-info text-white text-uppercase text-h6 mt-5 rounded-xl"
             v-bind="props"
           >

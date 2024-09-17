@@ -8,10 +8,10 @@
 // @use 'vuetify/settings' with (
 //   $color-pack: false
 // );
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
 
-.v-main {
-  // background-color: #e7e7e7;
-}
+// Globals
+$body-font-family: 'Nunito', sans-serif !default;
 
 #game-container {
   position: relative;

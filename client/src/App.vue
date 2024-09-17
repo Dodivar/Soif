@@ -34,8 +34,6 @@ export default {
 }
 
 .v-main {
-  // background-color: #afeeff !important;
-  // background: radial-gradient(#1027c0, #1388d1);
   background: #3399ff;
 }
 
@@ -46,6 +44,30 @@ export default {
 
 .v-alert {
   z-index: 999;
+}
+
+// <weight>: Use a value from 400 to 700
+.dancing-script-text {
+  font-family: 'Dancing Script', cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+// <weight>: Use a value from 200 to 1000
+.nunito-text {
+  font-family: 'Nunito', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h1.dancing-script-text {
+  font-size: 8rem !important;
+  text-shadow:
+    0px 0px 6px #ffffff,
+    2px 2px 7px #000,
+    5px 5px 0px #0075dd;
 }
 
 #background-app {
@@ -128,15 +150,15 @@ export default {
   @for $i from 1 through $total {
     @keyframes ripple#{$i} {
       0% {
-        transform: scale(0.6 + $i / 20);
+        transform: scale(1);
       }
 
       50% {
-        transform: scale(1 + $i / 20);
+        transform: scale(0.4 + $i / 20);
       }
 
       100% {
-        transform: scale(0.6 + $i / 20);
+        transform: scale(1);
       }
     }
   }

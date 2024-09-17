@@ -185,8 +185,8 @@ export default {
         }
       }
 
-      this.x += this.dx * this.speed * deltaTime
-      this.y += this.dy * this.speed * deltaTime
+      this.x += this.dx * this.speed //* deltaTime
+      this.y += this.dy * this.speed //* deltaTime
     },
 
     calculateBounceAngle(hitX) {
@@ -202,8 +202,7 @@ export default {
         this.paddleX = relativeX - this.paddleWidth / 2
       }
     }
-  },
-  created() {}
+  }
 }
 </script>
 
