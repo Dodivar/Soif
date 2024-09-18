@@ -27,6 +27,21 @@ $body-font-family: 'Nunito', sans-serif !default;
   color: white;
 }
 
+.bg-gradient-primary,
+.bg-gradient-warning,
+.bg-gradient-success,
+.bg-gradient-danger,
+.bg-gradient-info {
+  color: white;
+  text-transform: uppercase;
+  font-family: 'Nunito', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  // rounded-xl
+  border-radius: 24px !important;
+}
+
 .bg-gradient-default {
   background-image: linear-gradient(310deg, #141727, #3a416f) !important;
 }
@@ -49,6 +64,14 @@ $body-font-family: 'Nunito', sans-serif !default;
 
 .bg-gradient-info {
   background-image: linear-gradient(310deg, #2152ff, #21d4fd) !important;
+}
+
+.bg-gradient-info2 {
+  background-image: linear-gradient(310deg, #516aff, #51d4fd) !important;
+}
+
+.bg-gradient-info3 {
+  background-image: linear-gradient(310deg, #8169ff, #81e3ff) !important;
 }
 
 .bg-gradient-light {

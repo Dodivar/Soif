@@ -390,6 +390,14 @@ io.on("connection", socket => {
 
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
+    
+    // WizWaz
+    socket.on("WizWaz:SetVote", (socketId) => {
+        const room = getRoom(socket.data.actualRoomId)
+        room.actualGame.looser = getPlayerState(socket.data.actualRoomId, socketId)
+
+        io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
+    })
 })
 
 function launchNextRound(socket) {
@@ -492,6 +500,10 @@ function setActualGameData(room, nextGame) {
             room.actualGame.playerVotes = []
             room.actualGame.playerGuessing = utils.GetRandomElement(room.players)
             room.actualGame.guessImage = getRandomFile("games/GuessHeadImg")
+            break
+        case "WizWaz":
+            room.actualGame.playerStarting = utils.GetRandomElement(room.players)
+            room.actualGame.looser = null
             break
         default:
             break
@@ -626,6 +638,7 @@ function playGame(socket, data) {
                 
             case "RockPaperScissor":
             case "GuessHead":
+            case "WizWaz":
             default:
                 room.roundAnswer = true
                 room.roundAnswerLabel = " "
@@ -633,6 +646,7 @@ function playGame(socket, data) {
         }
 
         // Assign soif to winner
+        setGameValueLabel(room)
         setSoif(room)
 
         io.to(socket.data.actualRoomId).emit("Room:RefreshRoom", getRoom(socket.data.actualRoomId))
@@ -644,25 +658,26 @@ function playGame(socket, data) {
 
 function setGameValueLabel(player, gameName) {
     switch(gameName) {
-        case "Blackjack":
-            return `${player.gameValue.playerScore} contre ${player.gameValue.dealerScore}` + (player.gameValue.hasDoubled ? ' + a doublé' : '')
-        case "NavalBattle":
-            return `${player.gameValue.soif} touché` + (player.gameValue.isStillAlive ? ' + dernier en vie' : '')
-        case "Labyrinth":
-            return `${player.gameValue.ms}ms`
-        case "ReactionClick":
-        case "SurvivalEmoji":
-            return `${player.gameValue}ms`
-        case "FastClick":
-            return `${player.gameValue}`
-        case "Loto":
-            return `${player.gameValue.ball}`
-        case "GuessHead":
-        case "RockPaperScissor":
-            return player.gameValue ? "Gagné" : "Perdu"
-        default:
-            return player.gameValue
-    }
+            case "Blackjack":
+                return `${player.gameValue.playerScore} contre ${player.gameValue.dealerScore}` + (player.gameValue.hasDoubled ? ' + a doublé' : '')
+            case "NavalBattle":
+                return `${player.gameValue.soif} touché` + (player.gameValue.isStillAlive ? ' + dernier en vie' : '')
+            case "Labyrinth":
+                return `${player.gameValue.ms}ms`
+            case "ReactionClick":
+            case "SurvivalEmoji":
+                return `${player.gameValue}ms`
+            case "FastClick":
+                return `${player.gameValue}`
+            case "Loto":
+                return `${player.gameValue.ball}`
+            case "GuessHead":
+            case "RockPaperScissor":
+            case "WizWaz":
+                return player.gameValue ? "Gagné" : "Perdu"
+            default:
+                return player.gameValue
+        }
 }
 
 function setSoif(room) {

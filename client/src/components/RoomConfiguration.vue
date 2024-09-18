@@ -326,6 +326,22 @@ export default {
           templateAnswer: 'Bravo aux gagnants',
           tips: 'Les questions doivent être répondues par oui ou non',
           isEnabled: true
+        },
+        {
+          name: 'FindEmoji',
+          description: "Où est l'emoji ?",
+          soif: 4,
+          templateAnswer: 'Le meilleur score :',
+          tips: "Trouvez l'emoji qui n'apparaît qu'une seule fois",
+          isEnabled: true
+        },
+        {
+          name: 'WizWaz',
+          description: 'Wiz Waz !',
+          soif: 1,
+          templateAnswer: 'Bravo aux gagnants !',
+          tips: 'Vous pouvez feinter vos adversaires avec votre regard',
+          isEnabled: true
         }
       ],
       jokers: []

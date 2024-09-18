@@ -1,7 +1,7 @@
 <template>
   <div id="game-container">
     <Timer :time="30" @end-timer="playGame(30000)" />
-    <Countdown @countdown-end="startGame" />
+    <Countdown :countdown-number="3" @countdown-end="startGame" />
 
     <v-sheet
       class="position-fixed t-0 r-O bg-gradient-info rounded-xl text-center d-flex align-center"
@@ -10,11 +10,14 @@
       {{ targetEmoji }}
     </v-sheet>
 
-    <!-- <div id="info-panel">
-          <div id="target-emoji">Trouvez : </div>
-          <div id="timer">Temps : 0.000s</div>
-          <button id="start-button">Commencer le jeu</button>
-      </div> -->
+    <v-alert
+      v-if="message"
+      class="position-fixed top-50"
+      elevation="24"
+      color="success"
+      icon="$success"
+      :text="message"
+    ></v-alert>
   </div>
 </template>
 
@@ -25,7 +28,8 @@ import Timer from '@/components/Timer.vue'
 
 export default {
   components: {
-    Timer
+    Timer,
+    Countdown
   },
   data() {
     return {
@@ -122,12 +126,13 @@ export default {
       startTime: null,
       endTime: null,
       targetEmoji: null,
-      gameRunning: false
+      gameRunning: false,
+      message: null
     }
   },
   methods: {
     getRandomEmoji() {
-      return this.emojiList[Math.floor(Math.random() * emojiList.length)]
+      return this.emojiList[Math.floor(Math.random() * this.emojiList.length)]
     },
 
     getRandomPosition(max) {
@@ -143,7 +148,7 @@ export default {
 
       if (isTarget) {
         emojiElement.id = 'target-emoji-game'
-        emojiElement.addEventListener('click', endGame)
+        emojiElement.addEventListener('click', this.endGame)
       }
 
       return emojiElement
@@ -155,15 +160,15 @@ export default {
       this.gameRunning = true
       const gameContainer = document.getElementById('game-container')
 
-      this.targetEmoji = getRandomEmoji()
+      this.targetEmoji = this.getRandomEmoji()
       // document.getElementById('target-emoji').textContent = `Trouvez : ${this.targetEmoji}`;
 
       // Increased emoji count by 50%
       const emojiCount = Math.floor((window.innerWidth * window.innerHeight) / 6667)
 
       for (let i = 0; i < emojiCount; i++) {
-        const emoji = i === 0 ? this.targetEmoji : this.getRandomEmoji()
-        const emojiElement = createEmoji(emoji, i === 0)
+        const emoji = i === 0 ? this.this.targetEmoji : this.getRandomEmoji()
+        const emojiElement = this.createEmoji(emoji, i === 0)
         gameContainer.appendChild(emojiElement)
       }
 
@@ -180,19 +185,18 @@ export default {
       this.endTime = new Date().getTime()
       const timeTaken = (this.endTime - this.startTime) / 1000
       this.playGame(timeTaken.toFixed(3))
-      alert(
-        `Félicitations! Vous avez trouvé l'emoji ${this.targetEmoji} en ${timeTaken.toFixed(3)} secondes!`
-      )
+
+      this.message = `Vous avez trouvé l'emoji ${this.targetEmoji} en ${timeTaken.toFixed(3)} secondes!`
 
       // document.getElementById('target-emoji').textContent = 'Trouvez : ';
       // document.getElementById('timer').textContent = 'Temps : 0.000s';
     },
 
     updateTimer() {
-      if (!gameRunning) return
+      if (!this.gameRunning) return
 
       const currentTime = new Date().getTime()
-      const elapsedTime = (currentTime - startTime) / 1000
+      const elapsedTime = (currentTime - this.startTime) / 1000
       // document.getElementById('timer').textContent = `Temps : ${elapsedTime.toFixed(3)}s`;
 
       // requestAnimationFrame(updateTimer);

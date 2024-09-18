@@ -57,7 +57,6 @@
                 >
                   + {{ player.soifAddedThisRound }}
                 </v-chip>
-                <!-- ma-2  -->
                 <v-chip class="bg-gradient-info" small>
                   {{ player.soifTotal }}
                   <v-icon>mdi-glass-mug-variant</v-icon>
@@ -164,7 +163,11 @@ export default {
     playerHandleClick(target) {
       // If a joker with target needed
       if (state.jokerUsed.target === true) {
-        state.jokerUsed.target = target.socketId
+        if (state.player.socketId === target.socketId) {
+          alert('Tu ne peux pas te cibler toi-même, choisie un autre joueur')
+        } else {
+          state.jokerUsed.target = target.socketId
+        }
         return
       }
       if (state.player.soifToGive) {

@@ -4,13 +4,13 @@
     <v-icon
       v-if="!wantToCreateRoom && !wantToJoinRoom"
       @click="wantToSetProfil = true"
-      class="position-fixed top-0 right-0 text-h4 ma-3"
+      class="position-fixed top-0 right-0 text-h4 text-white ma-3"
       >mdi mdi-account-edit</v-icon
     >
     <div class="w-100">
       <!-- Set profil -->
-      <div v-if="!pseudo || !avatar || wantToSetProfil" class="mx-5">
-        <div class="text-center text-white ma-5">
+      <div v-if="!pseudo || !avatar || wantToSetProfil" class="mx-5 text-white">
+        <div class="text-center ma-5">
           <h1 class="dancing-script-text text-h1 mb-5">Soif !</h1>
           <h2 class="nunito-text">Créé ton profil</h2>
         </div>
@@ -32,7 +32,7 @@
           <v-btn
             @click="setProfile"
             elevation="4"
-            class="w-100 bg-gradient-success text-white rounded-xl my-3"
+            class="w-100 bg-gradient-success rounded-xl my-3"
             type="submit"
             >Jouer</v-btn
           >
@@ -40,16 +40,16 @@
       </div>
 
       <!-- Create or join -->
-      <div v-else-if="!state.room.roomId" class="mx-5">
+      <div v-else-if="!state.room.roomId" class="mx-5 text-white">
         <div class="text-center ma-5">
           <v-slide-y-transition>
-            <h1 class="dancing-script-text text-white mb-5">Soif !</h1>
+            <h1 class="dancing-script-text mb-5">Soif !</h1>
           </v-slide-y-transition>
           <!-- <h2 class="nunito-text text-white">Une petite soif ?</h2> -->
         </div>
         <!-- Create room -->
         <PlayerAvatar
-          class="text-center"
+          class="text-center text-black"
           :player="state.player"
           :avatar-size="200"
           :can-be-modified="true"
@@ -61,7 +61,7 @@
           v-if="!wantToCreateRoom && !wantToJoinRoom"
           @click="wantToCreateRoom = true"
           elevation="4"
-          class="w-100 bg-gradient-success text-white rounded-xl"
+          class="w-100 bg-gradient-success rounded-xl"
           type="submit"
           >Créer une partie</v-btn
         >
@@ -162,33 +162,35 @@
 
       <!-- Saloon -->
       <div v-else-if="!allIsReady && !wantToConfigureRoom" class="text-center mx-5">
-        <div class="text-center ma-5">
+        <div class="nunito-text text-white text-center ma-5">
           <h1>Numéro de la partie</h1>
-          <h2>{{ state.room.roomId }}</h2>
+          <p class="text-h3 nunito-text">{{ state.room.roomId }}</p>
         </div>
         <div class="d-flex flex-wrap flex-align-center justify-space-around">
-          <v-badge
-            v-for="(player, i) in players"
-            :key="i"
-            bordered
-            top
-            :color="player.isReady ? 'green' : 'red'"
-            offset-x="20"
-            offset-y="20"
-          >
-            <PlayerAvatar
-              :player="player"
-              :avatar-size="120"
-              :show-pseudo="true"
-              :show-room-master="true"
-            ></PlayerAvatar>
-          </v-badge>
+          <v-sheet class="px-5 pt-5 rounded-lg" elevation="10">
+            <v-badge
+              v-for="(player, i) in players"
+              :key="i"
+              bordered
+              top
+              :color="player.isReady ? 'green' : 'red'"
+              offset-x="20"
+              offset-y="20"
+            >
+              <PlayerAvatar
+                :player="player"
+                :avatar-size="120"
+                :show-pseudo="true"
+                :show-room-master="true"
+              ></PlayerAvatar>
+            </v-badge>
+          </v-sheet>
         </div>
         <v-btn
           :disabled="launchGameIsDisabled"
           @click="state.player.isReady ? notReadyToPlay() : readyToPlay()"
           elevation="4"
-          class="w-100 bg-gradient-success text-white rounded-xl"
+          class="w-100 bg-gradient-success text-white rounded-xl mt-5"
           >{{ readyBtnLabel }}</v-btn
         >
         <v-btn
@@ -298,6 +300,8 @@ import RebondBall from './games/RebondBall.vue'
 import BrickBreaker from './games/BrickBreaker.vue'
 import RockPaperScissor from './games/RockPaperScissor.vue'
 import GuessHead from './games/GuessHead.vue'
+import FindEmoji from './games/FindEmoji.vue'
+import WizWaz from './games/WizWaz.vue'
 
 import RoomConfiguration from './RoomConfiguration.vue'
 import ScoreSoif from './ScoreSoif.vue'
@@ -331,6 +335,8 @@ export default {
     BrickBreaker,
     RockPaperScissor,
     GuessHead,
+    FindEmoji,
+    WizWaz,
 
     RoomConfiguration,
     PodiumSoif,

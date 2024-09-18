@@ -21,7 +21,7 @@
     <v-btn v-if="stream" class="bg-gradient-success text-h5 text-white ma-3" @click="makeAvatar"
       >Valider la tronche</v-btn
     >
-    <p v-if="showPseudo" class="text-center text-h5 my-3">
+    <p v-if="showPseudo" class="text-center text-h5 my-3 nunito-text">
       <span v-if="showRoomMaster && player.isRoomMaster">👑</span>
       {{ player.pseudo }}
     </p>
