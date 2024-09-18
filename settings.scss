@@ -1,0 +1,86 @@
+/**
+ * src/styles/settings.scss
+ *
+ * Configures SASS variables and Vuetify overwrites
+ */
+
+// https://vuetifyjs.com/features/sass-variables/`
+// @use 'vuetify/settings' with (
+//   $color-pack: false
+// );
+
+.v-main {
+  // background-color: #e7e7e7;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.v-chip {
+  color: white;
+}
+
+
+.bg-gradient-default {
+  background-image: linear-gradient(310deg, #141727, #3a416f) !important;
+}
+
+.bg-gradient-primary {
+  background-image: linear-gradient(310deg, #7928ca, #ff0080) !important;
+}
+
+.bg-gradient-warning {
+  background-image: linear-gradient(310deg, #f53939, #fbcf33) !important;
+}
+
+.bg-gradient-danger {
+  background-image: linear-gradient(310deg, #ea0606, #ff667c) !important;
+}
+
+.bg-gradient-success {
+  background-image: linear-gradient(310deg, #17ad37, #98ec2d) !important;
+}
+
+.bg-gradient-info {
+  background-image: linear-gradient(310deg, #2152ff, #21d4fd) !important;
+}
+
+.bg-gradient-info2 {
+  background-image: linear-gradient(310deg, #516aff, #51d4fd) !important;
+}
+
+.bg-gradient-info3 {
+  background-image: linear-gradient(310deg, #8169ff, #81e3ff) !important;
+}
+
+.bg-gradient-light {
+  background-image: linear-gradient(310deg, #ced4da, #ebeff4) !important;
+}
+
+.bg-gradient-secondary {
+  background-image: linear-gradient(310deg, #627594, #a8b8d8) !important;
+}
+
+.bg-gradient-purple {
+  background-image: linear-gradient(310deg, #7928ca, #ff0080) !important;
+}
+
+.bg-gradient-yellow {
+  background-image: linear-gradient(310deg, #f53939, #fbcf33) !important;
+}
+
+.bg-gradient-neutral {
+  background-image: linear-gradient(310deg, #627594, #a8b8d8) !important;
+}
+
+.bg-gradient-primary, .bg-gradient-warning, .bg-gradient-success, .bg-gradient-danger, .bg-gradient-info {
+  color: white;
+  text-transform: uppercase;
+}
