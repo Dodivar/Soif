@@ -2,7 +2,7 @@
   <div class="ma-5">
     <div class="ui-wheel-of-fortune w-100">
       <ul>
-        <!-- <li class="common">COMMUN</li>
+        <li class="common">COMMUN</li>
         <li class="nothing">RIEN</li>
         <li class="epic">EPIQUE</li>
         <li class="common">COMMUN</li>
@@ -37,8 +37,9 @@
         <li class="nothing">RIEN</li>
         <li class="rare">RARE</li>
         <li class="nothing">RIEN</li>
-        <li class="legendary">LEGENDAIRE</li> -->
+        <li class="legendary">LEGENDAIRE</li>
 
+        <!-- <li class="rare">RARE</li>
         <li class="rare">RARE</li>
         <li class="rare">RARE</li>
         <li class="rare">RARE</li>
@@ -74,16 +75,18 @@
         <li class="rare">RARE</li>
         <li class="rare">RARE</li>
         <li class="rare">RARE</li>
-        <li class="rare">RARE</li>
-        <li class="rare">RARE</li>
+        <li class="rare">RARE</li> -->
       </ul>
-      <v-btn @click="launch" :disabled="animation !== null" type="button">SPIN</v-btn>
+      <v-btn @click="launch" :disabled="!canSpin || animation !== null" type="button">
+        {{ maxSpin - spinNumber }} SPIN</v-btn
+      >
     </div>
   </div>
 </template>
 
 <script>
 import { state, socket } from '@/socket'
+import { championsId } from '@/champions/championTools'
 
 export default {
   components: {},
@@ -94,12 +97,25 @@ export default {
       wheel: null,
       animation: null,
       previousEndDegree: 0,
-      selector: '.ui-wheel-of-fortune'
+      selector: '.ui-wheel-of-fortune',
+      spinNumber: 0,
+      maxSpin: 1
     }
   },
-  computed: {},
+  computed: {
+    canSpin() {
+      return (
+        (state.player.champion === championsId.boufon && this.spinNumber < 2) || this.spinNumber < 1
+      )
+    }
+  },
   mounted() {
     this.wheelOfFortune()
+  },
+  created() {
+    if (state.player.champion === championsId.boufon) {
+      this.maxSpin += 1
+    }
   },
   methods: {
     wheelOfFortune() {
@@ -112,11 +128,12 @@ export default {
       this.previousEndDegree = 0
     },
     launch() {
-      if (this.animation) {
+      if (!this.canSpin) {
         return
         // this.animation.cancel() // Reset the animation if it already exists
       }
 
+      this.spinNumber += 1
       const randomAdditionalDegrees = Math.random() * 360 + 1800
       const newEndDegree = this.previousEndDegree + randomAdditionalDegrees
 
@@ -136,8 +153,12 @@ export default {
 
       this.previousEndDegree = newEndDegree
 
-      setTimeout(this.getPrize, 4000)
+      setTimeout(() => {
+        this.getPrize()
+        this.animation = null
+      }, 4000)
     },
+    // Calculate the position of the win joker
     getPrize() {
       // const node = document.querySelector(this.selector)
       // const li = Array.from(node.querySelectorAll('li'))
@@ -148,10 +169,10 @@ export default {
         window.innerHeight / 3
       )
       const jokerRarity = heighestElement.className
-      socket.emit('Game:GetJokerOfRarity', jokerRarity)
+      const canReplay = state.player.champion === championsId.boufon && this.spinNumber < 2
+      socket.emit('Game:GetJokerOfRarity', jokerRarity, canReplay)
     }
-  },
-  created() {}
+  }
 }
 </script>
 

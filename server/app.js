@@ -37,7 +37,7 @@ Http.listen(PORT, () => {
 
 // Init model of room
 const initRoomState = (socket, isRoomMaster) => {
-    const actualPlayer = new Player(socket.id, socket.data.pseudo, isRoomMaster)
+    const actualPlayer = new Player(socket.id, socket.data.pseudo, socket.data.champion, isRoomMaster)
     return new Room(socket, actualPlayer)
 }
 
@@ -88,6 +88,7 @@ io.on("connection", socket => {
         // Set socket data
         socket.data.actualRoomId = roomId
         socket.data.pseudo = player.pseudo
+        socket.data.champion = player.champion
         socket.data.isRoomMaster = true
         socket.join(roomId)
 
@@ -118,9 +119,10 @@ io.on("connection", socket => {
             socket.join(roomId)
             socket.data.actualRoomId = roomId
             socket.data.pseudo = player.pseudo
+            socket.data.champion = player.champion
 
             // Set new player in room
-            const newPlayer = new Player(socket.id, player.pseudo)
+            const newPlayer = new Player(socket.id, player.pseudo, player.champion)
             let room = getRoom(roomId)
             room.players.push(newPlayer)
             
@@ -165,6 +167,11 @@ io.on("connection", socket => {
         getPlayerState(socket.data.actualRoomId, socket.id).isReady = false
         io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
+    
+    socket.on("Room:SetChampion", (id) => {
+        getPlayerState(socket.data.actualRoomId, socket.id).champion = id
+        io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
+    });
 
     socket.on("Game:Replay", () => {
         if (!socket.data.isRoomMaster) return
@@ -187,7 +194,7 @@ io.on("connection", socket => {
 		// Check trap joker of the targeted player
 		if (playerToGive.hasTrapJoker) {
 			playerToGive.hasTrapJoker = false
-			player.addSoifToDrink(3, null)
+			player.addSoifToDrink(3, playerToGive)
             const trapJoker = JokerTools.GetJokerByName("Le piège")
 			const msg = `${player.pseudo} est tombé dans le piège de ${playerToGive.pseudo} et doit prendre 3 soifs !`
 			io.to(socket.data.actualRoomId).emit("Game:UseJoker", msg, trapJoker)
@@ -195,7 +202,6 @@ io.on("connection", socket => {
 
         // Set soif has been gived by the player
         player.soifToGive -= soifNumber
-
         io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
 	
@@ -207,7 +213,7 @@ io.on("connection", socket => {
         io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
 
-    socket.on("Game:GetJokerOfRarity", (rarity) => {
+    socket.on("Game:GetJokerOfRarity", (rarity, canReplay = false) => {
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
         player.readyForNextRound = true
 
@@ -227,10 +233,11 @@ io.on("connection", socket => {
                 socket.emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
             }
         }
-        
-      setTimeout(() => {
-        playGame(socket, '')
-      }, 3000)
+        if (!canReplay) {
+            setTimeout(() => {
+                playGame(socket, '')
+            }, 3000)
+        }
     })
     
     socket.on("Game:UseJoker", (jokerId, targetSocketId) => {
@@ -398,14 +405,28 @@ io.on("connection", socket => {
 
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
+
+    // CHAMPION POWER
+    socket.on("Champion:UsePower", (id) => {
+        switch (id) {
+            case 'schlag':
+                const soif = Math.floor(Math.random() * 3) + 1
+                const player = getPlayerState(socket.data.actualRoomId, socket.id)
+                player.addSoifToGive(soif)
+            break
+            default:
+            break
+        }
+        socket.emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
+    })
 })
 
 function launchNextRound(socket) {
     // If all soif has been gived, launch next game
     const players = getPlayerRoomState(socket.data.actualRoomId)
-    const winnersHasGived = players.filter(e => e.winner).every(e => e.givedSoif)
+    // const winnersHasGived = players.filter(e => e.winner).every(e => e.givedSoif)
     const everyIsReady = players.every(e => e.readyForNextRound)
-    if (winnersHasGived && everyIsReady) {
+    if (everyIsReady) {
         // Send next game after 4s
         sendNextGame(io, socket, isProd ? 4000 : 500)
     }
@@ -753,7 +774,7 @@ function setSoif(room) {
 			if (e.hasWinnerJoker) {
                 soifToGive *= 2
                 e.hasWinnerJoker = false
-            } 
+            }
             e.addSoifToGive(soifToGive)
         }
     })

@@ -20,7 +20,8 @@ export const state = reactive({
     pseudo: null,
     avatar: null,
     isRoomMaster: false,
-    jokers: []
+    jokers: [],
+    champion: null
   },
   room: {}
 })

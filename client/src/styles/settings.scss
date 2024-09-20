@@ -38,8 +38,17 @@ $body-font-family: 'Nunito', sans-serif !default;
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
-  // rounded-xl
-  border-radius: 24px !important;
+}
+
+.v-btn {
+  &.bg-gradient-primary,
+  .bg-gradient-warning,
+  .bg-gradient-success,
+  .bg-gradient-danger,
+  .bg-gradient-info {
+    // rounded-xl
+    border-radius: 24px !important;
+  }
 }
 
 .bg-gradient-default {

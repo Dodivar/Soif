@@ -1,14 +1,16 @@
 <template>
   <div>
     <!-- OPTION -->
-    <div class="w-100 position-absolute top-0 d-flex align-center justify-space-between px-5 pt-5">
+    <div
+      class="w-100 text-white nunito-text position-absolute top-0 d-flex align-center justify-space-between px-5 pt-5"
+    >
       <p>{{ state.room.roomId }}</p>
       <v-icon @click="quitRoom" class="text-h4">mdi mdi-door</v-icon>
     </div>
 
     <!-- CONTENT LIST -->
     <v-container class="my-10">
-      <div class="w-100 text-center mb-5">
+      <div class="w-100 text-white nunito-text text-center mb-5">
         <h2>
           <span v-if="allPlayerHasPlayed"
             >{{ state.room.actualGame.templateAnswer }}
@@ -45,7 +47,7 @@
                 <v-chip v-if="player.soifToGive > 0" class="bg-gradient-warning mr-1" small
                   >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
                 </v-chip>
-                {{ player.pseudo }}
+                {{ playerChampion.name }}
               </template>
 
               <template v-slot:append>
@@ -72,11 +74,11 @@
         </v-list>
       </v-card>
 
-      <!-- WHO GIVE SOIF TO ME -->
+      <!-- WHO'S GIVE SOIF -->
       <v-menu open-on-hover>
         <template v-slot:activator="{ props }">
           <v-btn
-            :disabled="soifGivedByPlayer.length > 0"
+            :disabled="soifGivedByPlayer.length === 0"
             class="w-100 bg-gradient-info text-white text-uppercase text-h6 mt-5 rounded-xl"
             v-bind="props"
           >
@@ -85,7 +87,7 @@
         </template>
 
         <v-list>
-          <v-list-item v-for="(player, idx) in soifGivedByPlayer" :key="player.socketId">
+          <v-list-item v-for="player in soifGivedByPlayer" :key="player.socketId">
             <div class="d-flex align-center">
               <PlayerAvatar :player="player" :avatar-size="60" />
               <p class="ml-3">{{ player.pseudo }}</p>
@@ -102,12 +104,33 @@
       <!-- READY -->
       <v-btn
         v-if="!state.player.readyForNextRound"
-        :disabled="state.player.soifToGive > 0"
         class="w-100 bg-gradient-success text-white text-h6 mt-5 rounded-xl"
         @click="readyForNextRound"
       >
-        {{ state.player.soifToGive > 0 ? 'Donnes tes soifs...' : 'PRÊT' }}
+        PRÊT
       </v-btn>
+
+      <v-sheet
+        v-if="!playerChampion?.passif"
+        elevation="10"
+        class="w-100 rounded-lg d-flex align-center nunito-text mt-5 pa-2"
+      >
+        <v-progress-circular color="red" :model-value="championPowerValue" :size="50" :width="10">
+          <template v-slot:default>
+            {{ actualPowerReload }}/{{ playerChampion.reloadPower }}
+          </template>
+        </v-progress-circular>
+        <div class="text-center ma-auto">
+          <p>{{ playerChampion.description }}</p>
+          <v-btn
+            class="bg-gradient-primary text-white text-h6 rounded-xl"
+            :disabled="!championPowerCanBeActivate"
+            @click="usePlayerChampionPower"
+          >
+            {{ championPowerCanBeActivate ? 'activé' : 'chargement...' }}
+          </v-btn>
+        </div>
+      </v-sheet>
     </v-container>
 
     <JokerMenu :jokers="state.player.jokers" />
@@ -118,6 +141,7 @@
 import { state, socket } from '@/socket'
 import PlayerAvatar from './PlayerAvatar.vue'
 import JokerMenu from './JokerMenu.vue'
+import { GetChampionById, championsId } from '@/champions/championTools'
 
 export default {
   components: {
@@ -126,12 +150,15 @@ export default {
   },
   data() {
     return {
-      state
+      state,
+      playerChampion: null,
+      championPowerCanBeActivate: false,
+      championPowerValue: 100,
+      actualPowerReload: 3
     }
   },
   watch: {
     allPlayerHasPlayed(newVal) {
-      console.log(newVal, state.player.soifToGive)
       if (newVal === true && state.player.soifToGive > 0) {
         this.$emit('confetti')
       }
@@ -141,13 +168,18 @@ export default {
     if (this.allPlayerHasPlayed && state.player.soifToGive > 0) {
       this.$emit('confetti')
     }
+
+    this.playerChampion = GetChampionById(state.player.champion)
+    if (this.playerChampion?.reloadPower && !this.championReload) {
+      this.championReload = this.addPlayerChampionReload()
+    }
   },
   computed: {
     playerItems() {
       return state.room.players
     },
     allPlayerHasPlayed() {
-      return this.playerItems.every((e) => e.hasPlayed)
+      return this.playerItems?.every((e) => e.hasPlayed)
     },
     roundAnswer() {
       return state.room.roundAnswer
@@ -172,7 +204,13 @@ export default {
       }
       if (state.player.soifToGive) {
         if (target.hasInvincibleJoker > 0) {
-          alert(`${target.pseudo} est invincible pendant ${target.hasInvincibleJoker} tour`)
+          alert(`${target.pseudo} est invincible pendant ${target.hasInvincibleJoker} round`)
+          return
+        }
+        if (target.champion === championsId.croixRouge && target.soifAddedThisRound >= 3) {
+          alert(
+            `${target.pseudo} fait partie de la croix rouge et ne peut pas boire plus de 3 soif chaque round`
+          )
           return
         }
         this.giveSoif(target.socketId)
@@ -184,6 +222,15 @@ export default {
     },
 
     readyForNextRound() {
+      if (state.player.soifToGive > 0) {
+        if (
+          !confirm(
+            `Il te reste ${state.player.soifToGive} soif à distribuer, tu es sûr de vouloir passer au prochian round ?`
+          )
+        ) {
+          return
+        }
+      }
       socket.emit('Game:ReadyForNextRound'), (state.player.readyForNextRound = true)
     },
 
@@ -192,7 +239,40 @@ export default {
         this.$emit('Room:Quit')
         state.room = {}
       }
-    }
+    },
+    usePlayerChampionPower() {
+      socket.emit('Champion:UsePower', this.playerChampion.id)
+      this.setPlayerChampionReload(0)
+      this.actualPowerReload = this.getPlayerChampionReload()
+      this.refreshChampionPowerValue()
+    },
+    addPlayerChampionReload() {
+      // Create reload if no exist
+      if (this.getPlayerChampionReload() === null) {
+        this.setPlayerChampionReload(0)
+      }
+      if (this.getPlayerChampionReload() < this.playerChampion.reloadPower) {
+        const reload = this.getPlayerChampionReload() + 1
+        this.setPlayerChampionReload(reload)
+      }
+
+      this.actualPowerReload = this.getPlayerChampionReload()
+      this.refreshChampionPowerValue()
+    },
+    refreshChampionPowerValue() {
+      // Refresh value circular reload power
+      this.championPowerValue = (this.actualPowerReload / this.playerChampion.reloadPower) * 100
+      this.championPowerCanBeActivate =
+        this.getPlayerChampionReload() === this.playerChampion.reloadPower
+    },
+    getPlayerChampionReload() {
+      if (localStorage.getItem('playerChampion:Reload') === null) return null
+      return Number(localStorage.getItem('playerChampion:Reload'))
+    },
+    setPlayerChampionReload(reload) {
+      localStorage.setItem('playerChampion:Reload', reload)
+    },
+    GetChampionById
   }
 }
 </script>

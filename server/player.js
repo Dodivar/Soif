@@ -1,5 +1,5 @@
 module.exports = class Player {
-  constructor(socketId, pseudo, isRoomMaster = false) {
+  constructor(socketId, pseudo, champion, isRoomMaster = false) {
     this.socketId = socketId
     this.pseudo = pseudo
     this.isRoomMaster = isRoomMaster // Est le maître de la partie, celui qui l'a créé
@@ -22,6 +22,8 @@ module.exports = class Player {
     this.hasInvincibleJoker = 0 // Nombre de tours ne pouvant pas être visé
     this.hasTrapJoker = false // Donne 3 soifs au joueur qui cible celui-ci
     this.hasWinnerJoker = false // Double les soifs si prochain jeu gagnant
+
+    this.champion = champion
   }
 
   /**
@@ -50,7 +52,7 @@ module.exports = class Player {
     }
     this.readyForNextRound = false
 
-    if (player === null || player.socketId === this.socketId) return
+    if (player === null) return
 
     // Track the player who's gived soif
     const playerGiving = this.soifGivedBy.find(e => e.socketId === player.socketId)
@@ -63,6 +65,9 @@ module.exports = class Player {
   }
   
   addSoifToGive(number) {
+      if (this.champion === 'rat' && number === 1) {
+          number += 1
+      }
     this.soifToGive = this.soifToGive + number < 0 ? 0 : this.soifToGive + number
     this.addTotalSoifGived(number) 
   }

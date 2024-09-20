@@ -87,6 +87,7 @@
                         color="green"
                         icon="mdi-minus"
                         variant="outlined"
+                        :disabled="item.raw.soif === 1"
                         @click="decrementSoif(item)"
                       ></v-btn>
                       {{ item.raw.soif }}

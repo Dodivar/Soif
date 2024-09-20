@@ -40,14 +40,10 @@
       </div>
 
       <!-- Create or join -->
-      <div v-else-if="!state.room.roomId" class="mx-5 text-white">
+      <div v-else-if="!state.room.roomId && !wantToSelectChampion" class="mx-5 text-white">
         <div class="text-center ma-5">
-          <v-slide-y-transition>
-            <h1 class="dancing-script-text mb-5">Soif !</h1>
-          </v-slide-y-transition>
-          <!-- <h2 class="nunito-text text-white">Une petite soif ?</h2> -->
+          <h1 class="dancing-script-text mb-5">Soif !</h1>
         </div>
-        <!-- Create room -->
         <PlayerAvatar
           class="text-center text-black"
           :player="state.player"
@@ -57,6 +53,7 @@
         >
         </PlayerAvatar>
 
+        <!-- Create room -->
         <v-btn
           v-if="!wantToCreateRoom && !wantToJoinRoom"
           @click="wantToCreateRoom = true"
@@ -87,6 +84,15 @@
             >{{ wantToJoinRoom ? 'Valider' : 'Rejoindre une partie' }}</v-btn
           >
         </v-form>
+
+        <!-- CHAMP SELECTION -->
+        <v-btn
+          v-if="!wantToCreateRoom && !wantToJoinRoom"
+          @click="goToChampionSelection"
+          elevation="4"
+          class="w-100 bg-gradient-primary text-white rounded-xl mt-5"
+          >Choisir son champion</v-btn
+        >
 
         <!-- ROUND NUMBER -->
         <div v-if="wantToCreateRoom">
@@ -161,7 +167,10 @@
       </div>
 
       <!-- Saloon -->
-      <div v-else-if="!allIsReady && !wantToConfigureRoom" class="text-center mx-5">
+      <div
+        v-else-if="!allIsReady && !wantToConfigureRoom && !wantToSelectChampion"
+        class="text-center mx-5"
+      >
         <div class="nunito-text text-white text-center ma-5">
           <h1>Numéro de la partie</h1>
           <p class="text-h3 nunito-text">{{ state.room.roomId }}</p>
@@ -203,7 +212,7 @@
         <v-btn
           @click="goToChampionSelection"
           elevation="4"
-          class="w-100 bg-gradient-info text-white rounded-xl mt-5"
+          class="w-100 bg-gradient-primary text-white rounded-xl mt-5"
           >Choisir son champion</v-btn
         >
         <v-btn class="w-100 bg-gradient-warning text-white rounded-xl mt-5" @click="quitRoom"
@@ -218,6 +227,7 @@
       <ChampionSelection
         v-if="wantToSelectChampion"
         @quit-configuration="wantToSelectChampion = false"
+        @get-champion="getChampion"
       />
       <!-- GAMES -->
       <div v-else>
@@ -242,7 +252,9 @@
             </p>
           </v-sheet>
         </div>
+        <!-- ROUND RESULT -->
         <ScoreSoif v-else-if="state.player?.hasPlayed" @confetti="createConfetti" />
+        <!-- GAME -->
         <component v-else :is="actualGameName" @confetti="createConfetti" />
       </div>
 
@@ -386,7 +398,7 @@ export default {
       return state.room.players
     },
     actualGameName() {
-      return state.room.actualGame.name
+      return state.room.actualGame?.name
     },
     allIsReady() {
       return this.players?.every((e) => e.isReady)
@@ -414,6 +426,7 @@ export default {
       state.room = {}
     },
     readyToPlay() {
+      localStorage.removeItem('playerChampion:Reload')
       const roomConfiguration = JSON.parse(localStorage.getItem('RoomConfiguration'))
       if (
         state.player.isRoomMaster &&
@@ -444,6 +457,7 @@ export default {
     setPlayerState() {
       this.pseudo = this.getLocalPlayerPseudo()
       this.avatar = this.getLocalPlayerAvatar()
+      this.getChampion()
       state.player.pseudo = this.pseudo
       state.player.avatar = this.avatar
     },
@@ -467,6 +481,9 @@ export default {
             origin: { y: 0.6 }
           })
       }
+    },
+    getChampion() {
+      state.player.champion = localStorage.getItem('playerChampion')
     },
 
     confettiStars() {
