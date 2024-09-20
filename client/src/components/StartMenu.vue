@@ -200,6 +200,12 @@
           class="w-100 bg-gradient-info text-white rounded-xl mt-5"
           >Configurer la partie</v-btn
         >
+        <v-btn
+          @click="goToChampionSelection"
+          elevation="4"
+          class="w-100 bg-gradient-info text-white rounded-xl mt-5"
+          >Choisir son champion</v-btn
+        >
         <v-btn class="w-100 bg-gradient-warning text-white rounded-xl mt-5" @click="quitRoom"
           >QUITTER</v-btn
         >
@@ -208,6 +214,10 @@
       <RoomConfiguration
         @quit-configuration="wantToConfigureRoom = false"
         v-else-if="wantToConfigureRoom"
+      />
+      <ChampionSelection
+        v-if="wantToSelectChampion"
+        @quit-configuration="wantToSelectChampion = false"
       />
       <!-- GAMES -->
       <div v-else>
@@ -304,6 +314,7 @@ import FindEmoji from './games/FindEmoji.vue'
 import WizWaz from './games/WizWaz.vue'
 
 import RoomConfiguration from './RoomConfiguration.vue'
+import ChampionSelection from './ChampionSelection.vue'
 import ScoreSoif from './ScoreSoif.vue'
 import PodiumSoif from './PodiumSoif.vue'
 import PlayerAvatar from './PlayerAvatar.vue'
@@ -339,6 +350,7 @@ export default {
     WizWaz,
 
     RoomConfiguration,
+    ChampionSelection,
     PodiumSoif,
     PlayerAvatar,
     JokerWheel,
@@ -358,7 +370,8 @@ export default {
       wantToCreateRoom: false,
       wantToJoinRoom: false,
       wantToSetProfil: false,
-      wantToConfigureRoom: false
+      wantToConfigureRoom: false,
+      wantToSelectChampion: false
     }
   },
   created() {
@@ -437,6 +450,10 @@ export default {
     goToRoomConfiguration() {
       this.notReadyToPlay()
       this.wantToConfigureRoom = true
+    },
+    goToChampionSelection() {
+      this.notReadyToPlay()
+      this.wantToSelectChampion = true
     },
     createConfetti(type) {
       switch (type) {
