@@ -47,7 +47,7 @@
                 <v-chip v-if="player.soifToGive > 0" class="bg-gradient-warning mr-1" small
                   >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
                 </v-chip>
-                {{ playerChampion.name }}
+                {{ playerChampion ? playerChampion.name : player.pseudo }}
               </template>
 
               <template v-slot:append>
@@ -170,8 +170,8 @@ export default {
     }
 
     this.playerChampion = GetChampionById(state.player.champion)
-    if (this.playerChampion?.reloadPower && !this.championReload) {
-      this.championReload = this.addPlayerChampionReload()
+    if (this.playerChampion?.reloadPower) {
+      this.addPlayerChampionReload()
     }
   },
   computed: {

@@ -221,11 +221,11 @@
       </div>
 
       <RoomConfiguration
-        @quit-configuration="wantToConfigureRoom = false"
         v-else-if="wantToConfigureRoom"
+        @quit-configuration="wantToConfigureRoom = false"
       />
       <ChampionSelection
-        v-if="wantToSelectChampion"
+        v-else-if="wantToSelectChampion"
         @quit-configuration="wantToSelectChampion = false"
         @get-champion="getChampion"
       />

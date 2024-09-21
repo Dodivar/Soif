@@ -69,7 +69,7 @@ export default {
   mounted() {},
   methods: {
     getChampion() {
-      this.$emit('getChampion')
+      this.$emit('get-champion')
     },
     setChampion(id) {
       localStorage.setItem('playerChampion', id)
