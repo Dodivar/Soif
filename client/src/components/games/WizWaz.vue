@@ -27,9 +27,7 @@
 
     <v-menu open-on-hover>
       <template v-slot:activator="{ props }">
-        <v-btn class="w-100 bg-gradient-info mt-5 rounded-xl" v-bind="props">
-          Les règles du jeu :
-        </v-btn>
+        <v-btn class="w-100 bg-gradient-info mt-5" v-bind="props"> Les règles du jeu </v-btn>
       </template>
       <v-sheet elevation="10">
         <ul>
@@ -73,6 +71,7 @@ export default {
   },
   watch: {
     'state.room.actualGame.looser'(newVal) {
+      console.log(newVal)
       if (!newVal) return
       this.playGame(newVal.socketId !== state.player.socketId)
     }
@@ -89,8 +88,8 @@ export default {
     this.playerStarting = state.room.actualGame.playerStarting
   },
   methods: {
-    setLooser(socketId) {
-      socket.emit('Game:PlayGame', socketId)
+    setLooser(player) {
+      socket.emit('WizWaz:SetLooser', player.socketId)
     },
     playGame(win) {
       socket.emit('Game:PlayGame', win)

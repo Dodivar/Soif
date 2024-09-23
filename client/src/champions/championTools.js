@@ -23,7 +23,7 @@ function GetAll() {
     new CroixRouge(), // DONE
     new Fan86(),
     new Rat(), // DONE
-    new Schlag(),
+    new Schlag(), // DONE
     new Siphon(),
     new Taze(),
     new Victime()

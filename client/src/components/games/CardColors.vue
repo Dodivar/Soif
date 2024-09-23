@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <!-- <Timer :time="10" @end-timer="setChoice('🥴')"></Timer> -->
+    <Timer :time="10" @end-timer="setChoice('🥴')"></Timer>
 
     <div class="d-flex align-center justify-space-around mb-10">
       <v-sheet

@@ -56,7 +56,7 @@ socket.on('connect_error', (err) => {
 })
 
 // User joined the game
-socket.on('join room', (roomState, roomAvatars) => {
+socket.on('Room:Join', (roomState, roomAvatars) => {
   state.room = roomState
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
 
@@ -82,6 +82,14 @@ socket.on('Room:RefreshPlayers', (players) => {
 socket.on('Room:RefreshRoom', (room) => {
   state.room = room
   state.player = state.room.players.find((e) => e.socketId === socket.id) ?? state.player
+})
+
+socket.on('Room:SendMessage', (message, player) => {
+  const newSnackbar = {
+    message,
+    player
+  }
+  state.snackbarElements.push(newSnackbar)
 })
 
 socket.on('UpdateActualGame', (actualGame) => {

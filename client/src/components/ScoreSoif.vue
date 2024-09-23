@@ -47,7 +47,7 @@
                 <v-chip v-if="player.soifToGive > 0" class="bg-gradient-warning mr-1" small
                   >{{ player.soifToGive }}<v-icon>mdi-glass-mug-variant</v-icon>
                 </v-chip>
-                {{ playerChampion ? playerChampion.name : player.pseudo }}
+                {{ player.champion ? GetChampionName(player.champion) : player.pseudo }}
               </template>
 
               <template v-slot:append>
@@ -141,7 +141,7 @@
 import { state, socket } from '@/socket'
 import PlayerAvatar from './PlayerAvatar.vue'
 import JokerMenu from './JokerMenu.vue'
-import { GetChampionById, championsId } from '@/champions/championTools'
+import { GetChampionById, GetChampionName, championsId } from '@/champions/championTools'
 
 export default {
   components: {
@@ -272,7 +272,8 @@ export default {
     setPlayerChampionReload(reload) {
       localStorage.setItem('playerChampion:Reload', reload)
     },
-    GetChampionById
+    GetChampionById,
+    GetChampionName
   }
 }
 </script>

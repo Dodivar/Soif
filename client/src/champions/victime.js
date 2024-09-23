@@ -1,13 +1,8 @@
 import Champion from './champion'
 
-export default class Boufon extends Champion {
+export default class Victime extends Champion {
   constructor() {
-    super(
-      'victime',
-      'La victime',
-      'Si tu reçoies le plus de soif à boire, donne 1 soif aux autres joueurs',
-      '',
-      null
-    )
+    super('victime', 'La victime', 'Réduit tes soifs de 2', '', 3)
+    this.isDisabled = false
   }
 }

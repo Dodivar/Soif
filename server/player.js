@@ -27,7 +27,7 @@ module.exports = class Player {
   }
 
   /**
-   * A donner les soifs du round
+   * Has gived soif of round
    */
   get givedSoif() {
     return this.soifToGive <= 0
@@ -64,12 +64,20 @@ module.exports = class Player {
     }
   }
   
+  reduceFoifToDrink(number) {
+    this.soifAddedThisRound = this.soifAddedThisRound - number < 0 ? 0 : this.soifAddedThisRound - number
+  }
+
   addSoifToGive(number) {
       if (this.champion === 'rat' && number === 1) {
           number += 1
       }
     this.soifToGive = this.soifToGive + number < 0 ? 0 : this.soifToGive + number
     this.addTotalSoifGived(number) 
+  }
+
+  reduceFoifToGive(number) {
+    this.soifToGive = this.soifToGive - number < 0 ? 0 : this.soifToGive - number
   }
 
   addTotalSoifGived(number) {

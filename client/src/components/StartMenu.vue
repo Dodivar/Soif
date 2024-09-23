@@ -176,24 +176,22 @@
           <p class="text-h3 nunito-text">{{ state.room.roomId }}</p>
         </div>
         <div class="d-flex flex-wrap flex-align-center justify-space-around">
-          <v-sheet class="px-5 pt-5 rounded-lg" elevation="10">
-            <v-badge
-              v-for="(player, i) in players"
-              :key="i"
-              bordered
-              top
-              :color="player.isReady ? 'green' : 'red'"
-              offset-x="20"
-              offset-y="20"
-            >
-              <PlayerAvatar
-                :player="player"
-                :avatar-size="120"
-                :show-pseudo="true"
-                :show-room-master="true"
-              ></PlayerAvatar>
-            </v-badge>
-          </v-sheet>
+          <v-badge
+            v-for="(player, i) in players"
+            :key="i"
+            bordered
+            top
+            :color="player.isReady ? 'green' : 'red'"
+            offset-x="20"
+            offset-y="20"
+          >
+            <PlayerAvatar
+              :player="player"
+              :avatar-size="120"
+              :show-pseudo="true"
+              :show-room-master="true"
+            ></PlayerAvatar>
+          </v-badge>
         </div>
         <v-btn
           :disabled="launchGameIsDisabled"

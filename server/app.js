@@ -105,7 +105,7 @@ io.on("connection", socket => {
         }
         roomAvatars.push(newRoomAvatars)
         
-        io.to(roomId).emit('join room', roomObj, newRoomAvatars);
+        io.to(roomId).emit('Room:Join', roomObj, newRoomAvatars);
     });
 
     socket.on("Room:Join", (roomId, player, avatar) => {
@@ -131,7 +131,7 @@ io.on("connection", socket => {
             const actualRoomAvatars = roomAvatars.find(e => e.roomId === roomId)
             actualRoomAvatars.avatars.push(avatarObj)
 
-            io.to(roomId).emit('join room', room, actualRoomAvatars);
+            io.to(roomId).emit('Room:Join', room, actualRoomAvatars);
         }
         catch(e) {
             console.error(e)
@@ -201,7 +201,7 @@ io.on("connection", socket => {
 		}
 
         // Set soif has been gived by the player
-        player.soifToGive -= soifNumber
+        player.reduceFoifToGive(soifNumber)
         io.to(socket.data.actualRoomId).emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     });
 	
@@ -394,12 +394,12 @@ io.on("connection", socket => {
     socket.on("GuessHead:SetVote", vote => {
         const room = getRoom(socket.data.actualRoomId)
         room.actualGame.playerVotes.push(vote)
-
+        
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
     
     // WizWaz
-    socket.on("WizWaz:SetVote", (socketId) => {
+    socket.on("WizWaz:SetLooser", (socketId) => {
         const room = getRoom(socket.data.actualRoomId)
         room.actualGame.looser = getPlayerState(socket.data.actualRoomId, socketId)
 
@@ -408,23 +408,45 @@ io.on("connection", socket => {
 
     // CHAMPION POWER
     socket.on("Champion:UsePower", (id) => {
+        let msg = null
+        const player = getPlayerState(socket.data.actualRoomId, socket.id)
         switch (id) {
             case 'schlag':
                 const soif = Math.floor(Math.random() * 3) + 1
-                const player = getPlayerState(socket.data.actualRoomId, socket.id)
                 player.addSoifToGive(soif)
+                msg = `${player.pseudo} a reçu ${soif} soif, quel schlag !`
+            break
+            case 'siphon':
+                let total = 0
+                const players = getPlayerRoomState(socket.data.actualRoomId)
+                players.forEach(p => {
+                    if (p.givedSoif || socket.id === p.socketId) return
+                    total += p.soifToGive
+                    player.addSoifToDrink(p.soifToGive, p)
+                    p.reduceFoifToGive(p.soifToGive)
+                })
+                if (total === 0) return
+                msg = `${player.pseudo} a siphonné ${total} soif !`
+            break
+            case 'victime':
+                player.reduceFoifToDrink(2)
+                msg = `${player.pseudo} la victime a réduit ses soif de 2 !`
             break
             default:
             break
         }
-        socket.emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
+        sendMessageToRoom(socket.data.actualRoomId, msg, player)
+        io.emit("Room:RefreshPlayers", getPlayerRoomState(socket.data.actualRoomId))
     })
 })
+
+function sendMessageToRoom(roomId, msg, player) {
+    io.to(roomId).emit("Room:SendMessage", msg, player)
+}
 
 function launchNextRound(socket) {
     // If all soif has been gived, launch next game
     const players = getPlayerRoomState(socket.data.actualRoomId)
-    // const winnersHasGived = players.filter(e => e.winner).every(e => e.givedSoif)
     const everyIsReady = players.every(e => e.readyForNextRound)
     if (everyIsReady) {
         // Send next game after 4s
@@ -606,12 +628,13 @@ function playGame(socket, data) {
 				
             // Lower score of players
             case "ReactionClick":
-                room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue));
+                room.roundAnswer = Math.min.apply(Math, room.players.filter(e).map(e => e.gameValue));
                 break
             case "Labyrinth":
+            case "FindEmoji":
                 room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue.ms));
                 break
-                
+
             case "Simon":
                 // If the score is > 0 then it's a win, else if the score = 0, it's a loose for this player  
                 if (data === 0) {
@@ -684,6 +707,7 @@ function setGameValueLabel(player, gameName) {
             case "NavalBattle":
                 return `${player.gameValue.soif} touché` + (player.gameValue.isStillAlive ? ' + dernier en vie' : '')
             case "Labyrinth":
+            case "FindEmoji":
                 return `${player.gameValue.ms}ms`
             case "ReactionClick":
             case "SurvivalEmoji":
@@ -712,6 +736,7 @@ function setSoif(room) {
             soifToGive = Math.floor(room.actualGame.level/room.players.length) + 1
             break;
         case "Labyrinth":
+        case "FindEmoji":
             winners = room.players.filter(e => e.gameValue.win && e.gameValue.ms === room.roundAnswer)
             soifToGive = room.actualGame.soif
             break

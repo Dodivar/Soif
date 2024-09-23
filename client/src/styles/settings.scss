@@ -42,10 +42,10 @@ $body-font-family: 'Nunito', sans-serif !default;
 
 .v-btn {
   &.bg-gradient-primary,
-  .bg-gradient-warning,
-  .bg-gradient-success,
-  .bg-gradient-danger,
-  .bg-gradient-info {
+  &.bg-gradient-warning,
+  &.bg-gradient-success,
+  &.bg-gradient-danger,
+  &.bg-gradient-info {
     // rounded-xl
     border-radius: 24px !important;
   }
