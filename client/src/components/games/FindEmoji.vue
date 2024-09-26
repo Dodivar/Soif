@@ -1,6 +1,6 @@
 <template>
   <div id="game-container">
-    <Timer v-if="gameRunning" :time="30" @end-timer="playGame(false, 696969)" />
+    <Timer v-if="gameRunning" :time="30" @end-timer="playGame(false, 0)" />
     <Countdown :countdown-number="3" @countdown-end="startGame" />
 
     <v-sheet
@@ -188,9 +188,9 @@ export default {
       this.message = `Vous avez trouvé l'emoji ${this.targetEmoji} en ${timeTaken.toFixed(3)} secondes!`
     },
 
-    playGame(win, time) {
+    playGame(win, score) {
       setTimeout(() => {
-        socket.emit('Game:PlayGame', { win, ms: time })
+        socket.emit('Game:PlayGame', { win, score })
       }, 2000)
     }
   },
