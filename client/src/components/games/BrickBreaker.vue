@@ -72,6 +72,12 @@ export default {
     this.canvas.addEventListener('touchmove', this.touchHandler)
 
     this.draw()
+
+    // Disable page over scroll
+    window.addEventListener('scroll', (e) => {
+      e.preventDefault()
+      window.scrollTo(0, 0)
+    })
   },
   methods: {
     startGame() {
@@ -210,6 +216,13 @@ export default {
 #gameCanvas {
   display: block;
   background: #fff;
+
+  /* Disable page over scroll */
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 #score {
   position: absolute;

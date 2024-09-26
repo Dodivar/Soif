@@ -1,4 +1,3 @@
-
 const fs = require("fs");
 const path = require("path");
 const Player = require("./player.js");
@@ -10,9 +9,6 @@ const games = require("./games.js");
 const TtmcThemes = require("./games/TTMC_themes.json")
 const DoYouPreferQuestions = require("./games/DoYouPrefer.json")
 const PersonnalQuestion = require("./games/PersonnalQuestion.json")
-
-
-
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -111,7 +107,7 @@ io.on("connection", socket => {
     socket.on("Room:Join", (roomId, player, avatar) => {
         try {
             if (!roomId) {           
-                socket.emit('msg', "Aucun channel pour " + roomId)
+                socket.emit('User:ErrorMessage', `Aucun partie ${roomId} n'a été trouvée`)
                 return
             }
 
@@ -405,12 +401,21 @@ io.on("connection", socket => {
 
         io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
     })
+    // InMySuiteCase
+    socket.on("InMySuiteCase:SetLooser", (socketId) => {
+        const room = getRoom(socket.data.actualRoomId)
+        room.actualGame.looser = getPlayerState(socket.data.actualRoomId, socketId)
+
+        io.to(socket.data.actualRoomId).emit("UpdateActualGame", room.actualGame)
+    })
 
     // CHAMPION POWER
-    socket.on("Champion:UsePower", (id) => {
+    socket.on("Champion:UsePower", ({championId, targetSocketId}) => {
         let msg = null
+        let targetPlayer = targetSocketId ? getPlayerState(socket.data.actualRoomId, targetSocketId) : null
+
         const player = getPlayerState(socket.data.actualRoomId, socket.id)
-        switch (id) {
+        switch (championId) {
             case 'schlag':
                 const soif = Math.floor(Math.random() * 3) + 1
                 player.addSoifToGive(soif)
@@ -431,6 +436,16 @@ io.on("connection", socket => {
             case 'victime':
                 player.reduceFoifToDrink(2)
                 msg = `${player.pseudo} la victime a réduit ses soif de 2 !`
+            break
+            case 'camping':
+                if (!targetPlayer) return
+                targetPlayer.hasCampingPowerFromSocketId = player.socketId
+                msg = `${player.pseudo} le campeur volera les soif de ${targetPlayer.pseudo} si il en gagne au prochain round`
+            break
+            case 'fan86':
+                if (!targetPlayer) return
+                targetPlayer.hasFan86PowerFromSocketId = player.socketId
+                msg = `${player.pseudo} boit dans la 8.6 de ${targetPlayer.pseudo} et gagnera 2 soif si il gagne au prochain round`
             break
             default:
             break
@@ -545,6 +560,7 @@ function setActualGameData(room, nextGame) {
             room.actualGame.guessImage = getRandomFile("games/GuessHeadImg")
             break
         case "WizWaz":
+        case "InMySuiteCase":
             room.actualGame.playerStarting = utils.GetRandomElement(room.players)
             room.actualGame.looser = null
             break
@@ -683,6 +699,7 @@ function playGame(socket, data) {
             case "RockPaperScissor":
             case "GuessHead":
             case "WizWaz":
+            case "InMySuiteCase":
             default:
                 room.roundAnswer = true
                 room.roundAnswerLabel = " "
@@ -708,17 +725,16 @@ function setGameValueLabel(player, gameName) {
                 return `${player.gameValue.soif} touché` + (player.gameValue.isStillAlive ? ' + dernier en vie' : '')
             case "Labyrinth":
             case "FindEmoji":
-                return `${player.gameValue.ms}ms`
+                return `${player.gameValue.score}s`
             case "ReactionClick":
             case "SurvivalEmoji":
-                return `${player.gameValue}ms`
-            case "FastClick":
-                return `${player.gameValue}`
+                return `${player.gameValue}s`
             case "Loto":
                 return `${player.gameValue.ball}`
             case "GuessHead":
             case "RockPaperScissor":
             case "WizWaz":
+            case "InMySuiteCase":
                 return player.gameValue ? "Gagné" : "Perdu"
             default:
                 return player.gameValue
@@ -752,7 +768,7 @@ function setSoif(room) {
         case "GuessNumber":
             let bestScore = room.actualGame.targetNumber
 
-            // Find the nearest value if no one find
+            // Find the nearest value if no one find the right value
             const winnerExist = room.players.some(e => e.gameValue === bestScore)
             if (!winnerExist) {
                 const allScore = room.players.map(e => e.gameValue)
@@ -786,22 +802,39 @@ function setSoif(room) {
         if (soifToGive === null) {
             switch(room.actualGame.name) {
                 case "TTMC":
-                    e.addSoifToGive(room.actualGame.chosenQuestionNumber + 1)
+                    soifToGive = room.actualGame.chosenQuestionNumber + 1
                     break
                 case "Blackjack":
-                    e.addSoifToGive(e.gameValue.soif)
+                    soifToGive = e.gameValue.soif
                     break
                 case "NavalBattle":
-                    e.addSoifToGive(e.gameValue.soif + (e.gameValue.isStillAlive ? 2 : 0))
+                    soifToGive = e.gameValue.soif + (e.gameValue.isStillAlive ? 2 : 0)
                     break
             }
-        } else {
-			if (e.hasWinnerJoker) {
-                soifToGive *= 2
-                e.hasWinnerJoker = false
-            }
-            e.addSoifToGive(soifToGive)
         }
+
+        // Winner joker double soif to give
+        if (e.hasWinnerJoker) {
+            soifToGive *= 2
+            e.hasWinnerJoker = false
+        }
+
+        // Add soif to give to Fan86 champion
+        if (e.hasFan86PowerFromSocketId) {
+            const playerFromFan86Power = getPlayerState(room.roomId, e.hasCampingPowerFromSocketId)
+            playerFromFan86Power.addSoifToGive(2)
+            e.hasFan86PowerFromSocketId = null
+        }
+
+        // Transfer soif to camping champion if player has been choosed
+        if (e.hasCampingPowerFromSocketId) {
+            const playerFromCampingPower = getPlayerState(room.roomId, e.hasCampingPowerFromSocketId)
+            playerFromCampingPower.addSoifToGive(soifToGive)
+            e.hasCampingPowerFromSocketId = null
+            return
+        }
+        
+        e.addSoifToGive(soifToGive)
     })
 }
 
