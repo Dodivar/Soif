@@ -94,9 +94,10 @@ export default {
 
       // Ask to target someone
       if (this.isTargeted && state.jokerUsed.target === null) {
-        alert('click sur le joueur que tu souhaites viser')
+        alert('Appuie sur le joueur que tu souhaites viser')
         state.jokerUsed.target = true
         state.jokerUsed.id = this.jokerId
+        state.championPowerTarget = null
         return
       }
       // Use it

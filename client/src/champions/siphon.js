@@ -1,8 +1,14 @@
 import Champion from './champion'
 
-export default class Boufon extends Champion {
+const id = 'siphon'
+
+export default class Siphon extends Champion {
   constructor() {
-    super('siphon', 'Le siphon', 'Boit tous les soif à distribuer des autres joueurs', '', 1)
+    super(id, 'Le siphon', 'Boit tous les soif à distribuer des autres joueurs', '', 1)
     this.isDisabled = false
+  }
+
+  static getId() {
+    return id
   }
 }

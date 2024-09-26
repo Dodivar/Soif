@@ -71,7 +71,6 @@ export default {
   },
   watch: {
     'state.room.actualGame.looser'(newVal) {
-      console.log(newVal)
       if (!newVal) return
       this.playGame(newVal.socketId !== state.player.socketId)
     }

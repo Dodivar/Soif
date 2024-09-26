@@ -343,6 +343,14 @@ export default {
           templateAnswer: 'Bravo aux gagnants !',
           tips: 'Vous pouvez feinter vos adversaires avec votre regard',
           isEnabled: true
+        },
+        {
+          name: 'InMySuiteCase',
+          description: 'Dans ma valise',
+          soif: 1,
+          templateAnswer: 'Bravo aux gagnants !',
+          tips: 'Aide toi de ta mémoire visuel pour te souvenir des éléments',
+          isEnabled: true
         }
       ],
       jokers: []

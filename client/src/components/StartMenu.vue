@@ -27,6 +27,7 @@
             :counter="10"
             :rules="pseudoRules"
             label="Pseudo"
+            class="text-black"
             required
           ></v-text-field>
           <v-btn
@@ -37,6 +38,26 @@
             >Jouer</v-btn
           >
         </v-form>
+        <!--GOOGLE LOGIN-->
+        <div
+          id="g_id_onload"
+          data-client_id="soifGoogleLogin"
+          data-context="signup"
+          data-ux_mode="popup"
+          data-callback="handleSignInWithGoogle"
+          data-auto_select="true"
+          data-itp_support="true"
+          data-use_fedcm_for_prompt="true"
+        ></div>
+        <div
+          class="g_id_signin"
+          data-type="standard"
+          data-shape="pill"
+          data-theme="outline"
+          data-text="signin_with"
+          data-size="large"
+          data-logo_alignment="left"
+        ></div>
       </div>
 
       <!-- Create or join -->
@@ -71,11 +92,13 @@
             :counter="6"
             placeholder="Numéro de partie"
             label="Numéro de partie"
+            class="text-black"
           ></v-text-field>
           <v-btn
             v-if="!wantToCreateRoom"
             @click="wantToJoinRoom ? joinRoom() : (wantToJoinRoom = true)"
             elevation="4"
+            :loading="loadingRoom"
             :class="
               (wantToJoinRoom ? 'bg-gradient-success' : 'bg-gradient-info') +
               ' w-100 text-white rounded-xl'
@@ -83,6 +106,7 @@
             type="submit"
             >{{ wantToJoinRoom ? 'Valider' : 'Rejoindre une partie' }}</v-btn
           >
+          <!-- <p v-if="showNoRoomIdFound">Aucune partie {{ roomToJoin }} n'a été trouvée</p> -->
         </v-form>
 
         <!-- CHAMP SELECTION -->
@@ -186,6 +210,7 @@
             offset-y="20"
           >
             <PlayerAvatar
+              :key="player.socketId"
               :player="player"
               :avatar-size="120"
               :show-pseudo="true"
@@ -218,6 +243,7 @@
         >
       </div>
 
+      <!-- Options -->
       <RoomConfiguration
         v-else-if="wantToConfigureRoom"
         @quit-configuration="wantToConfigureRoom = false"
@@ -322,6 +348,7 @@ import RockPaperScissor from './games/RockPaperScissor.vue'
 import GuessHead from './games/GuessHead.vue'
 import FindEmoji from './games/FindEmoji.vue'
 import WizWaz from './games/WizWaz.vue'
+import InMySuiteCase from './games/InMySuiteCase.vue'
 
 import RoomConfiguration from './RoomConfiguration.vue'
 import ChampionSelection from './ChampionSelection.vue'
@@ -358,6 +385,7 @@ export default {
     GuessHead,
     FindEmoji,
     WizWaz,
+    InMySuiteCase,
 
     RoomConfiguration,
     ChampionSelection,
@@ -381,7 +409,9 @@ export default {
       wantToJoinRoom: false,
       wantToSetProfil: false,
       wantToConfigureRoom: false,
-      wantToSelectChampion: false
+      wantToSelectChampion: false,
+      loadingRoom: false
+      // showNoRoomIdFound: false,
     }
   },
   created() {
@@ -415,9 +445,30 @@ export default {
   methods: {
     createRoom(roundNumber) {
       socket.emit('Room:Create', state.player, this.avatar, roundNumber)
+
+      setTimeout(() => {
+        if (state.room.roomId) {
+          this.wantToCreateRoom = false
+        }
+      }, 2000)
     },
     joinRoom() {
+      this.loadingRoom = true
       socket.emit('Room:Join', this.roomToJoin, state.player, this.avatar)
+
+      setTimeout(() => {
+        // if (!state.room.roomId) {
+        // this.showNoRoomIdFound = true
+        // } else {
+        //   this.wantToJoinRoom = false
+        // }
+
+        if (state.room.roomId) {
+          this.wantToJoinRoom = false
+        }
+
+        this.loadingRoom = false
+      }, 2000)
     },
     quitRoom() {
       socket.emit('Room:Quit')

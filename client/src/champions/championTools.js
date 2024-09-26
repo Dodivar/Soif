@@ -19,14 +19,14 @@ function GetAll() {
   return [
     new Boufon(), // DONE
     new Came(),
-    new Camping(),
+    new Camping(), // DONE
     new CroixRouge(), // DONE
     new Fan86(),
     new Rat(), // DONE
     new Schlag(), // DONE
-    new Siphon(),
+    new Siphon(), // DONE
     new Taze(),
-    new Victime()
+    new Victime() // DONE
   ]
 }
 

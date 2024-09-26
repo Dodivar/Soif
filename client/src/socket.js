@@ -15,6 +15,7 @@ export const state = reactive({
     id: null,
     target: null
   },
+  championPowerTarget: null,
   player: {
     socketId: null,
     pseudo: null,
@@ -72,6 +73,10 @@ socket.on('Room:Join', (roomState, roomAvatars) => {
 
   // Copy in the clipboard the room id
   navigator.clipboard.writeText(state.room.roomId)
+})
+
+socket.on('User:ErrorMessage', (err) => {
+  state.errMsg = err
 })
 
 socket.on('Room:RefreshPlayers', (players) => {

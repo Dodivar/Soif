@@ -268,9 +268,6 @@ export default {
         if (this.collectedStars === 3) {
           this.gameWon()
         }
-        // else {
-        //   this.gameOver()
-        // }
       }
     },
 
@@ -282,7 +279,7 @@ export default {
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', { ms: 696969, win: false })
+        socket.emit('Game:PlayGame', { score: 0, win: false })
       }, 2000)
     },
 
@@ -290,12 +287,12 @@ export default {
       this.gameActive = false
       this.hasWin = true
       let endTime = new Date().getTime()
-      let reactionTime = endTime - this.startTime
-      this.message = `Vous avez gagné en ${reactionTime}ms !`
+      let reactionTime = endTime - this.startTime / 1000
+      this.message = `Vous avez gagné en ${reactionTime}s !`
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', { ms: reactionTime, win: true })
+        socket.emit('Game:PlayGame', { score: Number(reactionTime.toFixed(3)), win: true })
       }, 2000)
     },
 

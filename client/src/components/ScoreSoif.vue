@@ -110,6 +110,7 @@
         PRÊT
       </v-btn>
 
+      <!-- CHAMPION POWER -->
       <v-sheet
         v-if="!playerChampion?.passif"
         elevation="10"
@@ -202,6 +203,18 @@ export default {
         }
         return
       }
+
+      // If we aim player with a champion power
+      if (state.championPowerTarget === true) {
+        if (state.player.socketId === target.socketId) {
+          alert('Tu ne peux pas te cibler toi-même, choisie un autre joueur')
+        } else {
+          state.championPowerTarget = target.socketId
+          this.usePlayerChampionPower()
+        }
+        return
+      }
+
       if (state.player.soifToGive) {
         if (target.hasInvincibleJoker > 0) {
           alert(`${target.pseudo} est invincible pendant ${target.hasInvincibleJoker} round`)
@@ -241,7 +254,21 @@ export default {
       }
     },
     usePlayerChampionPower() {
-      socket.emit('Champion:UsePower', this.playerChampion.id)
+      if (this.playerChampion.canTarget) {
+        if (state.championPowerTarget === null) {
+          state.championPowerTarget = true
+          state.jokerUsed.target = null
+          alert('Appuie sur le joueur que tu souhaites viser')
+        } else {
+          socket.emit('Champion:UsePower', {
+            championId: this.playerChampion.id,
+            targetSocketId: state.championPowerTarget
+          })
+          state.championPowerTarget = null
+        }
+        return
+      }
+      socket.emit('Champion:UsePower', { championId: this.playerChampion.id })
       this.setPlayerChampionReload(0)
       this.actualPowerReload = this.getPlayerChampionReload()
       this.refreshChampionPowerValue()

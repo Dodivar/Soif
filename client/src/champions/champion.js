@@ -7,9 +7,6 @@ export default class Champion {
     this.reloadPower = reloadPower
     this.passif = reloadPower === null
     this.isDisabled = true
-  }
-
-  effect() {
-    console.error(`Not implemented effect of ${this.name}`)
+    this.canTarget = false
   }
 }

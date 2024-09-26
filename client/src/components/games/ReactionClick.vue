@@ -66,13 +66,13 @@ export default {
 
     stopGame() {
       this.endTime = new Date().getTime()
-      this.reactionTime = this.endTime - this.startTime
+      this.reactionTime = this.endTime - this.startTime / 1000
       this.emojiDisplay.removeEventListener('click', this.stopGame)
       this.emojiDisplay.style.display = 'none'
 
       // Send score after 2s
       setTimeout(() => {
-        socket.emit('Game:PlayGame', this.reactionTime)
+        socket.emit('Game:PlayGame', Number(this.reactionTime.toFixed(3)))
       }, 2000)
     }
   }
