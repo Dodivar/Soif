@@ -287,7 +287,8 @@ export default {
       this.gameActive = false
       this.hasWin = true
       let endTime = new Date().getTime()
-      let reactionTime = endTime - this.startTime / 1000
+      let reactionTime = (endTime - this.startTime) / 1000
+
       this.message = `Vous avez gagné en ${reactionTime}s !`
 
       // Send score after 2s

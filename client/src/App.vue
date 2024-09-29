@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <StartMenu id="content-app" />
+      <RootComponent id="content-app" />
     </v-main>
     <div id="background-app">
       <div class="circle shade1 xxlarge"></div>
@@ -14,11 +14,11 @@
 </template>
 
 <script>
-import StartMenu from './components/StartMenu.vue'
+import RootComponent from './components/RootComponent.vue'
 
 export default {
   components: {
-    StartMenu
+    RootComponent
   },
   data() {
     return {}

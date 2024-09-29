@@ -9,7 +9,7 @@ export default class Fan86 extends Champion {
       'Le fan de 86',
       "Désigne quelqu'un pour être ta 8.6, chaque fois qu'il gagne un jeu, te donne +2 soif à distribuer",
       '',
-      1
+      2
     )
     this.isDisabled = false
     this.canTarget = true

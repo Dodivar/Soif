@@ -106,7 +106,8 @@ io.on("connection", socket => {
 
     socket.on("Room:Join", (roomId, player, avatar) => {
         try {
-            if (!roomId) {           
+            const room = getRoom(roomId)
+            if (!room) {           
                 socket.emit('User:ErrorMessage', `Aucun partie ${roomId} n'a été trouvée`)
                 return
             }
@@ -119,7 +120,6 @@ io.on("connection", socket => {
 
             // Set new player in room
             const newPlayer = new Player(socket.id, player.pseudo, player.champion)
-            let room = getRoom(roomId)
             room.players.push(newPlayer)
             
             // Save avatar
@@ -447,6 +447,12 @@ io.on("connection", socket => {
                 targetPlayer.hasFan86PowerFromSocketId = player.socketId
                 msg = `${player.pseudo} boit dans la 8.6 de ${targetPlayer.pseudo} et gagnera 2 soif si il gagne au prochain round`
             break
+            case 'taze':
+                if (!targetPlayer) return
+                targetPlayer.hasBeenTazed = targetPlayer.hasBeenTazed === 0 ? 2 : targetPlayer.hasBeenTazed + 1
+                console.log(targetPlayer.hasBeenTazed)
+                msg = `${player.pseudo} a tazé ${targetPlayer.pseudo} jusqu'au prochain round`
+            break
             default:
             break
         }
@@ -648,7 +654,7 @@ function playGame(socket, data) {
                 break
             case "Labyrinth":
             case "FindEmoji":
-                room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue.ms));
+                room.roundAnswer = Math.min.apply(Math, room.players.map(e => e.gameValue.score));
                 break
 
             case "Simon":
@@ -753,7 +759,7 @@ function setSoif(room) {
             break;
         case "Labyrinth":
         case "FindEmoji":
-            winners = room.players.filter(e => e.gameValue.win && e.gameValue.ms === room.roundAnswer)
+            winners = room.players.filter(e => e.gameValue.win && e.gameValue.score === room.roundAnswer)
             soifToGive = room.actualGame.soif
             break
         case "Blackjack":

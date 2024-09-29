@@ -1,8 +1,8 @@
 <template>
-  <v-container class="fill-height pa-0" fluid>
+  <v-container class="fill-height pa-0" :class="{ isTazed: state.player.hasBeenTazed > 0 }" fluid>
     <canvas id="confetti"></canvas>
     <v-icon
-      v-if="!wantToCreateRoom && !wantToJoinRoom"
+      v-if="!wantToCreateRoom && !wantToJoinRoom && !state.room?.roomId"
       @click="wantToSetProfil = true"
       class="position-fixed top-0 right-0 text-h4 text-white ma-3"
       >mdi mdi-account-edit</v-icon
@@ -106,7 +106,6 @@
             type="submit"
             >{{ wantToJoinRoom ? 'Valider' : 'Rejoindre une partie' }}</v-btn
           >
-          <!-- <p v-if="showNoRoomIdFound">Aucune partie {{ roomToJoin }} n'a été trouvée</p> -->
         </v-form>
 
         <!-- CHAMP SELECTION -->
@@ -360,7 +359,7 @@ import JokerCard from './JokerCard.vue'
 import { state, socket } from '@/socket'
 
 export default {
-  name: 'StartMenu',
+  name: 'RootComponent',
   components: {
     StopSlider,
     RedOrBlack,
@@ -411,7 +410,6 @@ export default {
       wantToConfigureRoom: false,
       wantToSelectChampion: false,
       loadingRoom: false
-      // showNoRoomIdFound: false,
     }
   },
   created() {
@@ -457,12 +455,6 @@ export default {
       socket.emit('Room:Join', this.roomToJoin, state.player, this.avatar)
 
       setTimeout(() => {
-        // if (!state.room.roomId) {
-        // this.showNoRoomIdFound = true
-        // } else {
-        //   this.wantToJoinRoom = false
-        // }
-
         if (state.room.roomId) {
           this.wantToJoinRoom = false
         }
@@ -584,5 +576,8 @@ export default {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
+}
+.isTazed {
+  filter: blur(5px);
 }
 </style>

@@ -74,6 +74,7 @@ export default {
     },
 
     playSequence() {
+      this.userCanPlay = false
       this.playerSequence = []
 
       let i = 0

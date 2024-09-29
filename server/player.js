@@ -23,6 +23,11 @@ module.exports = class Player {
     this.hasTrapJoker = false // Donne 3 soifs au joueur qui cible celui-ci
     this.hasWinnerJoker = false // Double les soifs si prochain jeu gagnant
 
+    // Champion
+    this.hasFan86PowerFromSocketId = null
+    this.hasCampingPowerFromSocketId = null
+    this.hasBeenTazed = 0
+
     this.champion = champion
   }
 
@@ -95,8 +100,8 @@ module.exports = class Player {
     this.soidGivedBy = []
     this.soifGivedBy = []
     this.hasBlurRoundDescription = hasBlurRoundDescription ?? false
-	
     this.hasInvincibleJoker = this.hasInvincibleJoker > 0 ? this.hasInvincibleJoker - 1 : this.hasInvincibleJoker
+    this.hasBeenTazed = this.hasBeenTazed > 0 ? this.hasBeenTazed - 1 : 0
   }
 
   reset() {
@@ -112,5 +117,6 @@ module.exports = class Player {
     this.jokers = []
     this.soifGivedBy = []
     this.hasBlurRoundDescription = false
+    this.hasBeenTazed = this.hasBeenTazed > 0 ? this.hasBeenTazed - 1 : 0
   }
 }
