@@ -13,6 +13,11 @@
 // Globals
 $body-font-family: 'Nunito', sans-serif !default;
 
+// Cancel androïd reload page
+body {
+  overscroll-behavior-y: contain;
+}
+
 #game-container {
   position: relative;
   width: 100vw;
