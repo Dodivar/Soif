@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sauvage - Rachat de Montres de Luxe</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script>
+        <!-- tailwind.config = { -->
+            <!-- theme: { -->
+                <!-- extend: { -->
+                    <!-- colors: { -->
+                        <!-- primary: '#006135', -->
+                        <!-- 'text-main': '#2a282b' -->
+                    <!-- } -->
+                <!-- } -->
+            <!-- } -->
+        <!-- } -->
+    </script>
+	<style type="text/tailwindcss">
+      @theme {
+        --color-primary: #00c172;
+        --color-text-main: #2a282b;
+      }
+    </style>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        .watch-shadow {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+		#header {
+			background-color: rgba(255,255,255,0.45);
+		}
+    </style>
+</head>
+<body class="bg-white text-text-main font-sans">
+    <!-- Header -->
+    <header id="header" class="shadow-sm backdrop-blur-sm sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold text-primary">Sauvage</div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#accueil" class="text-text-main hover:text-primary transition-colors">Accueil</a>
+                        <a href="#estimation" class="text-text-main hover:text-primary transition-colors">Estimation</a>
+                        <a href="#a-propos" class="text-text-main hover:text-primary transition-colors">À propos</a>
+                        <a href="#faq" class="text-text-main hover:text-primary transition-colors">FAQ</a>
+                        <a href="#contact" class="text-text-main hover:text-primary transition-colors">Contact</a>
+                    </div>
+                </div>
+                <button class="md:hidden">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="gradient-bg py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-4xl lg:text-6xl font-bold text-text-main mb-6 leading-tight">
+                        Vendez votre montre de luxe au 
+                        <span class="text-primary">meilleur prix</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        Estimation gratuite, offre sous 24h, paiement immédiat. 
+                        Faites confiance aux experts du rachat horloger.
+                    </p>
+                    <a href="#estimation" class="inline-flex items-center bg-primary text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg">
+                        Faire estimer ma montre
+                        <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="flex justify-center">
+                    <div class="watch-shadow rounded-2xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+                             alt="Montre de luxe" class="w-full h-auto max-w-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comment ça marche -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-text-main mb-4">Comment ça marche ?</h2>
+                <p class="text-xl text-gray-600">Un processus simple et sécurisé en 3 étapes</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center group">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Remplir le formulaire</h3>
+                    <p class="text-gray-600">Décrivez votre montre et ajoutez quelques photos. Notre équipe d'experts analyse votre demande.</p>
+                </div>
+                <div class="text-center group">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Recevoir une offre sous 24h</h3>
+                    <p class="text-gray-600">Nous vous proposons le meilleur prix du marché basé sur l'état et la rareté de votre pièce.</p>
+                </div>
+                <div class="text-center group">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-4">Paiement rapide et sécurisé</h3>
+                    <p class="text-gray-600">Dès accord, nous organisons la récupération sécurisée et vous payons immédiatement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulaire d'estimation -->
+    <section id="estimation" class="py-20 gradient-bg">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-bold text-text-main mb-4">Estimation gratuite de votre montre</h2>
+                <p class="text-xl text-gray-600">Remplissez ce formulaire pour recevoir une estimation personnalisée</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                <form class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-text-main mb-2">Prénom Nom *</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all" required>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-text-main mb-2">Email *</label>
+                            <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-main mb-2">Téléphone</label>
+                            <input type="tel" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-text-main mb-2">Marque *</label>
+                            <input type="text" placeholder="Ex: Rolex, Patek Philippe..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-main mb-2">Modèle</label>
+                            <input type="text" placeholder="Ex: Submariner, Nautilus..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-text-main mb-2">Année</label>
+                            <input type="number" placeholder="2020" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text-main mb-2">Photos de votre montre</label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                            <input type="file" multiple accept="image/*" class="hidden" id="photos">
+                            <label for="photos" class="cursor-pointer">
+                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <span class="text-primary font-medium">Cliquez pour ajouter des photos</span>
+                                <p class="text-gray-500 text-sm mt-1">PNG, JPG jusqu'à 10MB</p>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-text-main mb-2">Message (optionnel)</label>
+                        <textarea rows="4" placeholder="Décrivez l'état de votre montre, si vous son histoire..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-white py-4 px-8 rounded-lg font-semibold text-lg hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg">
+                        Recevoir mon estimation gratuite
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sécurité du service -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-text-main mb-4">Pourquoi nous faire confiance ?</h2>
+                <p class="text-xl text-gray-600">Votre sécurité et satisfaction sont nos priorités</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-6 rounded-2xl bg-green-50 hover:bg-green-100 transition-colors">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Estimation gratuite</h3>
+                    <p class="text-gray-600">Aucun frais, aucun engagement jusqu'à votre accord final</p>
+                </div>
+                <div class="text-center p-6 rounded-2xl bg-green-50 hover:bg-green-100 transition-colors">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Prix du marché</h3>
+                    <p class="text-gray-600">Nous fournissons une estimation claire selon différents critères que nous vous argumenterons</p>
+                </div>
+                <div class="text-center p-6 rounded-2xl bg-green-50 hover:bg-green-100 transition-colors">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Paiement rapide</h3>
+                    <p class="text-gray-600">Virement bancaire immédiat dès validation de votre montre</p>
+                </div>
+                <div class="text-center p-6 rounded-2xl bg-green-50 hover:bg-green-100 transition-colors">
+                    <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold mb-2">Aucune commission</h3>
+                    <p class="text-gray-600">Le prix proposé est le prix que vous recevez, sans frais cachés</p>
+                </div>
+            </div>
+        </div>
+    </section>
+	
+    <!-- Avis et Témoignages -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-text-main mb-4">Ils nous font confiance</h2>
+                <p class="text-xl text-gray-600">Découvrez les témoignages de nos clients satisfaits</p>
+                <div class="flex justify-center items-center mt-6 space-x-2">
+                    <div class="flex space-x-1">
+                        <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <svg class="h-6 w-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    <span class="text-lg font-semibold text-text-main ml-3">4.9/5</span>
+                    <span class="text-gray-600 ml-2">(247 avis)</span>
+                </div>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Témoignage 1 -->
+                <div class="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center mb-6">
+                        <div class="flex space-x-1">
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-6 leading-relaxed italic">
+                        "Service exceptionnel ! J'ai vendu ma Rolex Submariner et l'estimation était très juste. 
+                        Le processus était simple et le paiement rapide comme promis. Je recommande vivement."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            P.M
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-semibold text-text-main">Pierre Martin</p>
+                            <p class="text-sm text-gray-600">Rolex Submariner • Janvier 2025</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Témoignage 2 -->
+                <div class="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            S.L
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-semibold text-text-main">Sophie Lefebvre</p>
+                            <p class="text-sm text-gray-600">Patek Philippe Calatrava • Décembre 2024</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center mb-3">
+                        <div class="flex space-x-1">
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed italic">
+                        "Excellente expérience avec LuxTime. Ma Patek Philippe a été expertisée avec soin et 
+                        professionnalisme. L'offre reçue était au-dessus de mes attentes. Transparence totale !"
+                    </p>
+                </div>
+
+                <!-- Témoignage 3 -->
+                <div class="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex items-center mb-3">
+                        <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                            A.D
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-semibold text-text-main">Antoine Dubois</p>
+                            <p class="text-sm text-gray-600">Omega Speedmaster • Novembre 2024</p>
+                        </div>
+                    </div>
+					<div class="flex items-center mb-3">
+                    <p class="text-gray-700 mb-3 leading-relaxed italic">
+                        "Processus très professionnel du début à la fin. J'avais des doutes au départ mais 
+                        l'équipe m'a rassuré à chaque étape. Ma montre Omega a été parfaitement évaluée."
+                    </p>
+				</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-20 gradient-bg">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-text-main mb-4">Questions fréquentes</h2>
+                <p class="text-xl text-gray-600">Vos questions les plus fréquentes</p>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">L’estimation est-elle vraiment gratuite ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-gray-600">Oui, l’estimation est 100 % gratuite et sans aucun engagement. Vous êtes libre d’accepter ou de refuser notre proposition, sans aucune pression.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Comment est calculée l’estimation de ma montre ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-gray-600">Nous basons notre estimation sur l’état de votre montre, sa cote actuelle sur le marché (Chrono24, ventes aux enchères, etc.), sa rareté, et la présence de la boîte/papiers. Nous vous fournissons une estimation transparente et argumentée.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Dois-je fournir la boîte et les papiers ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-gray-600">Ce n’est pas obligatoire, mais cela peut augmenter la valeur de votre montre. Nous acceptons également les montres sans papiers, à condition qu’elles soient authentiques.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Comment puis-je être sûr(e) que vous êtes un professionnel sérieux ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-gray-600">Notre activité est déclarée (SIRET visible sur le site), et nous avons déjà accompagné de nombreux clients satisfaits. Nous vous invitons à consulter nos avis Google, à vérifier notre profil professionnel et à nous contacter pour toute question.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Je ne suis pas sûr(e) de vouloir vendre tout de suite. Puis-je quand même demander une estimation ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-gray-600">Absolument. Vous pouvez obtenir une estimation et revenir vers nous plus tard si vous changez d’avis. Nous ne conservons vos données que pour vous recontacter si vous le souhaitez.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">Rachetez-vous toutes les marques de montres ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-gray-600">Nous rachetons principalement les montres de luxe de marques comme Rolex, Omega, Cartier, Breitling, Audemars Piguet, Patek Philippe, etc. Si vous avez un doute, n’hésitez pas à nous envoyer les informations, nous vous répondrons rapidement.</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm">
+                    <button class="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset faq-button" onclick="toggleFAQ(this)">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">omment se déroule le processus de vente ?</h3>
+                            <svg class="h-5 w-5 transform transition-transform faq-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+						<ul>
+							<li>Vous remplissez notre formulaire en ligne (ou nous contactez directement).</li>
+							<li>Nous vous envoyons une estimation sous 24h.</li>
+							<li>Si vous acceptez, nous organisons la remise en main propre.</li>
+							<li>Une fois la montre vérifiée, vous recevez le paiement immédiat.</li>
+						</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Suivez-nous Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-text-main mb-4">Suivez-nous</h2>
+                <p class="text-xl text-gray-600">Découvrez l'univers fascinant des montres de luxe</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Plongez dans l'histoire horlogère</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Sur nos réseaux sociaux, nous partageons notre passion pour l'horlogerie de luxe. 
+                        Découvrez l'histoire fascinante des plus grandes manufactures, les secrets de fabrication 
+                        des montres d'exception, et les anecdotes sur les modèles les plus emblématiques.
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        De la Submariner de Rolex à la Royal Oak d'Audemars Piguet, chaque montre a son histoire. 
+                        Rejoignez notre communauté de passionnés et enrichissez vos connaissances horlogères.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-primary text-white p-3 rounded-full hover:bg-green-700 transition-colors">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-primary text-white p-3 rounded-full hover:bg-green-700 transition-colors">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.74.099.120.112.225.085.347-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.758-1.378l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="bg-primary text-white p-3 rounded-full hover:bg-green-700 transition-colors">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.254-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <img src="https://images.unsplash.com/photo-1594534475808-b18fc33b045e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="Rolex" class="rounded-2xl shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1548171915-e79a380a2a4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="Patek Philippe" class="rounded-2xl shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1609587312208-cea54be969e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="Omega" class="rounded-2xl shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80" alt="Cartier" class="rounded-2xl shadow-lg">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-text-main text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <div class="text-3xl font-bold text-primary mb-4">Sauvage</div>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Experts en rachat de montres de luxe depuis plus de 15 ans. 
+                        Nous offrons les meilleures estimations du marché avec un service transparent et sécurisé.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.254-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-primary transition-colors">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Navigation</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#accueil" class="text-gray-300 hover:text-primary transition-colors">Accueil</a></li>
+                        <li><a href="#estimation" class="text-gray-300 hover:text-primary transition-colors">Estimation</a></li>
+                        <li><a href="#a-propos" class="text-gray-300 hover:text-primary transition-colors">À propos</a></li>
+                        <li><a href="#faq" class="text-gray-300 hover:text-primary transition-colors">FAQ</a></li>
+                        <li><a href="#contact" class="text-gray-300 hover:text-primary transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <div class="space-y-2 text-gray-300">
+                        <p class="flex items-center">
+                            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            01 23 45 67 89
+                        </p>
+                        <p class="flex items-center">
+                            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            contact@Sauvage.fr
+                        </p>
+                        <p class="flex items-start">
+                            <svg class="h-5 w-5 mr-2 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            123 Avenue des Montres<br>75001 Paris, France
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-300 text-sm">
+                        © 2025 Sauvage. Tous droits réservés.
+                    </p>
+                    <div class="flex space-x-6 mt-4 md:mt-0">
+                        <a href="#" class="text-gray-300 hover:text-primary text-sm transition-colors">Mentions légales</a>
+                        <a href="#" class="text-gray-300 hover:text-primary text-sm transition-colors">Politique de confidentialité</a>
+                        <a href="#" class="text-gray-300 hover:text-primary text-sm transition-colors">CGU</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Toggle Function
+        function toggleFAQ(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('.faq-icon');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission handler
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Merci pour votre demande ! Nous vous contacterons sous 24h avec une estimation personnalisée.');
+        });
+
+        // Mobile menu toggle (basic implementation)
+        const mobileMenuButton = document.querySelector('.md\\:hidden button');
+        const mobileMenu = document.querySelector('.md\\:block');
+        
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', function() {
+                // Simple mobile menu toggle - in a real implementation, you'd want a proper mobile menu
+                alert('Menu mobile - À implémenter selon vos besoins');
+            });
+        }
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            once: true
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
+
+
+<!-- Focus -->
+<!-- - Apport de lead sur l'estimation de montre -->
+
+<!-- - Rachat -->
+<!-- - Travailler le SEO. -->
+<!-- - Lancer des campagnes Google Ads ou Facebook/Instagram Ads. -->
+<!-- - Publier du contenu pertinent (ex. : blog sur la cote des montres). -->
+<!-- - Tu entres dans un secteur déjà occupé par des professionnels bien installés (Watchfinder, Cresus, etc.). Il faut te différencier (service plus rapide, meilleure offre, transparence, etc.). -->
+<!-- - Tu risques de recevoir beaucoup de demandes peu qualifiées (faux Rolex, modèles peu liquides, etc.). Il faudra un bon système de filtrage ou de qualification. -->
+
+
+<!-- Pages : -->
+<!-- - Estimation gratuite -->
+<!-- - Blog -->
+
+<!-- Publicité -->
+<!-- - Quels mots clés ? -->
+<!-- - Ciblé sur la région -->
+
+<!-- Axes d'améliorations -->
+<!-- - Blog: création d'articles automatisés toutes les semaines -->
+
+
+<!-- Couleur : -->
+<!-- vert #006135 -->
+<!-- blanc #fffff -->
+<!-- bleu #416E99 -->
+<!-- noir #2a282b -->
