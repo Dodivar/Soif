@@ -9,7 +9,7 @@
     >
     <div class="w-100">
       <!-- Set profil -->
-      <div v-if="!pseudo || !avatar || wantToSetProfil" class="mx-5 text-white">
+      <div v-if="!pseudo || wantToSetProfil" class="mx-5 text-white">
         <div class="text-center ma-5">
           <h1 class="dancing-script-text text-h1 mb-5">Soif !</h1>
           <h2 class="nunito-text">Créé ton profil</h2>
@@ -38,26 +38,6 @@
             >Jouer</v-btn
           >
         </v-form>
-        <!--GOOGLE LOGIN-->
-        <div
-          id="g_id_onload"
-          data-client_id="soifGoogleLogin"
-          data-context="signup"
-          data-ux_mode="popup"
-          data-callback="handleSignInWithGoogle"
-          data-auto_select="true"
-          data-itp_support="true"
-          data-use_fedcm_for_prompt="true"
-        ></div>
-        <div
-          class="g_id_signin"
-          data-type="standard"
-          data-shape="pill"
-          data-theme="outline"
-          data-text="signin_with"
-          data-size="large"
-          data-logo_alignment="left"
-        ></div>
       </div>
 
       <!-- Create or join -->
